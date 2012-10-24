@@ -1,6 +1,6 @@
 cocos-benchmark
 ===============
-Cocos-benchmark is a benchmark for cocos2d which focus on Intel chip performance improvement.
+Cocos-benchmark is a benchmark for cocos2d, which is designed to compare different engine versions of the same platform, different platforms to each other(Inspired by [SunSpider][7]).
 
 The first version is for [Cocos2d-html5][1], and it will support Hybrid and native in the future.
 
@@ -29,3 +29,4 @@ Contact us
 [4]: http://forum.cocos2d-x.org "http://forum.cocos2d-x.org"
 [5]: http://www.twitter.com/cocos2dhtml5 "http://www.twitter.com/cocos2dhtml5"
 [6]: http://t.sina.com.cn/cocos2dhtml5 "http://t.sina.com.cn/cocos2dhtml5"
+[7]: http://www.webkit.org/perf/sunspider/sunspider.html "SunSpider"
