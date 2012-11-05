@@ -4,6 +4,8 @@
  * Date: 11/1/12
  * Time: 11:21 AM
  */
+$BENCHMARK_DEBUG = false;
+
 BenchmarkEntry = cc.Layer.extend({
     init:function () {
         this._super();
@@ -11,7 +13,7 @@ BenchmarkEntry = cc.Layer.extend({
         var lazyLayer = new cc.LazyLayer();
         this.addChild(lazyLayer);
 
-        var sprite = cc.Sprite.create("res/background.png");
+        var sprite = cc.Sprite.create(s_benchmark);
         sprite.setPosition(cc.p(size.width / 2, size.height / 2));
         sprite.setScale(0.5);
 
@@ -38,44 +40,33 @@ BenchmarkEntryScene = cc.Scene.extend({
 });
 
 BenchmarkCategoryScene = cc.Scene.extend({
+    _categoryIndex: null, // save index in scene, due to "onExit" called late
+    getCategoryIndex: function() {
+        return this._categoryIndex;
+    },
+    setCategoryIndex: function(index) {
+        this._categoryIndex = index;
+    },
     onEnter: function() {
-        benchmarkControllerInstance.onEnterCategoryScene();
+        this._super();
+        benchmarkControllerInstance.onEnterCategoryScene(this);
     },
     onExit: function() {
-        benchmarkControllerInstance.onExitCategoryScene();
+        this._super();
+        benchmarkControllerInstance.onExitCategoryScene(this);
     }
 });
-
-BenchmarkTestCases = [
-    {
-        category: 'DrawPrimitives',
-        times: 100, // time mode
-        time: 2000 // ms, FPS mode
-    }/*,
-    {
-        category: 'Actions'
-    },
-    {
-        category: 'Particle'
-    }
-    */
-];
 
 // TODO: refactor it
 BenchmarkBaseController = cc.Class.extend({
     _categoryTestResult: [],
     _currentCategoryIndex: 0,
     _isBenchmarking: false,
-    _runCategoryTest: function(index) {
-    },
-    onEnterCategoryScene: function() {
-    },
-    onExitCategoryScene: function() {
-    },
-    onTestBegin: function() {
-    },
-    onTestEnd: function() {
-    },
+    _runCategoryTest: function(index) {},
+    onEnterCategoryScene: function(categoryScene) {},
+    onExitCategoryScene: function(categoryScene) {},
+    onTestBegin: function() {},
+    onTestEnd: function() {},
     startBenchmark: function(button) {
         this._isBenchmarking = true;
         this._runCategoryTest(0);
@@ -89,8 +80,7 @@ BenchmarkBaseController = cc.Class.extend({
     isBenchmarking: function() {
         return this._isBenchmarking;
     },
-    outputResult: function() {
-    }
+    outputResult: function() {}
 });
 
 // TODO: refactor it
@@ -125,6 +115,7 @@ BenchmarkTimeController = BenchmarkBaseController.extend({
             this._testResult = [];
             this._testRunTimes = 0;
             var categoryTestScene = new window[BenchmarkTestCases[this._currentCategoryIndex].category + 'BenchmarkScene'];
+            categoryTestScene.setCategoryIndex(index);
             categoryTestScene.runTest();
         }
     },
@@ -163,9 +154,9 @@ BenchmarkFPSController = BenchmarkBaseController.extend({
     _categoryTestBeginFrames: 0,
     _categoryTestEndFrames: 0,
     _timer: 0,
-    _saveCurrentCategoryTestResult: function() {
-        this._categoryTestResult[this._currentCategoryIndex] = {
-            category: BenchmarkTestCases[this._currentCategoryIndex].category,
+    _saveCategoryTestResult: function(categoryIndex) {
+        this._categoryTestResult[categoryIndex] = {
+            category: BenchmarkTestCases[categoryIndex].category,
             FPS: ((this._categoryTestEndFrames - this._categoryTestBeginFrames) /
                 (this._categoryTestEndTime - this._categoryTestBeginTime) * 1000).toFixed(2)
         }
@@ -176,31 +167,33 @@ BenchmarkFPSController = BenchmarkBaseController.extend({
             benchmarkOutputInstance.writeln(result.category + ': ' + result.FPS);
         }
     },
-    onEnterCategoryScene: function() {
+    onEnterCategoryScene: function(categoryScene) {
         this._categoryTestBeginTime = (new Date).getTime();
         this._categoryTestBeginFrames = cc.Director.getInstance().getTotalFrames();
         this._timer = setTimeout(function() {
                 benchmarkControllerInstance._timerTimeout()
             },
-            BenchmarkTestCases[this._currentCategoryIndex].time);
+            BenchmarkTestCases[categoryScene.getCategoryIndex()].duration);
     },
-    onExitCategoryScene: function() {
+    onExitCategoryScene: function(categoryScene) {
         if (this._timer) { // stop manually
             clearTimeout(this._timer);
             this._timer = 0;
         } else {
+            var categoryIndex = categoryScene.getCategoryIndex();
             this._categoryTestEndTime = (new Date).getTime();
             this._categoryTestEndFrames = cc.Director.getInstance().getTotalFrames();
-            this._saveCurrentCategoryTestResult();
-            if (!this.isBenchmarking()) {
-                this.outputResult(); // output result here, for "onExitCategoryScene" called the next frame after "stopBenchmark"
+            this._saveCategoryTestResult(categoryIndex);
+            if (categoryScene.getCategoryIndex() == BenchmarkTestCases.length) { // last category ends, output result
+                this.outputResult();
             }
         }
     },
     _runCategoryTest: function(index) {
         if (0 <= index && index < BenchmarkTestCases.length) {
             this._currentCategoryIndex = index;
-            var categoryTestScene = new window[BenchmarkTestCases[this._currentCategoryIndex].category + 'BenchmarkScene'];
+            var categoryTestScene = new window[BenchmarkTestCases[index].category + 'BenchmarkScene'];
+            categoryTestScene.setCategoryIndex(index);
             categoryTestScene.runTest();
         } else if (index == BenchmarkTestCases.length) {
             this.stopBenchmark();
@@ -209,17 +202,24 @@ BenchmarkFPSController = BenchmarkBaseController.extend({
     _timerTimeout: function() {
         this._timer = 0;
         this._runCategoryTest(this._currentCategoryIndex + 1);
+    },
+    stopBenchmark: function() {
+        this._super();
+        if (this._timer) {
+            clearTimeout(this._timer);
+            this._timer = 0;
+        }
     }
 });
 
 benchmarkTimeControllerInstance = new BenchmarkTimeController;
 benchmarkFPSControllerInstance = new BenchmarkFPSController;
-
-benchmarkControllerInstance = benchmarkTimeControllerInstance;
-benchmarkOutputInstance.writeln('Benchmark mode: time');
+benchmarkControllerInstance = null;
 
 function BenchmarkSetMode(mode) {
-    benchmarkControllerInstance.stopBenchmark();
+    if (benchmarkControllerInstance) {
+        benchmarkControllerInstance.stopBenchmark();
+    }
     benchmarkOutputInstance.writeln('Benchmark mode set to: ' + mode);
     if ('time' == mode) {
         benchmarkControllerInstance = benchmarkTimeControllerInstance;
@@ -229,3 +229,20 @@ function BenchmarkSetMode(mode) {
     }
 }
 
+BenchmarkSetMode(BenchmarkInitialMode);
+
+BenchmarkTestCases = [
+    {
+        category: 'DrawPrimitives',
+        times: 100, // time mode
+        duration: 2000 // ms, FPS mode
+    }, {
+        category: 'Particle',
+        times: 100, // time mode
+        duration: 5000 // ms, FPS mode
+    }/*,
+     {
+     category: 'Actions'
+     }
+     */
+];

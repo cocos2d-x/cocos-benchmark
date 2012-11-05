@@ -38,6 +38,7 @@
                 output.firstChild.deleteData(0, output.firstChild.length);
             }
         }
+        BenchmarkInitialMode = 'time';
         function BenchmarkSetAction(button, action) {
             if (!button) {
                 button = document.getElementById('action');
@@ -60,6 +61,12 @@
                 benchmarkControllerInstance.stopBenchmark(button);
             }
         }
+        function BenchmarkOnModeChange(mode) {
+            BenchmarkInitialMode = mode;
+            if (typeof BenchmarkSetMode !== 'undefined') { // loaded
+                BenchmarkSetMode(mode);
+            }
+        }
     </script>
     <script src="cocos2d.js"></script>
 </head>
@@ -73,8 +80,8 @@
                 <td width="30%">
                     <div>
                         <label>mode:</label>
-                        <input type="radio" name=mode checked onchange="BenchmarkSetMode('time')">time</input>
-                        <input type="radio" name=mode onchange="BenchmarkSetMode('FPS')">FPS</input>
+                        <input type="radio" name=mode checked onchange="BenchmarkOnModeChange('time')">time</input>
+                        <input type="radio" name=mode onchange="BenchmarkOnModeChange('FPS')">FPS</input>
                     </div>
                 </td>
                 <td>

@@ -40,7 +40,8 @@ var $ALL_IN_ONE_FILE = 'cocos-benchmark-all.js';
         appFiles:[
             'src/resources.js',
             'src/cocos-benchmark.js',
-            'src/tests/DrawPrimitives/DrawPrimitivesBenchmark.js'
+            'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',
+            'src/tests/Particle/BenchmarkParticleTest.js'
         ]
     };
     window.addEventListener('DOMContentLoaded', function () {

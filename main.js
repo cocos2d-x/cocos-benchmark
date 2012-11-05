@@ -43,9 +43,11 @@ var cocos2dApp = cc.Application.extend({
     applicationDidFinishLaunching:function () {
         // initialize director
         var director = cc.Director.getInstance();
-
         // turn on/off display FPS
-        director.setDisplayStats(this.config['showFPS']);
+        if ($BENCHMARK_DEBUG) {
+            benchmarkOutputInstance.writeln('Debug mode: on');
+            director.setDisplayStats(this.config['showFPS']);
+        }
 
         // set FPS. the default value is 1.0/60 if you don't call this
         director.setAnimationInterval(1.0 / this.config['frameRate']);
