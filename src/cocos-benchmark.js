@@ -4,8 +4,15 @@
  * Date: 11/1/12
  * Time: 11:21 AM
  */
-$BENCHMARK_DEBUG = false;
 
+// If show debug info(FPS, particle count and etc.) when benchmarking
+$BENCHMARK_DEBUG = true;
+
+////////////////////////////////////////////////////////
+//
+// Default scene stuff
+//
+////////////////////////////////////////////////////////
 BenchmarkEntry = cc.Layer.extend({
     init:function () {
         this._super();
@@ -25,12 +32,11 @@ BenchmarkEntry = cc.Layer.extend({
     }
 });
 
-benchmarkEntrySceneInstance = null;
-
 BenchmarkEntryScene = cc.Scene.extend({
     ctor: function() {
         this._super();
-        benchmarkEntrySceneInstance = this;
+        // set the share instance to this
+        BenchmarkEntryScene.instance = this;
     },
     onEnter:function () {
         var layer = new BenchmarkEntry();
@@ -39,8 +45,17 @@ BenchmarkEntryScene = cc.Scene.extend({
     }
 });
 
+// share instance for BenchmarkEntryScene
+BenchmarkEntryScene.instance = null;
+
+////////////////////////////////////////////////////////
+//
+// Base scene for category tests
+// NOTE: only 1 test in category for now
+//
+////////////////////////////////////////////////////////
 BenchmarkCategoryScene = cc.Scene.extend({
-    _categoryIndex: null, // save index in scene, due to "onExit" called late
+    _categoryIndex: null, // save index in scene, due to "onExit" called delay
     getCategoryIndex: function() {
         return this._categoryIndex;
     },
@@ -57,33 +72,44 @@ BenchmarkCategoryScene = cc.Scene.extend({
     }
 });
 
+////////////////////////////////////////////////////////
+//
+// Base benchmark controller
 // TODO: refactor it
+//
+////////////////////////////////////////////////////////
 BenchmarkBaseController = cc.Class.extend({
+    // test result organized by categories
     _categoryTestResult: [],
+    // current running test category index
     _currentCategoryIndex: 0,
-    _isBenchmarking: false,
+    // run a category of test(s) by index
     _runCategoryTest: function(index) {},
+    // called when enter category tests scene
     onEnterCategoryScene: function(categoryScene) {},
+    // called when exit category tests scene
     onExitCategoryScene: function(categoryScene) {},
+    // call it just before test code
     onTestBegin: function() {},
+    // cal it just after test code
     onTestEnd: function() {},
     startBenchmark: function(button) {
-        this._isBenchmarking = true;
         this._runCategoryTest(0);
         BenchmarkSetActionStop(button);
     },
     stopBenchmark: function(button) {
-        this._isBenchmarking = false;
-        cc.Director.getInstance().replaceScene(benchmarkEntrySceneInstance);
+        cc.Director.getInstance().replaceScene(BenchmarkEntryScene.instance);
         BenchmarkSetActionStart(button);
-    },
-    isBenchmarking: function() {
-        return this._isBenchmarking;
     },
     outputResult: function() {}
 });
 
+////////////////////////////////////////////////////////
+//
+// Time mode benchmark controller
 // TODO: refactor it
+//
+////////////////////////////////////////////////////////
 BenchmarkTimeController = BenchmarkBaseController.extend({
     _testBeginTime: 0,
     _testRunTimes: 0,
@@ -147,13 +173,18 @@ BenchmarkTimeController = BenchmarkBaseController.extend({
     }
 });
 
+////////////////////////////////////////////////////////
+//
+// FPS mode benchmark controller
 // TODO: refactor it
+//
+////////////////////////////////////////////////////////
 BenchmarkFPSController = BenchmarkBaseController.extend({
     _categoryTestBeginTime: 0,
     _categoryTestEndTime: 0,
     _categoryTestBeginFrames: 0,
     _categoryTestEndFrames: 0,
-    _timer: 0,
+    _timer: 0, // ID of timer to stop category tests
     _saveCategoryTestResult: function(categoryIndex) {
         this._categoryTestResult[categoryIndex] = {
             category: BenchmarkTestCases[categoryIndex].category,
@@ -184,7 +215,7 @@ BenchmarkFPSController = BenchmarkBaseController.extend({
             this._categoryTestEndTime = (new Date).getTime();
             this._categoryTestEndFrames = cc.Director.getInstance().getTotalFrames();
             this._saveCategoryTestResult(categoryIndex);
-            if (categoryScene.getCategoryIndex() == BenchmarkTestCases.length) { // last category ends, output result
+            if (categoryScene.getCategoryIndex() + 1 == BenchmarkTestCases.length) { // last category ends, output result
                 this.outputResult();
             }
         }
@@ -214,6 +245,7 @@ BenchmarkFPSController = BenchmarkBaseController.extend({
 
 benchmarkTimeControllerInstance = new BenchmarkTimeController;
 benchmarkFPSControllerInstance = new BenchmarkFPSController;
+// current active benchmark controller
 benchmarkControllerInstance = null;
 
 function BenchmarkSetMode(mode) {
@@ -229,20 +261,26 @@ function BenchmarkSetMode(mode) {
     }
 }
 
-BenchmarkSetMode(BenchmarkInitialMode);
+BenchmarkSetMode(benchmarkInitialMode);
 
+// Test cases data
+// category: API category
+// times: run times in time mode
+// duration: duration(ms) in FPS mode
 BenchmarkTestCases = [
     {
         category: 'DrawPrimitives',
-        times: 100, // time mode
-        duration: 2000 // ms, FPS mode
+        times: 100,
+        duration: 2000
     }, {
         category: 'Particle',
-        times: 100, // time mode
-        duration: 5000 // ms, FPS mode
+        times: 100,
+        duration: 5000
     }/*,
      {
      category: 'Actions'
      }
      */
 ];
+
+

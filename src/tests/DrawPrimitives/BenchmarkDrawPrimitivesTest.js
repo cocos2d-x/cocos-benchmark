@@ -28,7 +28,9 @@ var DrawPrimitivesBenchmark = cc.Layer.extend({
     },
     draw:function () {
         this._super();
+        // call "onTestBegin" just before code to test
         benchmarkControllerInstance.onTestBegin();
+
         var s = cc.Director.getInstance().getWinSize();
 
         cc.renderContext.fillStyle = "rgba(255,255,255,1)";
@@ -118,6 +120,7 @@ var DrawPrimitivesBenchmark = cc.Layer.extend({
         //glPointSize(1);
         cc.renderContext.fillStyle = "rgba(255,255,255,1)";
         cc.renderContext.strokeStyle = "rgba(255,255,255,1)";
+        // call "onTestEnd" just after code to test
         benchmarkControllerInstance.onTestEnd();
     }
 });

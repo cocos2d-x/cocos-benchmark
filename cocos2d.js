@@ -24,6 +24,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
+// TODO: support all in one?
 var $ALL_IN_ONE = 0;
 var $ALL_IN_ONE_FILE = 'cocos-benchmark-all.js';
 

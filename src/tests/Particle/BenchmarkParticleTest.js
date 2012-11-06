@@ -28,15 +28,22 @@ var TAG_PARTICLE_SYSTEM = 3;
 var TAG_LABEL_ATLAS = 4;
 var PARTICLE_NODES_INCREASE = 50;
 
+////////////////////////////////////////////////////////
+//
+// Particle System Quad Stub for benchmarking
+//
+////////////////////////////////////////////////////////
 BenchmarkParticleSystemQuad = cc.ParticleSystemQuad.extend({
     draw: function() {
+        var VALID_DELTA_RATE = 0.1;
         var currentParticleCount = this.getParticleCount();
         var particleCountGoal = cc.Director.getInstance().getRunningScene().getParticlesNum();
-        // WHAT IF current count is always smaller than goal, e.g. low performance :(
-        var valid = (Math.abs(particleCountGoal-currentParticleCount)/particleCountGoal) < 0.1;
-        if (valid) {
+        // TODO: fix it, if current count is always smaller than goal, e.g. low performance :(
+        var valid = (Math.abs(particleCountGoal-currentParticleCount)/particleCountGoal) <= VALID_DELTA_RATE;
+        if (valid) { // only call if particles are enough
             benchmarkControllerInstance.onTestBegin();
         }
+        // call "ParticleSystemQuad.draw()
         this._super();
         if (valid) {
             benchmarkControllerInstance.onTestEnd();

@@ -28,6 +28,8 @@
         }
     </style>
     <script type="text/javascript">
+        benchmarkInitialMode = 'time';
+        // benchmark output to write test result
         benchmarkOutputInstance = {
             writeln: function(text) {
                 var output = document.getElementById('output');
@@ -38,7 +40,6 @@
                 output.firstChild.deleteData(0, output.firstChild.length);
             }
         }
-        BenchmarkInitialMode = 'time';
         function BenchmarkSetAction(button, action) {
             if (!button) {
                 button = document.getElementById('action');
@@ -53,7 +54,7 @@
         }
         function BenchmarkActionButtonClick(button) {
             if (button.value == 'start') {
-                if (typeof benchmarkControllerInstance !== 'undefined') {
+                if (typeof benchmarkControllerInstance !== 'undefined') { // loaded
                     benchmarkControllerInstance.startBenchmark(button);
                 }
             }
@@ -62,7 +63,7 @@
             }
         }
         function BenchmarkOnModeChange(mode) {
-            BenchmarkInitialMode = mode;
+            benchmarkInitialMode = mode; // save it, if clicked before loading finishes
             if (typeof BenchmarkSetMode !== 'undefined') { // loaded
                 BenchmarkSetMode(mode);
             }
