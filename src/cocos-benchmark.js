@@ -272,15 +272,17 @@ BenchmarkTestCases = [
         category: 'DrawPrimitives',
         times: 100,
         duration: 2000
-    }, {
+    },
+    {
         category: 'Particle',
         times: 100,
         duration: 5000
-    }/*,
-     {
-     category: 'Actions'
-     }
-     */
+    },
+    {
+        category:'TouchesTest',
+        times:100,
+        duration:5000
+    }
 ];
 
 
