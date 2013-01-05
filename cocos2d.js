@@ -46,6 +46,7 @@ var $ALL_IN_ONE_FILE = 'cocos-benchmark-all.js';
             'src/tests/TouchesTest/Paddle.js',
             'src/tests/TouchesTest/Ball.js',
             'src/tests/TouchesTest/TouchesTest.js',
+            'src/tests/RotateWorldTest/RotateWorldTest.js'
         ]
     };
     window.addEventListener('DOMContentLoaded', function () {
