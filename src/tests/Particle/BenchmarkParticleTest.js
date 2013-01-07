@@ -26,37 +26,14 @@
 var TAG_INFO_LAYER = 1;
 var TAG_PARTICLE_SYSTEM = 3;
 var TAG_LABEL_ATLAS = 4;
-var PARTICLE_NODES_INCREASE = 500;
-
-////////////////////////////////////////////////////////
-//
-// Particle System Quad Stub for benchmarking
-//
-////////////////////////////////////////////////////////
-BenchmarkParticleSystemQuad = cc.ParticleSystemQuad.extend({
-    draw: function() {
-        var VALID_DELTA_RATE = 0.1;
-        var currentParticleCount = this.getParticleCount();
-        var particleCountGoal = cc.Director.getInstance().getRunningScene().getParticlesNum();
-        // TODO: fix it, if current count is always smaller than goal, e.g. low performance :(
-        var valid = (Math.abs(particleCountGoal-currentParticleCount)/particleCountGoal) <= VALID_DELTA_RATE;
-        if (valid) { // only call if particles are enough
-            benchmarkControllerInstance.onTestBegin();
-        }
-        // call "ParticleSystemQuad.draw()
-        this._super();
-        if (valid) {
-            benchmarkControllerInstance.onTestEnd();
-        }
-    }
-});
+var PARTICLE_NODES = 300;
 
 ////////////////////////////////////////////////////////
 //
 // ParticleMainScene
 //
 ////////////////////////////////////////////////////////
-var ParticleMainScene = BenchmarkCategoryScene.extend({
+var ParticleMainScene = BenchmarkBaseTestScene.extend({
     _lastRenderedCount:null,
     _quantityParticles:null,
     _subtestNumber:null,
@@ -67,7 +44,7 @@ var ParticleMainScene = BenchmarkCategoryScene.extend({
         this._lastRenderedCount = 0;
         this._quantityParticles = particles;
 
-        if ($BENCHMARK_DEBUG) {
+        if (BENCHMARK_DEBUG) {
             var infoLabel = cc.LabelTTF.create("0 nodes", "Marker Felt", 30);
             infoLabel.setColor(cc.c3b(0, 200, 20));
             infoLabel.setPosition(cc.p(s.width / 2, s.height - 90));
@@ -90,7 +67,7 @@ var ParticleMainScene = BenchmarkCategoryScene.extend({
         this.schedule(this.step);
     },
     step:function () {
-        if ($BENCHMARK_DEBUG) {
+        if (BENCHMARK_DEBUG) {
             var atlas = this.getChildByTag(TAG_LABEL_ATLAS);
             var emitter = this.getChildByTag(TAG_PARTICLE_SYSTEM);
 
@@ -116,7 +93,7 @@ var ParticleMainScene = BenchmarkCategoryScene.extend({
         var texture = cc.TextureCache.getInstance().addImage("res/Images/fire.png");
         cc.TextureCache.getInstance().removeTexture(texture);
 
-        particleSystem = new BenchmarkParticleSystemQuad();
+        particleSystem = new cc.ParticleSystemQuad();
 
         switch (this._subtestNumber) {
             case 1:
@@ -147,7 +124,7 @@ var ParticleMainScene = BenchmarkCategoryScene.extend({
         cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_RGBA8888);
     },
     updateQuantityLabel:function () {
-        if ($BENCHMARK_DEBUG) {
+        if (BENCHMARK_DEBUG) {
             if (this._quantityParticles != this._lastRenderedCount) {
                 var infoLabel = this.getChildByTag(TAG_INFO_LAYER);
                 var str = this._quantityParticles + " particles";
@@ -167,9 +144,9 @@ var ParticleMainScene = BenchmarkCategoryScene.extend({
     }
 });
 
-var ParticleBenchmarkScene = ParticleMainScene.extend({
+var ParticleSize4BenchmarkScene = ParticleMainScene.extend({
     runTest:function () {
-        this.initWithSubTest(1, PARTICLE_NODES_INCREASE);
+        this.initWithSubTest(1, PARTICLE_NODES);
         cc.Director.getInstance().replaceScene(this);
     },
     title:function () {
@@ -232,3 +209,197 @@ var ParticleBenchmarkScene = ParticleMainScene.extend({
     }
 });
 
+var ParticleSize8BenchmarkScene = ParticleMainScene.extend({
+    runTest:function () {
+        this.initWithSubTest(1, PARTICLE_NODES);
+        cc.Director.getInstance().replaceScene(this);
+    },
+    title:function () {
+        return "B " + this._subtestNumber + " size=8";
+    },
+    doTest:function () {
+        var s = cc.Director.getInstance().getWinSize();
+        var particleSystem = this.getChildByTag(TAG_PARTICLE_SYSTEM);
+
+        // duration
+        particleSystem.setDuration(-1);
+
+        // gravity
+        particleSystem.setGravity(cc.p(0, -90));
+
+        // angle
+        particleSystem.setAngle(90);
+        particleSystem.setAngleVar(0);
+
+        // radial
+        particleSystem.setRadialAccel(0);
+        particleSystem.setRadialAccelVar(0);
+
+        // speed of particles
+        particleSystem.setSpeed(180);
+        particleSystem.setSpeedVar(50);
+
+        // emitter position
+        particleSystem.setPosition(cc.p(s.width / 2, 100));
+        particleSystem.setPosVar(cc.p(s.width / 2, 0));
+
+        // life of particles
+        particleSystem.setLife(2.0);
+        particleSystem.setLifeVar(1);
+
+        // emits per frame
+        particleSystem.setEmissionRate(particleSystem.getTotalParticles() / particleSystem.getLife());
+
+        // color of particles
+        var startColor = new cc.Color4F(0.5, 0.5, 0.5, 1.0);
+        particleSystem.setStartColor(startColor);
+
+        var startColorVar = new cc.Color4F(0.5, 0.5, 0.5, 1.0);
+        particleSystem.setStartColorVar(startColorVar);
+
+        var endColor = new cc.Color4F(0.1, 0.1, 0.1, 0.2);
+        particleSystem.setEndColor(endColor);
+
+        var endColorVar = new cc.Color4F(0.1, 0.1, 0.1, 0.2);
+        particleSystem.setEndColorVar(endColorVar);
+
+        // size, in pixels
+        particleSystem.setEndSize(8.0);
+        particleSystem.setStartSize(8.0);
+        particleSystem.setEndSizeVar(0);
+        particleSystem.setStartSizeVar(0);
+
+        // additive
+        particleSystem.setBlendAdditive(false);
+    }
+});
+
+var ParticleSize32BenchmarkScene = ParticleMainScene.extend({
+    runTest:function () {
+        this.initWithSubTest(1, PARTICLE_NODES);
+        cc.Director.getInstance().replaceScene(this);
+    },
+    title:function () {
+        return "C " + this._subtestNumber + " size=32";
+    },
+    doTest:function () {
+        var s = cc.Director.getInstance().getWinSize();
+        var particleSystem = this.getChildByTag(TAG_PARTICLE_SYSTEM);
+
+        // duration
+        particleSystem.setDuration(-1);
+
+        // gravity
+        particleSystem.setGravity(cc.p(0, -90));
+
+        // angle
+        particleSystem.setAngle(90);
+        particleSystem.setAngleVar(0);
+
+        // radial
+        particleSystem.setRadialAccel(0);
+        particleSystem.setRadialAccelVar(0);
+
+        // speed of particles
+        particleSystem.setSpeed(180);
+        particleSystem.setSpeedVar(50);
+
+        // emitter position
+        particleSystem.setPosition(cc.p(s.width / 2, 100));
+        particleSystem.setPosVar(cc.p(s.width / 2, 0));
+
+        // life of particles
+        particleSystem.setLife(2.0);
+        particleSystem.setLifeVar(1);
+
+        // emits per frame
+        particleSystem.setEmissionRate(particleSystem.getTotalParticles() / particleSystem.getLife());
+
+        // color of particles
+        var startColor = new cc.Color4F(0.5, 0.5, 0.5, 1.0);
+        particleSystem.setStartColor(startColor);
+
+        var startColorVar = new cc.Color4F(0.5, 0.5, 0.5, 1.0);
+        particleSystem.setStartColorVar(startColorVar);
+
+        var endColor = new cc.Color4F(0.1, 0.1, 0.1, 0.2);
+        particleSystem.setEndColor(endColor);
+
+        var endColorVar = new cc.Color4F(0.1, 0.1, 0.1, 0.2);
+        particleSystem.setEndColorVar(endColorVar);
+
+        // size, in pixels
+        particleSystem.setEndSize(32.0);
+        particleSystem.setStartSize(32.0);
+        particleSystem.setEndSizeVar(0);
+        particleSystem.setStartSizeVar(0);
+
+        // additive
+        particleSystem.setBlendAdditive(false);
+    }
+});
+
+var ParticleSize64BenchmarkScene = ParticleMainScene.extend({
+    runTest:function () {
+        this.initWithSubTest(1, PARTICLE_NODES);
+        cc.Director.getInstance().replaceScene(this);
+    },
+    title:function () {
+        return "D " + this._subtestNumber + " size=64";
+    },
+    doTest:function () {
+        var s = cc.Director.getInstance().getWinSize();
+        var particleSystem = this.getChildByTag(TAG_PARTICLE_SYSTEM);
+
+        // duration
+        particleSystem.setDuration(-1);
+
+        // gravity
+        particleSystem.setGravity(cc.p(0, -90));
+
+        // angle
+        particleSystem.setAngle(90);
+        particleSystem.setAngleVar(0);
+
+        // radial
+        particleSystem.setRadialAccel(0);
+        particleSystem.setRadialAccelVar(0);
+
+        // speed of particles
+        particleSystem.setSpeed(180);
+        particleSystem.setSpeedVar(50);
+
+        // emitter position
+        particleSystem.setPosition(cc.p(s.width / 2, 100));
+        particleSystem.setPosVar(cc.p(s.width / 2, 0));
+
+        // life of particles
+        particleSystem.setLife(2.0);
+        particleSystem.setLifeVar(1);
+
+        // emits per frame
+        particleSystem.setEmissionRate(particleSystem.getTotalParticles() / particleSystem.getLife());
+
+        // color of particles
+        var startColor = new cc.Color4F(0.5, 0.5, 0.5, 1.0);
+        particleSystem.setStartColor(startColor);
+
+        var startColorVar = new cc.Color4F(0.5, 0.5, 0.5, 1.0);
+        particleSystem.setStartColorVar(startColorVar);
+
+        var endColor = new cc.Color4F(0.1, 0.1, 0.1, 0.2);
+        particleSystem.setEndColor(endColor);
+
+        var endColorVar = new cc.Color4F(0.1, 0.1, 0.1, 0.2);
+        particleSystem.setEndColorVar(endColorVar);
+
+        // size, in pixels
+        particleSystem.setEndSize(64.0);
+        particleSystem.setStartSize(64.0);
+        particleSystem.setEndSizeVar(0);
+        particleSystem.setStartSizeVar(0);
+
+        // additive
+        particleSystem.setBlendAdditive(false);
+    }
+});

@@ -43,10 +43,7 @@ var $ALL_IN_ONE_FILE = 'cocos-benchmark-all.js';
             'src/cocos-benchmark.js',
             'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',
             'src/tests/Particle/BenchmarkParticleTest.js',
-            'src/tests/TouchesTest/Paddle.js',
-            'src/tests/TouchesTest/Ball.js',
-            'src/tests/TouchesTest/TouchesTest.js',
-            'src/tests/RotateWorldTest/RotateWorldTest.js'
+            'src/tests/Sprite/BenchmarkSpriteTest.js'
         ]
     };
     window.addEventListener('DOMContentLoaded', function () {
@@ -67,8 +64,7 @@ var $ALL_IN_ONE_FILE = 'cocos-benchmark-all.js';
             script.src = $ALL_IN_ONE_FILE;
         }
         document.body.appendChild(script);
-        document.ccConfig=config;
-        script.c = config;
+        document.ccConfig = config;
         script.id = 'cocos2d-html5';
     });
 })();

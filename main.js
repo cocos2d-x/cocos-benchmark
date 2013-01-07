@@ -25,7 +25,7 @@
  THE SOFTWARE.
  ****************************************************************************/
 var cocos2dApp = cc.Application.extend({
-    config:document.querySelector('#cocos2d-html5')['c'],
+    config:document['ccConfig'],
     ctor:function (scene) {
         this._super();
         this.startScene = scene;
@@ -44,7 +44,7 @@ var cocos2dApp = cc.Application.extend({
         // initialize director
         var director = cc.Director.getInstance();
         // turn on/off display FPS
-        if ($BENCHMARK_DEBUG) {
+        if (BENCHMARK_DEBUG) {
             benchmarkOutputInstance.writeln('Debug mode: on');
             director.setDisplayStats(this.config['showFPS']);
         }

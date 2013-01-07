@@ -23,14 +23,12 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-var DrawPrimitivesBenchmark = cc.Layer.extend({
+var DrawPrimitivesTest01Benchmark = cc.Layer.extend({
     ctor:function () {
     },
     draw:function () {
         this._super();
-        // call "onTestBegin" just before code to test
-        benchmarkControllerInstance.onTestBegin();
-        for(var i=0;i<200;i++){
+
         var s = cc.Director.getInstance().getWinSize();
 
         cc.renderContext.fillStyle = "rgba(255,255,255,1)";
@@ -120,15 +118,12 @@ var DrawPrimitivesBenchmark = cc.Layer.extend({
         //glPointSize(1);
         cc.renderContext.fillStyle = "rgba(255,255,255,1)";
         cc.renderContext.strokeStyle = "rgba(255,255,255,1)";
-        // call "onTestEnd" just after code to test
-      }
-        benchmarkControllerInstance.onTestEnd();
     }
 });
 
-var DrawPrimitivesBenchmarkScene = BenchmarkCategoryScene.extend({
+var DrawPrimitivesTest01BenchmarkScene = BenchmarkBaseTestScene.extend({
     runTest:function () {
-        var layer = new DrawPrimitivesBenchmark();
+        var layer = new DrawPrimitivesTest01Benchmark();
         this.addChild(layer);
         cc.Director.getInstance().replaceScene(this);
     }
