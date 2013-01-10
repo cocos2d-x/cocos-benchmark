@@ -100,8 +100,12 @@ var PongLayer = cc.Layer.extend({
 
         // TODO -- scoring
     },
+    _time:0,
     doStep:function (delta) {
+        
+        //if(this._time==0)
         benchmarkControllerInstance.onTestBegin();
+        for(var k=0;k<30000;k++){
         this._ball.move(delta);
 
         for (var i = 0; i < this._paddles.length; i++) {
@@ -111,12 +115,29 @@ var PongLayer = cc.Layer.extend({
             this._ball.collideWithPaddle(this._paddles[i]);
         }
 
-        if (this._ball.getPosition().y > this._winSize.height - STATUS_BAR_HEIGHT + this._ball.radius())
+        if (this._ball.getPosition().y > this._winSize.height - STATUS_BAR_HEIGHT + this._ball.radius()){
+           // benchmarkControllerInstance.onTestBegin();
             this.resetAndScoreBallForPlayer(LOW_PLAYER);
-        else if (this._ball.getPosition().y < -this._ball.radius())
+             
+        }
+        else if (this._ball.getPosition().y < -this._ball.radius()){
+             //benchmarkControllerInstance.onTestEnd(); 
             this.resetAndScoreBallForPlayer(HIGH_PLAYER);
+            
+             //alert(2)
+             // alert(new Date()-this._time)
+        }
         this._ball.draw();
+      
+         }
+        //if(this._time>=300) 
         benchmarkControllerInstance.onTestEnd();
+       // this._time++;
+        
+       
+     
+       
+
         
     }
 });

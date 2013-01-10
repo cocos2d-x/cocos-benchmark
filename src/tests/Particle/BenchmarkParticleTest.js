@@ -26,7 +26,7 @@
 var TAG_INFO_LAYER = 1;
 var TAG_PARTICLE_SYSTEM = 3;
 var TAG_LABEL_ATLAS = 4;
-var PARTICLE_NODES_INCREASE = 50;
+var PARTICLE_NODES_INCREASE = 500;
 
 ////////////////////////////////////////////////////////
 //
