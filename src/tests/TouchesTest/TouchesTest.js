@@ -1,0 +1,143 @@
+/****************************************************************************
+ Copyright (c) 2010-2012 cocos2d-x.org
+ Copyright (c) 2008-2010 Ricardo Quesada
+ Copyright (c) 2011      Zynga Inc.
+
+ http://www.cocos2d-x.org
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+var HIGH_PLAYER = 0;
+var LOW_PLAYER = 1;
+var STATUS_BAR_HEIGHT = 20.0;
+var SPRITE_TAG = 0;
+var TouchesTestBenchmarkScene = BenchmarkCategoryScene.extend({
+    runTest:function () {
+        var layer = new PongLayer();
+        this.addChild(layer);
+        cc.Director.getInstance().replaceScene(this);
+    }
+});
+
+/*var TouchesTestScene = cc.Scene.extend({
+     onEnter:function(){
+        this._super();
+        var layer = new PongLayer();
+        layer.init();
+        this.addChild(layer);
+    }
+});*/
+
+var PongLayer = cc.Layer.extend({
+    _ball:null,
+    _paddles:[],
+    _ballStartingVelocity:cc.p(0,0),
+    _winSize:null,
+
+    ctor:function () {
+        this._ballStartingVelocity = cc.p(20.0, -100.0);
+        this._winSize = cc.Director.getInstance().getWinSize();
+
+        this._ball = Ball.ballWithTexture(cc.TextureCache.getInstance().addImage(s_ball));
+        this._ball.setPosition(cc.p(this._winSize.width / 2, this._winSize.height / 2));
+        this._ball.setVelocity(this._ballStartingVelocity);
+        this.addChild(this._ball);
+
+        var paddleTexture = cc.TextureCache.getInstance().addImage(s_paddle);
+
+        this._paddles = [];
+
+        var paddle = Paddle.paddleWithTexture(paddleTexture);
+        paddle.setPosition(cc.p(this._winSize.width / 2, 15));
+        this._paddles.push(paddle);
+
+        paddle = Paddle.paddleWithTexture(paddleTexture);
+        paddle.setPosition(cc.p(this._winSize.width / 2, this._winSize.height - STATUS_BAR_HEIGHT - 15));
+        this._paddles.push(paddle);
+
+        paddle = Paddle.paddleWithTexture(paddleTexture);
+        paddle.setPosition(cc.p(this._winSize.width / 2, 100));
+        this._paddles.push(paddle);
+
+        paddle = Paddle.paddleWithTexture(paddleTexture);
+        paddle.setPosition(cc.p(this._winSize.width / 2, this._winSize.height - STATUS_BAR_HEIGHT - 100));
+        this._paddles.push(paddle);
+
+        for (var i = 0; i < this._paddles.length; i++) {
+            if (!this._paddles[i])
+                break;
+
+            this.addChild(this._paddles[i]);
+        }
+       
+        this.schedule(this.doStep);
+       
+    },
+    resetAndScoreBallForPlayer:function (player) {
+        if (Math.abs(this._ball.getVelocity().y) < 300) {
+            this._ballStartingVelocity = cc.pMult(this._ballStartingVelocity, -1.1);
+        } else {
+            this._ballStartingVelocity = cc.pMult(this._ballStartingVelocity, -1);
+        }
+        this._ball.setVelocity(this._ballStartingVelocity);
+        this._ball.setPosition(cc.p(this._winSize.width / 2, this._winSize.height / 2));
+
+        // TODO -- scoring
+    },
+    _time:0,
+    doStep:function (delta) {
+        
+        //if(this._time==0)
+        benchmarkControllerInstance.onTestBegin();
+        for(var k=0;k<30000;k++){
+        this._ball.move(delta);
+
+        for (var i = 0; i < this._paddles.length; i++) {
+            if (!this._paddles[i])
+                break;
+
+            this._ball.collideWithPaddle(this._paddles[i]);
+        }
+
+        if (this._ball.getPosition().y > this._winSize.height - STATUS_BAR_HEIGHT + this._ball.radius()){
+           // benchmarkControllerInstance.onTestBegin();
+            this.resetAndScoreBallForPlayer(LOW_PLAYER);
+             
+        }
+        else if (this._ball.getPosition().y < -this._ball.radius()){
+             //benchmarkControllerInstance.onTestEnd(); 
+            this.resetAndScoreBallForPlayer(HIGH_PLAYER);
+            
+             //alert(2)
+             // alert(new Date()-this._time)
+        }
+        this._ball.draw();
+      
+         }
+        //if(this._time>=300) 
+        benchmarkControllerInstance.onTestEnd();
+       // this._time++;
+        
+       
+     
+       
+
+        
+    }
+});

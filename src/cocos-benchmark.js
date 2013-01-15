@@ -114,9 +114,47 @@ BenchmarkTimeController = BenchmarkBaseController.extend({
     _testBeginTime: 0,
     _testRunTimes: 0,
     _testResult: [],
+    _getValidTestResult:function(){
+        var timeSum=0,meanTime=0;
+        var validResult=[];
+         for (var i=0; i<this._testResult.length; ++i) {
+            var time = this._testResult[i];
+            timeSum += time;
+        }
+         meanTime = timeSum / this._testResult.length;
+          for (var i=0; i<this._testResult.length; ++i) {
+             validResult[i]=Math.abs((this._testResult[i]-meanTime).toFixed(3));
+          }
+          var length=validResult.length;
+          for(var i=0;i<length-1;i++){
+            for(var j=i+1;j<length;j++){
+                var temp;
+              if(validResult[i]>validResult[j]){
+                temp=validResult[i];
+                validResult[i]=validResult[j];
+                validResult[j]=temp;
+                temp=this._testResult[i];
+                this._testResult[i]=this._testResult[j];
+                this._testResult[j]=temp;
+              }
+            }
+          }
+         return validResult;
+    },
+    _getConfidenceInterval:function(results,mean){
+        var D2=0,current=0;
+        var length=results.length - BenchmarkTestCases[this._currentCategoryIndex].invalidTimes;
+        for(var i=0;i<length;i++){
+            current=Math.abs(results[i]-mean)
+            D2+=current*current;
+        }
+        return (Math.sqrt(D2/length*2.262)).toFixed(3);
+    },
     _saveCurrentCategoryTestResult: function() {
+        var abc=this._getValidTestResult();
         var timeSum = 0, minTime = 0, maxTime = 0, meanTime = 0, maxDeltaPercent = 0;
-        for (var i=0; i<this._testResult.length; ++i) {
+        var length = this._testResult.length - BenchmarkTestCases[this._currentCategoryIndex].invalidTimes;
+        for (var i=0; i<length; ++i) {
             var time = this._testResult[i];
             timeSum += time;
             if (time > maxTime || 0 == maxTime) {
@@ -126,12 +164,16 @@ BenchmarkTimeController = BenchmarkBaseController.extend({
                 minTime = time;
             }
         }
-        meanTime = timeSum / this._testResult.length;
-        maxDeltaPercent = (Math.max(maxTime-meanTime, meanTime-minTime) / meanTime * 100).toFixed(2);
+        meanTime = (timeSum / length).toFixed(2);
+        //maxDeltaPercent = (Math.max(maxTime-meanTime, meanTime-minTime) / meanTime * 100).toFixed(2);
+        maxDeltaPercent = this._getConfidenceInterval(this._testResult,meanTime);
+        maxDeltaPercent = (maxDeltaPercent/meanTime*100).toFixed(2);
         this._categoryTestResult[this._currentCategoryIndex] = {
             category: BenchmarkTestCases[this._currentCategoryIndex].category,
             meanTime: meanTime,
-            maxDeltaPercent: maxDeltaPercent
+            maxDeltaPercent: maxDeltaPercent,
+            results:this._testResult,
+           // abc:abc
         }
     },
     _runCategoryTest: function(index) {
@@ -152,11 +194,17 @@ BenchmarkTimeController = BenchmarkBaseController.extend({
                 result.meanTime + 'ms' +
                 ' +/- ' + result.maxDeltaPercent + '%');
         }
+        /*for(var i=0;i<this._categoryTestResult[0].results.length;i++){
+            benchmarkOutputInstance.writeln(this._categoryTestResult[0].results[i]+"---"+this._categoryTestResult[0].abc[i])
+           benchmarkOutputInstance.writeln(this._categoryTestResult[0].results[i])
+        }*/
     },
     onTestBegin: function() {
         this._testBeginTime = (new Date).getTime();
+       // alert(this._testBeginTime)
     },
     onTestEnd: function() {
+        var endTime= new Date().getTime();
         if (this._testRunTimes >= BenchmarkTestCases[this._currentCategoryIndex].times) {
             this._saveCurrentCategoryTestResult();
             if (this._currentCategoryIndex == BenchmarkTestCases.length - 1) {
@@ -168,7 +216,7 @@ BenchmarkTimeController = BenchmarkBaseController.extend({
             }
         }
         else {
-            this._testResult[this._testRunTimes++] = (new Date).getTime() - this._testBeginTime;
+            this._testResult[this._testRunTimes++] = endTime - this._testBeginTime;
         }
     }
 });
@@ -267,20 +315,32 @@ BenchmarkSetMode(benchmarkInitialMode);
 // category: API category
 // times: run times in time mode
 // duration: duration(ms) in FPS mode
+// invalidTimes:it is applied in time mode.when some browsers such as firefox is not very stable,we can deduce the invalidtimes with times
 BenchmarkTestCases = [
     {
         category: 'DrawPrimitives',
-        times: 100,
-        duration: 2000
-    }, {
-        category: 'Particle',
-        times: 100,
+        times: 10,
+        invalidTimes:0,
         duration: 5000
-    }/*,
-     {
-     category: 'Actions'
-     }
-     */
+    },
+    {
+        category: 'Particle',
+        times: 10,
+        invalidTimes:0,
+        duration: 5000
+    },
+    {
+        category:'TouchesTest',
+        times:10,
+        invalidTimes:0,
+        duration:5000
+    },
+    {
+        category:'RotateWorldTest',
+        times:0,// In time mode,we can't find a better method to test this API,so we set times to 0 so as to close it
+        invalidTimes:0,
+        duration:5000
+    }
 ];
 
 
