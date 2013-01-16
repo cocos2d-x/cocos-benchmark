@@ -309,13 +309,6 @@ var g_resources = [
     {type:"tmx", src:"res/TileMaps/ortho-tile-property.tmx"},
     {type:"tmx", src:"res/TileMaps/ortho-rotation-test.tmx"},
 
-    //audio ressources
-    {type:"bgm", src:"res/background"},
-    {type:"effect", src:"res/effect2"},
-
-    //tga ressources
-    //{type:"tga", src:s_levelMapTga},
-
     //fnt ressources
     {type:"fnt", src:s_bitmapFontTest_fnt},
     {type:"fnt", src:s_bitmapFontTest2_fnt},

@@ -6,11 +6,11 @@
  */
 
 // If show debug info(FPS, particle count and etc.) when benchmarking
-$BENCHMARK_DEBUG = true;
+BENCHMARK_DEBUG = false;
 
 ////////////////////////////////////////////////////////
 //
-// Default scene stuff
+// Default benchmark scene
 //
 ////////////////////////////////////////////////////////
 BenchmarkEntry = cc.Layer.extend({
@@ -22,7 +22,7 @@ BenchmarkEntry = cc.Layer.extend({
 
         var sprite = cc.Sprite.create(s_benchmark);
         sprite.setPosition(cc.p(size.width / 2, size.height / 2));
-        sprite.setScale(0.5);
+        sprite.setScale(0.75);
 
         lazyLayer.addChild(sprite, 0);
 
@@ -32,10 +32,11 @@ BenchmarkEntry = cc.Layer.extend({
     }
 });
 
+// Scene showed when no benchmark running
 BenchmarkEntryScene = cc.Scene.extend({
     ctor: function() {
         this._super();
-        // set the share instance to this
+        // set the shared instance to this
         BenchmarkEntryScene.instance = this;
     },
     onEnter:function () {
@@ -45,302 +46,320 @@ BenchmarkEntryScene = cc.Scene.extend({
     }
 });
 
-// share instance for BenchmarkEntryScene
+// shared instance for BenchmarkEntryScene
 BenchmarkEntryScene.instance = null;
 
-////////////////////////////////////////////////////////
-//
-// Base scene for category tests
-// NOTE: only 1 test in category for now
-//
-////////////////////////////////////////////////////////
-BenchmarkCategoryScene = cc.Scene.extend({
-    _categoryIndex: null, // save index in scene, due to "onExit" called delay
-    getCategoryIndex: function() {
-        return this._categoryIndex;
+BenchmarkBaseTestScene = cc.Scene.extend({
+    _ID: 0,
+    getID: function() {
+        return this._ID;
     },
-    setCategoryIndex: function(index) {
-        this._categoryIndex = index;
+    setID: function(ID) {
+        this._ID = ID;
     },
     onEnter: function() {
         this._super();
-        benchmarkControllerInstance.onEnterCategoryScene(this);
+        benchmarkControllerInstance.onEnterTestScene(this);
     },
     onExit: function() {
         this._super();
-        benchmarkControllerInstance.onExitCategoryScene(this);
+        benchmarkControllerInstance.onExitTestScene(this);
     }
 });
 
-////////////////////////////////////////////////////////
-//
-// Base benchmark controller
-// TODO: refactor it
-//
-////////////////////////////////////////////////////////
-BenchmarkBaseController = cc.Class.extend({
-    // test result organized by categories
-    _categoryTestResult: [],
-    // current running test category index
-    _currentCategoryIndex: 0,
-    // run a category of test(s) by index
-    _runCategoryTest: function(index) {},
-    // called when enter category tests scene
-    onEnterCategoryScene: function(categoryScene) {},
-    // called when exit category tests scene
-    onExitCategoryScene: function(categoryScene) {},
-    // call it just before test code
-    onTestBegin: function() {},
-    // cal it just after test code
-    onTestEnd: function() {},
+BenchmarkController = cc.Class.extend({
+    _testSceneBeginTime: 0,
+    _testSceneEndTime: 0,
+    _testSceneBeginFrames: 0,
+    _testSceneEndFrames: 0,
+    _testPassBeginTime: 0,
+    _testTransitionTimerID: 0,
+    _FPSTestResults: [],
+    _timeTestResults: [],
+    _testPassResults: [],
+    _currentTestID: 0,
+    _currentTestPass: 0,
+    // call it in a test case to start a test pass
+    startTestPass: function() {
+        this._testPassBeginTime = (new Date).getTime();
+    },
+    // call it in a test case to stop current running test pass
+    stopTestPass: function() {
+        this._testPassResults[this._currentTestPass] = new Date().getTime() - this._testPassBeginTime;
+        this._currentTestPass ++;
+        if (this._ifCurrentTestEnds()) {
+            this._runNextTest();
+        }
+    },
+    onEnterTestScene: function(testScene) {
+        var testInfo = BenchmarkTestCases.getTestInfo(testScene.getID());
+        if (testInfo.firstInCategory) {
+            benchmarkOutputInstance.writeln(testInfo.category);
+        }
+        this._testSceneBeginTime = (new Date).getTime();
+        this._testSceneBeginFrames = cc.Director.getInstance().getTotalFrames();
+        if (0 < testInfo.duration) {
+            this._testTransitionTimerID = setTimeout(function() {
+                    benchmarkControllerInstance._testTransitionTimerTimeout()
+                },
+                testInfo.duration);
+        }
+    },
+    onExitTestScene: function(testScene) {
+        if (this._testTransitionTimerID) { // stop manually
+            clearTimeout(this._testTransitionTimerID);
+            this._testTransitionTimerID = 0;
+        } else {
+            var testID = testScene.getID();
+            this._testSceneEndTime = (new Date).getTime();
+            this._testSceneEndFrames = cc.Director.getInstance().getTotalFrames();
+            this._saveFPSTestResult(testID);
+            this._saveTimeTestResult(testID);
+            if (testID >= BenchmarkTestCases.maxID()) {
+                this.outputScore();
+            }
+        }
+    },
     startBenchmark: function(button) {
-        this._runCategoryTest(0);
         BenchmarkSetActionStop(button);
+        this._runTest(0);
     },
     stopBenchmark: function(button) {
-        cc.Director.getInstance().replaceScene(BenchmarkEntryScene.instance);
         BenchmarkSetActionStart(button);
+        cc.Director.getInstance().replaceScene(BenchmarkEntryScene.instance);
+        if (this._testTransitionTimerID) {
+            clearTimeout(this._testTransitionTimerID);
+            this._testTransitionTimerID = 0;
+        }
     },
-    outputResult: function() {}
-});
-
-////////////////////////////////////////////////////////
-//
-// Time mode benchmark controller
-// TODO: refactor it
-//
-////////////////////////////////////////////////////////
-BenchmarkTimeController = BenchmarkBaseController.extend({
-    _testBeginTime: 0,
-    _testRunTimes: 0,
-    _testResult: [],
-    _getValidTestResult:function(){
-        var timeSum=0,meanTime=0;
-        var validResult=[];
-         for (var i=0; i<this._testResult.length; ++i) {
-            var time = this._testResult[i];
+    outputScore: function() {
+        // TODO: calculate score
+        var score = 0;
+        for (var i=0; i<this._FPSTestResults.length; ++i) {
+            score += Number(this._FPSTestResults[i]);
+        }
+        score = score.toFixed(2);
+        benchmarkOutputInstance.writeln('Score: ' + score);
+    },
+    _ifCurrentTestEnds: function() {
+        var testInfo = BenchmarkTestCases.getTestInfo(this._currentTestID);
+        return !this._testTransitionTimerID && this._currentTestPass >= testInfo.times;
+    },
+    _runNextTest: function() {
+        var ID = this._currentTestID;
+        ID ++;
+        if (ID <= BenchmarkTestCases.maxID()) {
+            this._runTest(ID);
+        } else {
+            this.stopBenchmark();
+        }
+    },
+    _runTest: function(ID) {
+        if (0 <= ID && ID <= BenchmarkTestCases.maxID()) {
+            var testInfo = BenchmarkTestCases.getTestInfo(ID);
+            var testSceneName = testInfo.category + testInfo.name + 'BenchmarkScene';
+            try {
+                var testScene = new window[testSceneName];
+                this._currentTestID = ID;
+                this._currentTestPass = 0;
+                testScene.setID(ID);
+                testScene.runTest();
+            } catch (e) {
+                benchmarkOutputInstance.writeln('Exception occurred, stopped:\n' + e);
+                this.stopBenchmark();
+            }
+        }
+    },
+    _saveFPSTestResult: function(testID) {
+        var testInfo = BenchmarkTestCases.getTestInfo(testID);
+        var FPS = ((this._testSceneEndFrames - this._testSceneBeginFrames) / (this._testSceneEndTime - this._testSceneBeginTime) * 1000).toFixed(2);
+        this._FPSTestResults[testID] = FPS;
+        benchmarkOutputInstance.writeln('  ' + testInfo.name + '(FPS): ' + FPS);
+    },
+    _testTransitionTimerTimeout: function() {
+        this._testTransitionTimerID = 0;
+        if (this._ifCurrentTestEnds()) {
+            this._runNextTest();
+        }
+    },
+    // TODO: used? by sunzhuoshi
+    _getValidTestPassResults:function(){
+        var timeSum = 0, meanTime = 0;
+        var validResults = [];
+        for (var i=0; i<this._testPassResults.length; ++i) {
+            var time = this._testPassResults[i];
             timeSum += time;
         }
-         meanTime = timeSum / this._testResult.length;
-          for (var i=0; i<this._testResult.length; ++i) {
-             validResult[i]=Math.abs((this._testResult[i]-meanTime).toFixed(3));
-          }
-          var length=validResult.length;
-          for(var i=0;i<length-1;i++){
-            for(var j=i+1;j<length;j++){
+        meanTime = timeSum / this._testPassResults.length;
+        for (var i=0; i<this._testPassResults.length; ++i) {
+            validResults[i] = Math.abs((this._testPassResults[i] - meanTime).toFixed(3));
+        }
+        var length = validResults.length;
+        for (var i=0; i<length-1; i++) {
+            for (var j=i+1; j<length; j++) {
                 var temp;
-              if(validResult[i]>validResult[j]){
-                temp=validResult[i];
-                validResult[i]=validResult[j];
-                validResult[j]=temp;
-                temp=this._testResult[i];
-                this._testResult[i]=this._testResult[j];
-                this._testResult[j]=temp;
-              }
+                if (validResults[i] > validResults[j]){
+                    temp = validResults[i];
+                    validResults[i] = validResults[j];
+                    validResults[j] = temp;
+                    temp = this._testPassResults[i];
+                    this._testPassResults[i] = this._testPassResults[j];
+                    this._testPassResults[j] = temp;
+                }
             }
-          }
-         return validResult;
+        }
+        return validResults;
     },
-    _getConfidenceInterval:function(results,mean){
-        var D2=0,current=0;
-        var length=results.length - BenchmarkTestCases[this._currentCategoryIndex].invalidTimes;
-        for(var i=0;i<length;i++){
-            current=Math.abs(results[i]-mean)
-            D2+=current*current;
+    _getConfidenceInterval:function(results, mean){
+        var invalidTimes = BenchmarkTestCases.getTestInfo(this._currentTestID).invalidTimes;
+        var D2 = 0, current = 0;
+        var length = results.length - invalidTimes;
+        for(var i=0; i<length; i++){
+            current = Math.abs(results[i] - mean)
+            D2 += current * current;
         }
         return (Math.sqrt(D2/length*2.262)).toFixed(3);
     },
-    _saveCurrentCategoryTestResult: function() {
-        var abc=this._getValidTestResult();
+    _saveTimeTestResult: function(testID) {
+        var testInfo = BenchmarkTestCases.getTestInfo(testID);
         var timeSum = 0, minTime = 0, maxTime = 0, meanTime = 0, maxDeltaPercent = 0;
-        var length = this._testResult.length - BenchmarkTestCases[this._currentCategoryIndex].invalidTimes;
+        var length = this._testPassResults.length - testInfo.invalidTimes;
         for (var i=0; i<length; ++i) {
-            var time = this._testResult[i];
+            var time = this._testPassResults[i];
             timeSum += time;
-            if (time > maxTime || 0 == maxTime) {
+            if (time > maxTime || 0 === maxTime) {
                 maxTime = time;
             }
-            if (time < minTime || 0 == minTime) {
+            if (time < minTime || 0 === minTime) {
                 minTime = time;
             }
         }
         meanTime = (timeSum / length).toFixed(2);
-        //maxDeltaPercent = (Math.max(maxTime-meanTime, meanTime-minTime) / meanTime * 100).toFixed(2);
-        maxDeltaPercent = this._getConfidenceInterval(this._testResult,meanTime);
+        maxDeltaPercent = this._getConfidenceInterval(this._testPassResults, meanTime);
         maxDeltaPercent = (maxDeltaPercent/meanTime*100).toFixed(2);
-        this._categoryTestResult[this._currentCategoryIndex] = {
-            category: BenchmarkTestCases[this._currentCategoryIndex].category,
+        this._timeTestResults[testID] = {
+            category: testInfo.category,
+            name: testInfo.name,
             meanTime: meanTime,
-            maxDeltaPercent: maxDeltaPercent,
-            results:this._testResult,
-           // abc:abc
+            maxDeltaPercent: maxDeltaPercent
         }
-    },
-    _runCategoryTest: function(index) {
-        if (0 <= index && index < BenchmarkTestCases.length) {
-            this._testBeginTime = 0;
-            this._currentCategoryIndex = index;
-            this._testResult = [];
-            this._testRunTimes = 0;
-            var categoryTestScene = new window[BenchmarkTestCases[this._currentCategoryIndex].category + 'BenchmarkScene'];
-            categoryTestScene.setCategoryIndex(index);
-            categoryTestScene.runTest();
-        }
-    },
-    outputResult: function() {
-        for (var i=0; i<this._categoryTestResult.length; ++i) {
-            var result = this._categoryTestResult[i];
-            benchmarkOutputInstance.writeln(result.category + ': ' +
-                result.meanTime + 'ms' +
-                ' +/- ' + result.maxDeltaPercent + '%');
-        }
-        /*for(var i=0;i<this._categoryTestResult[0].results.length;i++){
-            benchmarkOutputInstance.writeln(this._categoryTestResult[0].results[i]+"---"+this._categoryTestResult[0].abc[i])
-           benchmarkOutputInstance.writeln(this._categoryTestResult[0].results[i])
-        }*/
-    },
-    onTestBegin: function() {
-        this._testBeginTime = (new Date).getTime();
-       // alert(this._testBeginTime)
-    },
-    onTestEnd: function() {
-        var endTime= new Date().getTime();
-        if (this._testRunTimes >= BenchmarkTestCases[this._currentCategoryIndex].times) {
-            this._saveCurrentCategoryTestResult();
-            if (this._currentCategoryIndex == BenchmarkTestCases.length - 1) {
-                this.stopBenchmark();
-                this.outputResult();
-            }
-            else {
-                this._runCategoryTest(this._currentCategoryIndex + 1);
-            }
-        }
-        else {
-            this._testResult[this._testRunTimes++] = endTime - this._testBeginTime;
-        }
+        benchmarkOutputInstance.writeln('  ' + testInfo.name + '(time): ' + meanTime + ' +/-' + maxDeltaPercent + '%');
     }
 });
 
-////////////////////////////////////////////////////////
-//
-// FPS mode benchmark controller
-// TODO: refactor it
-//
-////////////////////////////////////////////////////////
-BenchmarkFPSController = BenchmarkBaseController.extend({
-    _categoryTestBeginTime: 0,
-    _categoryTestEndTime: 0,
-    _categoryTestBeginFrames: 0,
-    _categoryTestEndFrames: 0,
-    _timer: 0, // ID of timer to stop category tests
-    _saveCategoryTestResult: function(categoryIndex) {
-        this._categoryTestResult[categoryIndex] = {
-            category: BenchmarkTestCases[categoryIndex].category,
-            FPS: ((this._categoryTestEndFrames - this._categoryTestBeginFrames) /
-                (this._categoryTestEndTime - this._categoryTestBeginTime) * 1000).toFixed(2)
-        }
-    },
-    outputResult: function() {
-        for (var i=0; i<this._categoryTestResult.length; ++i) {
-            var result = this._categoryTestResult[i];
-            benchmarkOutputInstance.writeln(result.category + ': ' + result.FPS);
-        }
-    },
-    onEnterCategoryScene: function(categoryScene) {
-        this._categoryTestBeginTime = (new Date).getTime();
-        this._categoryTestBeginFrames = cc.Director.getInstance().getTotalFrames();
-        this._timer = setTimeout(function() {
-                benchmarkControllerInstance._timerTimeout()
-            },
-            BenchmarkTestCases[categoryScene.getCategoryIndex()].duration);
-    },
-    onExitCategoryScene: function(categoryScene) {
-        if (this._timer) { // stop manually
-            clearTimeout(this._timer);
-            this._timer = 0;
-        } else {
-            var categoryIndex = categoryScene.getCategoryIndex();
-            this._categoryTestEndTime = (new Date).getTime();
-            this._categoryTestEndFrames = cc.Director.getInstance().getTotalFrames();
-            this._saveCategoryTestResult(categoryIndex);
-            if (categoryScene.getCategoryIndex() + 1 == BenchmarkTestCases.length) { // last category ends, output result
-                this.outputResult();
-            }
-        }
-    },
-    _runCategoryTest: function(index) {
-        if (0 <= index && index < BenchmarkTestCases.length) {
-            this._currentCategoryIndex = index;
-            var categoryTestScene = new window[BenchmarkTestCases[index].category + 'BenchmarkScene'];
-            categoryTestScene.setCategoryIndex(index);
-            categoryTestScene.runTest();
-        } else if (index == BenchmarkTestCases.length) {
-            this.stopBenchmark();
-        }
-    },
-    _timerTimeout: function() {
-        this._timer = 0;
-        this._runCategoryTest(this._currentCategoryIndex + 1);
-    },
-    stopBenchmark: function() {
-        this._super();
-        if (this._timer) {
-            clearTimeout(this._timer);
-            this._timer = 0;
-        }
-    }
-});
-
-benchmarkTimeControllerInstance = new BenchmarkTimeController;
-benchmarkFPSControllerInstance = new BenchmarkFPSController;
-// current active benchmark controller
-benchmarkControllerInstance = null;
-
-function BenchmarkSetMode(mode) {
-    if (benchmarkControllerInstance) {
-        benchmarkControllerInstance.stopBenchmark();
-    }
-    benchmarkOutputInstance.writeln('Benchmark mode set to: ' + mode);
-    if ('time' == mode) {
-        benchmarkControllerInstance = benchmarkTimeControllerInstance;
-    }
-    else if ('FPS' == mode) {
-        benchmarkControllerInstance = benchmarkFPSControllerInstance;
-    }
-}
-
-BenchmarkSetMode(benchmarkInitialMode);
+benchmarkControllerInstance = new BenchmarkController;
 
 // Test cases data
 // category: API category
 // times: run times in time mode
 // duration: duration(ms) in FPS mode
-// invalidTimes:it is applied in time mode.when some browsers such as firefox is not very stable,we can deduce the invalidtimes with times
+// invalidTimes: it is applied in time mode. when some browsers such as firefox is not very stable, we can deduce the invalid times with times
+// referenceFPS: FPS test value on the reference platform
+// referenceTime: time test value on the reference platform
+// TODO: fill the correct reference FPS and time
 BenchmarkTestCases = [
     {
         category: 'DrawPrimitives',
-        times: 10,
-        invalidTimes:0,
-        duration: 5000
+        defaultDuration: 2000,
+        defaultTimes: 10,
+        tests: [
+            {
+                name: 'Test',
+                referenceFPS: 100,
+                referenceTime: 10
+            }
+        ]
     },
     {
         category: 'Particle',
-        times: 10,
-        invalidTimes:0,
-        duration: 5000
+        defaultDuration: 5000,
+        defaultTimes: 10,
+        tests: [
+            {
+                name: 'Size8',
+                referenceFPS: 100,
+                referenceTime: 10
+            }
+        ]
     },
     {
-        category:'TouchesTest',
-        times:10,
-        invalidTimes:0,
-        duration:5000
-    },
-    {
-        category:'RotateWorldTest',
-        times:0,// In time mode,we can't find a better method to test this API,so we set times to 0 so as to close it
-        invalidTimes:0,
-        duration:5000
+        category: 'Sprite',
+        defaultDuration: 3000,
+        defaultTimes: 0,
+        tests: [
+            {
+                name: 'Position',
+                referenceFPS: 100,
+                referenceTime: 10
+            },
+            {
+                name: 'Actions',
+                referenceFPS: 100,
+                referenceTime: 10
+            }
+        ]
     }
 ];
 
+BenchmarkTestCases.invalidTimes = 0; // TODO: check it
 
+BenchmarkTestCases.IDToIndices = function(ID) {
+    var tmp = 0;
+    var indices = {
+        categoryIndex: 0,
+        testIndex: 0
+    }
+    for (var i=0; i<BenchmarkTestCases.length; ++i) {
+        var oldTmp = tmp;
+        tmp += BenchmarkTestCases[i].tests.length;
+        if (tmp < ID) {
+            indices.categoryIndex = i + 1;
+        } else if (tmp === ID) {
+            indices.categoryIndex = i + 1;
+            break;
+        } else {
+            tmp = oldTmp;
+            break;
+        }
+    }
+    indices.testIndex = ID - tmp;
+    return indices;
+}
+
+BenchmarkTestCases._maxID = 0;
+
+BenchmarkTestCases.maxID = function() {
+    if (!this._maxID) {
+        for (var i=0; i<this.length; i++) {
+            this._maxID += this[i].tests.length;
+        }
+        this._maxID --;
+    }
+    return this._maxID;
+}
+
+BenchmarkTestCases.getTestInfo = function(ID) {
+    var testInfo = {
+        category: '',
+        firstInCategory: false,
+        name: '',
+        duration: 0,
+        times: 0,
+        invalidTimes: 0 // TODO: check it
+    }
+    var indices = this.IDToIndices(ID);
+    var test = this[indices.categoryIndex].tests[indices.testIndex];
+    var category = this[indices.categoryIndex];
+    testInfo.category = category.category;
+    testInfo.firstInCategory = (0 === indices.testIndex);
+    testInfo.name = test.name;
+    testInfo.duration = category.defaultDuration;
+    if (test.duration) {
+        testInfo.duration = test.duration;
+    }
+    testInfo.times = category.defaultTimes;
+    if (test.times) {
+        testInfo.times = test.times;
+    }
+    return testInfo;
+}
