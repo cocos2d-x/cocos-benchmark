@@ -141,6 +141,12 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
     },
     title: function() {
         return 'No title';
+    },
+    // TODO: find a better way to reduce error by sunzhuoshi
+    draw: function() {
+        benchmarkControllerInstance.startTestPass();
+        this._super();
+        benchmarkControllerInstance.stopTestPass();
     }
 });
 

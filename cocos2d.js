@@ -24,9 +24,9 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-// TODO: support all in one?
-var $ALL_IN_ONE = 0;
-var $ALL_IN_ONE_FILE = 'cocos-benchmark-all.js';
+// TODO: use all in one
+var ALL_IN_ONE = 0;
+var ALL_IN_ONE_FILE = 'cocos-benchmark-all.js';
 
 (function () {
     var config = {
@@ -43,13 +43,17 @@ var $ALL_IN_ONE_FILE = 'cocos-benchmark-all.js';
             'src/cocos-benchmark.js',
             'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',
             'src/tests/Particle/BenchmarkParticleTest.js',
-            'src/tests/Sprite/BenchmarkSpriteTest.js'
+            'src/tests/Sprite/BenchmarkSpriteTest.js',
+            'src/tests/Touches/Paddle.js',
+            'src/tests/Touches/Ball.js',
+            'src/tests/Touches/TouchesTest.js',
+            'src/tests/RotateWorld/RotateWorldTest.js'
         ]
     };
     window.addEventListener('DOMContentLoaded', function () {
         //first load engine file if specified
         var script = document.createElement('script');
-        if (!$ALL_IN_ONE) {
+        if (!ALL_IN_ONE) {
             if (config.SingleEngineFile && !config.engineDir) {
                 script.src = config.SingleEngineFile;
             }
@@ -61,7 +65,7 @@ var $ALL_IN_ONE_FILE = 'cocos-benchmark-all.js';
             }
         }
         else {
-            script.src = $ALL_IN_ONE_FILE;
+            script.src = ALL_IN_ONE_FILE;
         }
         document.body.appendChild(script);
         document.ccConfig = config;

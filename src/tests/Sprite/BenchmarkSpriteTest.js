@@ -241,55 +241,32 @@ var SpriteMainScene = BenchmarkBaseTestScene.extend({
         this._lastRenderedCount = 0;
         this._quantityNodes = 0;
 
-        // add title label
-        var label = cc.LabelTTF.create(this.title(), "Arial", 40);
-        this.addChild(label, 1);
-        label.setPosition(cc.p(s.width / 2, s.height - 32));
-        label.setColor(cc.c3b(255, 255, 40));
+        if (BENCHMARK_DEBUG) {
+            // add title label
+            var label = cc.LabelTTF.create(this.title(), "Arial", 40);
+            this.addChild(label, 1);
+            label.setPosition(cc.p(s.width / 2, s.height - 32));
+            label.setColor(cc.c3b(255, 255, 40));
 
-        var infoLabel = cc.LabelTTF.create("0 nodes", "Marker Felt", 30);
-        infoLabel.setColor(cc.c3b(0, 200, 20));
-        infoLabel.setPosition(cc.p(s.width / 2, s.height - 90));
-        this.addChild(infoLabel, 1, TAG_INFO_LAYER);
-
-        // add menu
-        //var menu = new SpriteMenuLayer(true, 7, s_nSpriteCurCase);
-        //this.addChild(menu, 1, TAG_SPRITE_MENU_LAYER);
-
-        /*
-        // Sub Tests
-        cc.MenuItemFont.setFontSize(32);
-        var subMenu = cc.Menu.create(null);
-        for (var i = 1; i <= 9; ++i) {
-            var text = i.toString();
-            var itemFont = cc.MenuItemFont.create(text, this, this.testNCallback);
-            itemFont.setTag(i);
-            subMenu.addChild(itemFont, 10);
-
-            if (i <= 3)
-                itemFont.setColor(cc.c3b(200, 20, 20));
-            else if (i <= 6)
-                itemFont.setColor(cc.c3b(0, 200, 20));
-            else
-                itemFont.setColor(cc.c3b(0, 20, 200));
+            var infoLabel = cc.LabelTTF.create("0 nodes", "Marker Felt", 30);
+            infoLabel.setColor(cc.c3b(0, 200, 20));
+            infoLabel.setPosition(cc.p(s.width / 2, s.height - 90));
+            this.addChild(infoLabel, 1, TAG_INFO_LAYER);
         }
-
-        subMenu.alignItemsHorizontally();
-        subMenu.setPosition(cc.p(s.width / 2, 80));
-        this.addChild(subMenu, 2);
-        */
 
         while (this._quantityNodes < nodes) {
             this.onIncrease(this);
         }
     },
     updateNodes:function () {
-        if (this._quantityNodes != this._lastRenderedCount) {
-            var infoLabel = this.getChildByTag(TAG_INFO_LAYER);
-            var str = this._quantityNodes + " nodes";
-            infoLabel.setString(str);
+        if (BENCHMARK_DEBUG) {
+            if (this._quantityNodes != this._lastRenderedCount) {
+                var infoLabel = this.getChildByTag(TAG_INFO_LAYER);
+                var str = this._quantityNodes + " nodes";
+                infoLabel.setString(str);
 
-            this._lastRenderedCount = this._quantityNodes;
+                this._lastRenderedCount = this._quantityNodes;
+            }
         }
     },
     testNCallback:function (sender) {
