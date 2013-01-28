@@ -49,6 +49,7 @@ BenchmarkEntryScene = cc.Scene.extend({
 // shared instance for BenchmarkEntryScene
 BenchmarkEntryScene.instance = null;
 
+
 BenchmarkBaseTestScene = cc.Scene.extend({
     _ID: 0,
     getID: function() {
@@ -82,10 +83,16 @@ BenchmarkController = cc.Class.extend({
     // call it in a test case to start a test pass
     startTestPass: function() {
         this._testPassBeginTime = (new Date).getTime();
+        //alert(new Date)
+
     },
     // call it in a test case to stop current running test pass
     stopTestPass: function() {
+        var testInfo = BenchmarkTestCases.getTestInfo(this._currentTestID);
+        if(this._currentTestPass <testInfo.times){
         this._testPassResults[this._currentTestPass] = new Date().getTime() - this._testPassBeginTime;
+        //alert(this._testPassResults[this._currentTestPass])
+       }
         this._currentTestPass ++;
         if (this._ifCurrentTestEnds()) {
             this._runNextTest();
@@ -111,11 +118,13 @@ BenchmarkController = cc.Class.extend({
             this._testTransitionTimerID = 0;
         } else {
             var testID = testScene.getID();
-            this._testSceneEndTime = (new Date).getTime();
-            this._testSceneEndFrames = cc.Director.getInstance().getTotalFrames();
+           /* this._testSceneEndTime = (new Date).getTime();
+            this._testSceneEndFrames = cc.Director.getInstance().getTotalFrames();*/
             this._saveFPSTestResult(testID);
             this._saveTimeTestResult(testID);
             if (testID >= BenchmarkTestCases.maxID()) {
+                
+               // alert(BenchmarkTestCases.maxID())
                 this.outputScore();
             }
         }
@@ -134,9 +143,13 @@ BenchmarkController = cc.Class.extend({
     },
     outputScore: function() {
         // TODO: calculate score
-        var score = 0;
-        for (var i=0; i<this._FPSTestResults.length; ++i) {
-            score += Number(this._FPSTestResults[i]);
+        var score = 0,indices,test ,fpsScore ,timeScore;
+        for (var i=0; i<=BenchmarkTestCases._maxID; ++i) {
+            indices=BenchmarkTestCases.IDToIndices(i);
+            test=BenchmarkTestCases[indices.categoryIndex].tests[indices.testIndex];
+            fpsScore=(this._FPSTestResults[i]/test.referenceFPS).toFixed(2);
+            timeScore=(test.referenceTime/this._timeTestResults[i].meanTime).toFixed(2);
+            score += (Number(fpsScore)+Number(timeScore))/2;
         }
         score = score.toFixed(2);
         benchmarkOutputInstance.writeln('Score: ' + score);
@@ -149,6 +162,7 @@ BenchmarkController = cc.Class.extend({
         var ID = this._currentTestID;
         ID ++;
         if (ID <= BenchmarkTestCases.maxID()) {
+            _testPassResults=[];
             this._runTest(ID);
         } else {
             this.stopBenchmark();
@@ -162,6 +176,7 @@ BenchmarkController = cc.Class.extend({
                 var testScene = new window[testSceneName];
                 this._currentTestID = ID;
                 this._currentTestPass = 0;
+                
                 testScene.setID(ID);
                 testScene.runTest();
             } catch (e) {
@@ -178,6 +193,10 @@ BenchmarkController = cc.Class.extend({
     },
     _testTransitionTimerTimeout: function() {
         this._testTransitionTimerID = 0;
+
+         this._testSceneEndTime = (new Date).getTime();
+         this._testSceneEndFrames = cc.Director.getInstance().getTotalFrames();
+
         if (this._ifCurrentTestEnds()) {
             this._runNextTest();
         }
@@ -224,6 +243,7 @@ BenchmarkController = cc.Class.extend({
         var testInfo = BenchmarkTestCases.getTestInfo(testID);
         var timeSum = 0, minTime = 0, maxTime = 0, meanTime = 0, maxDeltaPercent = 0;
         var length = this._testPassResults.length - testInfo.invalidTimes;
+       // alert(length)
         for (var i=0; i<length; ++i) {
             var time = this._testPassResults[i];
             timeSum += time;
@@ -244,6 +264,7 @@ BenchmarkController = cc.Class.extend({
             maxDeltaPercent: maxDeltaPercent
         }
         benchmarkOutputInstance.writeln('  ' + testInfo.name + '(time): ' + meanTime + ' +/-' + maxDeltaPercent + '%');
+        this._testPassResults=[];
     }
 });
 
@@ -265,8 +286,8 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Test',
-                referenceFPS: 100,
-                referenceTime: 10
+                referenceFPS: 0.88,
+                referenceTime: 1130.5
             }
         ]
     },
@@ -277,25 +298,37 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Size8',
-                referenceFPS: 100,
-                referenceTime: 10
+                referenceFPS: 15.05,
+                referenceTime: 52.2
             }
         ]
     },
     {
         category: 'Sprite',
         defaultDuration: 3000,
-        defaultTimes: 0,
+        defaultTimes: 10,
         tests: [
             {
                 name: 'Position',
-                referenceFPS: 100,
-                referenceTime: 10
+                referenceFPS: 7.36,
+                referenceTime: 129.8
             },
             {
                 name: 'Actions',
-                referenceFPS: 100,
-                referenceTime: 10
+                referenceFPS: 2.3,
+                referenceTime: 299.47
+            }
+        ]
+    },
+     {
+        category: 'BurstPipe',
+        defaultDuration: 5000,
+        defaultTimes: 10,
+        tests: [
+            {
+                name: 'Test',
+                referenceFPS: 10.39,
+                referenceTime: 70.67
             }
         ]
     }

@@ -1,3 +1,6 @@
+var s_resprefix="res/";
+
+
 var s_pathGrossini = "res/Images/grossini.png";
 var s_pathSister1 = "res/Images/grossinis_sister1.png";
 var s_pathSister2 = "res/Images/grossinis_sister2.png";
@@ -58,6 +61,7 @@ var s_ghostsPlist = "res/animations/ghosts.plist";
 var s_grossini_familyPlist = "res/animations/grossini_family.plist";
 var s_animations2Plist = "res/animations/animations-2.plist";
 var s_animationsPlist = "res/animations/animations.plist";
+
 
 var s_helloWorld = "res/Images/HelloWorld.png";
 var s_grossiniDance01 = "res/Images/grossini_dance_01.png";

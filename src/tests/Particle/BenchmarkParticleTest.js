@@ -26,7 +26,40 @@
 var TAG_INFO_LAYER = 1;
 var TAG_PARTICLE_SYSTEM = 3;
 var TAG_LABEL_ATLAS = 4;
-var PARTICLE_NODES = 300;
+var PARTICLE_NODES = 100;
+
+
+////////////////////////////////////////////////////////
+//
+// Particle System Quad Stub for benchmarking
+//
+////////////////////////////////////////////////////////
+BenchmarkParticleSystemQuad = cc.ParticleSystemQuad.extend({
+  
+    draw: function() {
+        var VALID_DELTA_RATE = 0.3;
+        var currentParticleCount = this.getParticleCount();
+        var particleCountGoal = cc.Director.getInstance().getRunningScene().getParticlesNum();
+        
+        // TODO: fix it, if current count is always smaller than goal, e.g. low performance :(
+        var valid = (Math.abs(particleCountGoal-currentParticleCount)/particleCountGoal) <= VALID_DELTA_RATE;
+       // var valid = currentParticleCount/particleCountGoal >= VALID_DELTA_RATE;
+        if (valid) { // only call if particles are enough
+                    
+              
+                benchmarkControllerInstance.startTestPass();
+        }
+        // call "ParticleSystemQuad.draw()
+        for(var i=0;i<2;i++)
+        this._super();
+    
+        if (valid) {
+             
+                benchmarkControllerInstance.stopTestPass();
+            
+        }
+    }
+});
 
 ////////////////////////////////////////////////////////
 //
@@ -70,8 +103,9 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         if (BENCHMARK_DEBUG) {
             var atlas = this.getChildByTag(TAG_LABEL_ATLAS);
             var emitter = this.getChildByTag(TAG_PARTICLE_SYSTEM);
-
+           
             var str = emitter.getParticleCount();
+
             atlas.setString(str);
         }
     },
@@ -93,7 +127,8 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         var texture = cc.TextureCache.getInstance().addImage("res/Images/fire.png");
         cc.TextureCache.getInstance().removeTexture(texture);
 
-        particleSystem = new cc.ParticleSystemQuad();
+       //  particleSystem = new cc.ParticleSystemQuad();
+         particleSystem = new BenchmarkParticleSystemQuad();
 
         switch (this._subtestNumber) {
             case 1:
@@ -144,13 +179,21 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
     },
     // TODO: find a better way to reduce error by sunzhuoshi
     draw: function() {
+        /*var particleSystem = this.getChildByTag(TAG_PARTICLE_SYSTEM);
+        
         benchmarkControllerInstance.startTestPass();
+        var start=new Date;
         this._super();
-        benchmarkControllerInstance.stopTestPass();
+       for(var i=0;i<2;i++){
+       particleSystem.draw();
+      }
+        alert(new Date-start)
+        benchmarkControllerInstance.stopTestPass();*/
+
     }
 });
 
-var ParticleSize4BenchmarkScene = ParticleMainScene.extend({
+/*var ParticleSize4BenchmarkScene = ParticleMainScene.extend({
     runTest:function () {
         this.initWithSubTest(1, PARTICLE_NODES);
         cc.Director.getInstance().replaceScene(this);
@@ -214,7 +257,7 @@ var ParticleSize4BenchmarkScene = ParticleMainScene.extend({
         particleSystem.setBlendAdditive(false);
     }
 });
-
+*/
 var ParticleSize8BenchmarkScene = ParticleMainScene.extend({
     runTest:function () {
         this.initWithSubTest(1, PARTICLE_NODES);
@@ -226,7 +269,7 @@ var ParticleSize8BenchmarkScene = ParticleMainScene.extend({
     doTest:function () {
         var s = cc.Director.getInstance().getWinSize();
         var particleSystem = this.getChildByTag(TAG_PARTICLE_SYSTEM);
-
+        
         // duration
         particleSystem.setDuration(-1);
 
@@ -280,7 +323,7 @@ var ParticleSize8BenchmarkScene = ParticleMainScene.extend({
     }
 });
 
-var ParticleSize32BenchmarkScene = ParticleMainScene.extend({
+/*var ParticleSize32BenchmarkScene = ParticleMainScene.extend({
     runTest:function () {
         this.initWithSubTest(1, PARTICLE_NODES);
         cc.Director.getInstance().replaceScene(this);
@@ -409,3 +452,4 @@ var ParticleSize64BenchmarkScene = ParticleMainScene.extend({
         particleSystem.setBlendAdditive(false);
     }
 });
+*/
