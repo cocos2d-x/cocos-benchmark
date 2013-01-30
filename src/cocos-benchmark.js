@@ -148,6 +148,7 @@ BenchmarkController = cc.Class.extend({
         }
         score = (length / sum).toFixed(2);
         benchmarkOutputInstance.writeln('Score: ' + score);
+        benchmarkOutputInstance.writeln('################################')
     },
     _ifCurrentTestEnds: function() {
         var testInfo = BenchmarkTestCases.getTestInfo(this._currentTestID);
@@ -298,7 +299,7 @@ BenchmarkTestCases = [
             {
                 name: 'Test',
                 times: 0, // TODO: fill the correct value after adding time calculation code
-                referenceFPS: 2,
+                referenceFPS: 1.04,
                 referenceTime: 0.5
             }
         ]
@@ -311,19 +312,19 @@ BenchmarkTestCases = [
             {
                 name: 'Size8',
                 times: 0, // TODO: fill the correct value after adding time calculation code
-                referenceFPS: 100,
+                referenceFPS: 17.5,
                 referenceTime: 10
             },
             {
                 name: 'BurstPipe',
                 times: 0, // TODO: fill the correct value after adding time calculation code
-                referenceFPS: 150,
+                referenceFPS: 20.6,
                 referenceTime: 10
             },
             {
                 name: 'Comet',
                 times: 0, // TODO: fill the correct value after adding time calculation code
-                referenceFPS: 150,
+                referenceFPS: 12.7,
                 referenceTime: 10
             }
         ]
@@ -335,12 +336,12 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Position',
-                referenceFPS: 100,
+                referenceFPS: 11,
                 referenceTime: 10
             },
             {
                 name: 'Actions',
-                referenceFPS: 50,
+                referenceFPS: 5.45,
                 referenceTime: 10
             }
         ]
