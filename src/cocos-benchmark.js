@@ -152,7 +152,7 @@ BenchmarkController = cc.Class.extend({
         var sum = 0;
         var score = 0;
         var length = BenchmarkTestCases.maxID() + 1;
-         alert(this._testScores)
+         //alert(this._testScores)
         for (var i=0; i<length; ++i) {
             sum += 1 / this._testScores[i];
         }
