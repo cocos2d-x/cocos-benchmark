@@ -22,7 +22,7 @@ BenchmarkEntry = cc.Layer.extend({
 
         var sprite = cc.Sprite.create(s_benchmark);
         sprite.setPosition(cc.p(size.width / 2, size.height / 2));
-        sprite.setScale(0.75);
+        sprite.setScale(0.7); // just fill the screen
 
         lazyLayer.addChild(sprite, 0);
 
