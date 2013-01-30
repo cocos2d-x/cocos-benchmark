@@ -40,7 +40,7 @@ var TAG_SPRITE_MENU_LAYER = (MAX_SPRITES + 1000);
 var s_nSpriteCurCase = 0;
 
 var temp1=0;
- var start=0;
+var start=0;
   var BenchmarkSprite=cc.Sprite.extend({
     _totalCount:0,
     draw:function(){

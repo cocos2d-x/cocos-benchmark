@@ -27,7 +27,7 @@ var TAG_INFO_LAYER = 1;
 var TAG_PARTICLE_SYSTEM = 3;
 var TAG_LABEL_ATLAS = 4;
 var PARTICLE_NODES = 100;
-
+var VALID_DELTA_RATE =0.3
 
 ////////////////////////////////////////////////////////
 //
@@ -37,10 +37,9 @@ var PARTICLE_NODES = 100;
 BenchmarkParticleSystemQuad = cc.ParticleSystemQuad.extend({
   
     draw: function() {
-        var VALID_DELTA_RATE = 0.3;
         var currentParticleCount = this.getParticleCount();
-        var particleCountGoal = cc.Director.getInstance().getRunningScene().getParticlesNum();
-        
+       // var particleCountGoal = cc.Director.getInstance().getRunningScene().getParticlesNum();
+        var particleCountGoal = PARTICLE_NODES;
         // TODO: fix it, if current count is always smaller than goal, e.g. low performance :(
         var valid = (Math.abs(particleCountGoal-currentParticleCount)/particleCountGoal) <= VALID_DELTA_RATE;
        // var valid = currentParticleCount/particleCountGoal >= VALID_DELTA_RATE;
@@ -179,21 +178,11 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
     },
     // TODO: find a better way to reduce error by sunzhuoshi
     draw: function() {
-        /*var particleSystem = this.getChildByTag(TAG_PARTICLE_SYSTEM);
-        
-        benchmarkControllerInstance.startTestPass();
-        var start=new Date;
-        this._super();
-       for(var i=0;i<2;i++){
-       particleSystem.draw();
-      }
-        alert(new Date-start)
-        benchmarkControllerInstance.stopTestPass();*/
 
     }
 });
 
-/*var ParticleSize4BenchmarkScene = ParticleMainScene.extend({
+var ParticleSize4BenchmarkScene = ParticleMainScene.extend({
     runTest:function () {
         this.initWithSubTest(1, PARTICLE_NODES);
         cc.Director.getInstance().replaceScene(this);
@@ -257,7 +246,7 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         particleSystem.setBlendAdditive(false);
     }
 });
-*/
+
 var ParticleSize8BenchmarkScene = ParticleMainScene.extend({
     runTest:function () {
         this.initWithSubTest(1, PARTICLE_NODES);
@@ -323,7 +312,7 @@ var ParticleSize8BenchmarkScene = ParticleMainScene.extend({
     }
 });
 
-/*var ParticleSize32BenchmarkScene = ParticleMainScene.extend({
+var ParticleSize32BenchmarkScene = ParticleMainScene.extend({
     runTest:function () {
         this.initWithSubTest(1, PARTICLE_NODES);
         cc.Director.getInstance().replaceScene(this);
@@ -452,4 +441,142 @@ var ParticleSize64BenchmarkScene = ParticleMainScene.extend({
         particleSystem.setBlendAdditive(false);
     }
 });
-*/
+
+
+var ParticleDemo = cc.LayerGradient.extend({
+    _emitter: null,
+    _background: null,
+
+    setColor:function() {},
+
+    ctor:function() {
+        this._super();
+        cc.associateWithNative( this, cc.LayerGradient );
+        this.init( cc.c4b(0,0,0,255), cc.c4b(98,99,117,255));
+
+        this._emitter = null;
+
+        var s = cc.Director.getInstance().getWinSize();
+        var label = cc.LabelTTF.create(this.title(), "Arial", 28);
+        this.addChild(label, 100, 1000);
+        label.setPosition(s.width / 2, s.height - 50);
+
+        var selfPoint = this;
+
+        if (BENCHMARK_DEBUG) {
+            var labelAtlas = cc.LabelAtlas.create("0123456789", s_fpsImages, 16, 24, '.');
+            this.addChild(labelAtlas, 100, TAG_LABEL_ATLAS);
+            labelAtlas.setPosition(s.width - 66, 50);
+        }
+
+        // moving background
+        this._background = cc.Sprite.create(s_back3);
+        this.addChild(this._background, 5);
+        this._background.setPosition(s.width / 2, s.height - 180);
+
+        var move = cc.MoveBy.create(4, cc.p(300, 0));
+        var move_back = move.reverse();
+
+        var seq = cc.Sequence.create(move, move_back);
+        this._background.runAction(cc.RepeatForever.create(seq));
+
+        this.scheduleUpdate();
+    },
+
+    onEnter:function () {
+        this._super();
+        if (BENCHMARK_DEBUG) {
+            var pLabel = this.getChildByTag(1000);
+            pLabel.setString(this.title());
+        }
+    },
+    title:function () {
+        return "No title";
+    },
+
+    update:function (dt) {
+        if (BENCHMARK_DEBUG) {
+            if (this._emitter) {
+                var atlas = this.getChildByTag(TAG_LABEL_ATLAS);
+                atlas.setString(this._emitter.getParticleCount().toFixed(0));
+            }
+        }
+    },
+    setEmitterPosition:function () {
+        var sourcePos = this._emitter.getSourcePosition();
+        if( sourcePos.x === 0 && sourcePos.y === 0)
+            this._emitter.setPosition(200,70);
+    }
+});
+
+
+BenchmarkParticleSystemQuad.create = function (pListFile) {
+    var ret = new BenchmarkParticleSystemQuad();
+    if (!pListFile || typeof(pListFile) === "number") {
+        var ton = pListFile || 100;
+        ret.setDrawMode(cc.PARTICLE_TEXTURE_MODE);
+        ret.initWithTotalParticles(ton);
+        return ret;
+    }
+
+    if (ret && ret.initWithFile(pListFile)) {
+        return ret;
+    }
+    return null;
+}
+
+var DemoParticleFromFile = ParticleDemo.extend({
+    _title:"",
+    ctor:function(filename) {
+        this._super();
+        this._title = filename;
+    },
+    onEnter:function () {
+        this._super();
+        this.setColor(cc.c3b(0,0,0));
+        this.removeChild(this._background, true);
+        this._background = null;
+
+        var filename = "res/Particles/" + this._title + ".plist";
+        this._emitter = BenchmarkParticleSystemQuad.create(filename);
+        this.addChild(this._emitter, 10);
+
+        if(this._title == "Flower"){
+            if(this._emitter.setShapeType)
+                this._emitter.setShapeType(cc.PARTICLE_STAR_SHAPE);
+        }//else if( this._title == "Upsidedown"){
+        //   this._emitter.setDrawMode(cc.PARTICLE_TEXTURE_MODE);
+        //}
+
+        this.setEmitterPosition();
+    },
+
+    setEmitterPosition:function () {
+        var sourcePos = this._emitter.getSourcePosition();
+        if( sourcePos.x === 0 && sourcePos.y === 0)
+            this._emitter.setPosition(cc.Director.getInstance().getWinSize().width / 2, cc.Director.getInstance().getWinSize().height / 2 - 50);
+    },
+
+    title:function () {
+        return this._title;
+    }
+});
+
+var ParticleBurstPipeBenchmarkScene = BenchmarkBaseTestScene.extend({
+    runTest: function () {
+        PARTICLE_NODES = 120;
+         VALID_DELTA_RATE = 0.4;
+        this.addChild(new DemoParticleFromFile("BurstPipe"));
+        cc.Director.getInstance().replaceScene(this);
+    }
+});
+
+var ParticleCometBenchmarkScene = BenchmarkBaseTestScene.extend({
+    runTest: function () {
+        PARTICLE_NODES = 120;
+         VALID_DELTA_RATE = 0.4;
+        this.addChild(new DemoParticleFromFile("Comet"));
+        cc.Director.getInstance().replaceScene(this);
+    }
+});
+

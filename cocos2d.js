@@ -44,11 +44,6 @@ var ALL_IN_ONE_FILE = 'cocos-benchmark-all.js';
             'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',
             'src/tests/Particle/BenchmarkParticleTest.js',
             'src/tests/Sprite/BenchmarkSpriteTest.js',
-            'src/tests/BurstPipe/BurstPipe.js',
-            'src/tests/Touches/Paddle.js',
-            'src/tests/Touches/Ball.js',
-            'src/tests/Touches/TouchesTest.js',
-            'src/tests/RotateWorld/RotateWorldTest.js'
         ]
     };
      function loadEnd() {

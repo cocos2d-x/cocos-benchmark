@@ -30,12 +30,15 @@
     <script type="text/javascript">
         // benchmark output to write test result
         benchmarkOutputInstance = {
-            writeln: function(text) {
+            write: function(text) {
                 var output = document.getElementById('output');
                 if (1 === output.firstChild.length) {
                     output.firstChild.deleteData(0, output.firstChild.length);
                 }
-                output.firstChild.appendData(text + '\n');
+                output.firstChild.appendData(text);
+            },
+            writeln: function(text) {
+                this.write(text + '\n');
             },
             clear: function() {
                 var output = document.getElementById('output');
