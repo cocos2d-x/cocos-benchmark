@@ -18,7 +18,7 @@
         }
         .button {
             margin: 10px 5%;
-            width: 35%;
+            width: 30%;
         }
         #output {
             border: 1px solid black;
@@ -27,6 +27,9 @@
         }
     </style>
     <script type="text/javascript">
+        var BENCHMARK_VERSION = 'v0.1.0'
+        // append version to title
+        document.title = document.title + ' ' + BENCHMARK_VERSION;
         // benchmark output to write test result
         benchmarkOutputInstance = {
             write: function(text) {
@@ -73,18 +76,11 @@
 <div id="Cocos2dGameContainer" style="background-color:rgba(0,0,0,0.1); width: 300px; height: 300px">
 </div>
 <div id="menu">
-    <table width="320">
-        <tbody>
-            <tr>
-                <td>
-                    <div>
-                        <input class="button" id="action" type="button" onclick="BenchmarkActionButtonClick(this)" value=start />
-                        <input class="button" id="clear" type="button" onclick="benchmarkOutputInstance.clear()" value=clear />
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <label id="version">
+    <script>document.write(BENCHMARK_VERSION)</script>
+    </label>
+    <input class="button" id="action" type="button" onclick="BenchmarkActionButtonClick(this)" value=start />
+    <input class="button" id="clear" type="button" onclick="benchmarkOutputInstance.clear()" value=clear />
 </div>
 <pre id="output">&nbsp;<!-- &nbsp MUST NOT be deleted, to simplify javascript code  --></pre>
 </body>
