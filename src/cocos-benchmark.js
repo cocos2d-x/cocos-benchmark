@@ -313,16 +313,8 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Test',
-<<<<<<< HEAD
-                referenceFPS: 0.88,
-                referenceTime: 1130.5
-                //times: 0, // TODO: fill the correct value after adding time calculation code
- 
-=======
-                times: 0, // TODO: fill the correct value after adding time calculation code
                 referenceFPS: 1.04,
-                referenceTime: 0.5
->>>>>>> 628f433bd65af07f2172736b4f6d4834a17929fd
+                referenceTime: 1130.5
             }
         ]
     },
@@ -333,36 +325,17 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Size8',
-<<<<<<< HEAD
-                referenceFPS: 15.05,
+                referenceFPS: 17.5,
                 referenceTime: 52.2
-            },
             {
                 name: 'BurstPipe',
-                referenceFPS: 10.39,
+                referenceFPS: 20.5,
                 referenceTime: 70.67
             },
             {
                 name: 'Comet',
-                referenceFPS: 150,
-=======
-                times: 0, // TODO: fill the correct value after adding time calculation code
-                referenceFPS: 17.5,
-                referenceTime: 10
-            },
-            {
-                name: 'BurstPipe',
-                times: 0, // TODO: fill the correct value after adding time calculation code
-                referenceFPS: 20.6,
-                referenceTime: 10
-            },
-            {
-                name: 'Comet',
-                times: 0, // TODO: fill the correct value after adding time calculation code
                 referenceFPS: 12.7,
->>>>>>> 628f433bd65af07f2172736b4f6d4834a17929fd
                 referenceTime: 10
-
             }
         ]
     },
@@ -373,23 +346,18 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Position',
-<<<<<<< HEAD
-                referenceFPS: 7.36,
+                referenceFPS: 11,
                 referenceTime: 129.8
             },
             {
                 name: 'Actions',
-                referenceFPS: 2.3,
-                referenceTime: 299.47
-=======
                 referenceFPS: 11,
-                referenceTime: 10
+                referenceTime: 299.47
             },
             {
                 name: 'Actions',
                 referenceFPS: 5.45,
                 referenceTime: 10
->>>>>>> 628f433bd65af07f2172736b4f6d4834a17929fd
             }
         ]
     }
