@@ -278,7 +278,7 @@ var ParticleSize8BenchmarkScene = ParticleMainScene.extend({
         particleSystem.setSpeedVar(50);
 
         // emitter position
-        particleSystem.setPosition(cc.p(s.width / 2, 100));
+        particleSystem.setPosition(cc.p(s.width / 2, 10));
         particleSystem.setPosVar(cc.p(s.width / 2, 0));
 
         // life of particles
@@ -527,9 +527,11 @@ BenchmarkParticleSystemQuad.create = function (pListFile) {
 
 var DemoParticleFromFile = ParticleDemo.extend({
     _title:"",
-    ctor:function(filename) {
+    _emitterPosition: {x: 0, y:0},
+    ctor:function(filename, emitterPosition) {
         this._super();
         this._title = filename;
+        this._emitterPosition = emitterPosition;
     },
     onEnter:function () {
         this._super();
@@ -547,16 +549,8 @@ var DemoParticleFromFile = ParticleDemo.extend({
         }//else if( this._title == "Upsidedown"){
         //   this._emitter.setDrawMode(cc.PARTICLE_TEXTURE_MODE);
         //}
-
-        this.setEmitterPosition();
+        this._emitter.setPosition(this._emitterPosition)
     },
-
-    setEmitterPosition:function () {
-        var sourcePos = this._emitter.getSourcePosition();
-        if( sourcePos.x === 0 && sourcePos.y === 0)
-            this._emitter.setPosition(cc.Director.getInstance().getWinSize().width / 2, cc.Director.getInstance().getWinSize().height / 2 - 50);
-    },
-
     title:function () {
         return this._title;
     }
@@ -565,8 +559,9 @@ var DemoParticleFromFile = ParticleDemo.extend({
 var ParticleBurstPipeBenchmarkScene = BenchmarkBaseTestScene.extend({
     runTest: function () {
         PARTICLE_NODES = 120;
-         VALID_DELTA_RATE = 0.4;
-        this.addChild(new DemoParticleFromFile("BurstPipe"));
+        VALID_DELTA_RATE = 0.4;
+        var winSize = cc.Director.getInstance().getWinSize();
+        this.addChild(new DemoParticleFromFile("BurstPipe", {x: winSize.width/2, y: winSize.height-50}));
         cc.Director.getInstance().replaceScene(this);
     }
 });
@@ -574,8 +569,9 @@ var ParticleBurstPipeBenchmarkScene = BenchmarkBaseTestScene.extend({
 var ParticleCometBenchmarkScene = BenchmarkBaseTestScene.extend({
     runTest: function () {
         PARTICLE_NODES = 120;
-         VALID_DELTA_RATE = 0.4;
-        this.addChild(new DemoParticleFromFile("Comet"));
+        VALID_DELTA_RATE = 0.4;
+        var winSize = cc.Director.getInstance().getWinSize();
+        this.addChild(new DemoParticleFromFile("Comet", {x: winSize.width-60, y: 60}));
         cc.Director.getInstance().replaceScene(this);
     }
 });
