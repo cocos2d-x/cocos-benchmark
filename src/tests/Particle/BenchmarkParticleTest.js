@@ -445,7 +445,6 @@ var ParticleSize64BenchmarkScene = ParticleMainScene.extend({
 
 var ParticleDemo = cc.LayerGradient.extend({
     _emitter: null,
-    _background: null,
 
     setColor:function() {},
 
@@ -468,18 +467,6 @@ var ParticleDemo = cc.LayerGradient.extend({
             this.addChild(labelAtlas, 100, TAG_LABEL_ATLAS);
             labelAtlas.setPosition(s.width - 66, 50);
         }
-
-        // moving background
-        this._background = cc.Sprite.create(s_back3);
-        this.addChild(this._background, 5);
-        this._background.setPosition(s.width / 2, s.height - 180);
-
-        var move = cc.MoveBy.create(4, cc.p(300, 0));
-        var move_back = move.reverse();
-
-        var seq = cc.Sequence.create(move, move_back);
-        this._background.runAction(cc.RepeatForever.create(seq));
-
         this.scheduleUpdate();
     },
 
