@@ -6,7 +6,10 @@
  */
 
 // If show debug info(FPS, particle count and etc.) when benchmarking
-BENCHMARK_DEBUG = false;
+BENCHMARK_DEBUG = false; // if enabled, show debug info
+BENCHMARK_FPS = true;
+BENCHMARK_TIME = true;
+BENCHMARK_TIME_MAX_DELTA_PERCENT = 15; // only <= value will be counted
 
 ////////////////////////////////////////////////////////
 //
@@ -87,15 +90,12 @@ BenchmarkController = cc.Class.extend({
     // call it in a test case to start a test pass
     startTestPass: function() {
         this._testPassBeginTime = (new Date).getTime();
-        //alert(new Date)
-
     },
     // call it in a test case to stop current running test pass
     stopTestPass: function() {
         var testInfo = BenchmarkTestCases.getTestInfo(this._currentTestID);
         if(this._currentTestPass <testInfo.times){
         this._testPassResults[this._currentTestPass] = new Date().getTime() - this._testPassBeginTime;
-        //alert(this._testPassResults[this._currentTestPass])
        }
         this._currentTestPass ++;
         if (this._ifCurrentTestEnds()) {
@@ -129,8 +129,6 @@ BenchmarkController = cc.Class.extend({
             this._saveTimeTestResult(testID, testInfo);
             this._saveTestScores(testID, testInfo);
             if (testID >= BenchmarkTestCases.maxID()) {
-                
-               // alert(BenchmarkTestCases.maxID())
                 this.outputScore();
             }
         }
@@ -152,7 +150,6 @@ BenchmarkController = cc.Class.extend({
         var sum = 0;
         var score = 0;
         var length = BenchmarkTestCases.maxID() + 1;
-         //alert(this._testScores)
         for (var i=0; i<length; ++i) {
             sum += 1 / this._testScores[i];
         }
@@ -243,7 +240,6 @@ BenchmarkController = cc.Class.extend({
     _saveTimeTestResult: function(testID, testInfo) {
         var timeSum = 0, minTime = 0, maxTime = 0, meanTime = 0, maxDeltaPercent = 0;
         var length = this._testPassResults.length - testInfo.invalidTimes;
-       // alert(length)
         for (var i=0; i<length; ++i) {
             var time = this._testPassResults[i];
             timeSum += time;
@@ -261,21 +257,22 @@ BenchmarkController = cc.Class.extend({
             meanTime: meanTime,
             maxDeltaPercent: maxDeltaPercent
         }
-        benchmarkOutputInstance.writeln('  ' + testInfo.name + '(time): ' + meanTime + ' +/-' + maxDeltaPercent + '%');
         this._testPassResults=[];
-        console.log('  ' + testInfo.name + '(time): ' + meanTime + ' +/-' + maxDeltaPercent + '%');
+        if (BENCHMARK_DEBUG) {
+            benchmarkOutputInstance.writeln('  ' + testInfo.name + '(time): ' + meanTime + ' +/-' + maxDeltaPercent + '%');
+        }
     },
     _saveTestScores: function(testID, testInfo) {
         var FPSScore = 0;
         var timeScore = 0;
         var firstValue = true;
         benchmarkOutputInstance.write('  ' + testInfo.name + ': ');
-        if (testInfo.duration) {
+        if (testInfo.duration && BENCHMARK_FPS) {
             FPSScore = (this._FPSTestResults[testID] / testInfo.referenceFPS).toFixed(2);
             benchmarkOutputInstance.write(this._FPSTestResults[testID] + '(' + FPSScore + ')');
             firstValue = false;
         }
-        if (testInfo.times) {
+        if (testInfo.times && BENCHMARK_TIME) {
             timeScore = (testInfo.referenceTime / this._timeTestResults[testID].meanTime).toFixed(2);
             if (!firstValue) {
                 benchmarkOutputInstance.write(', ');
@@ -284,13 +281,17 @@ BenchmarkController = cc.Class.extend({
         }
         benchmarkOutputInstance.writeln('');
         if (FPSScore && timeScore) {
-            this._testScores[testID] = (Number(FPSScore) + Number(timeScore)) / 2;
+            if (this._timeTestResults[testID].maxDeltaPercent <= BENCHMARK_TIME_MAX_DELTA_PERCENT) {
+                this._testScores[testID] = (Number(FPSScore) + Number(timeScore)) / 2;
+            } else {
+                this._testScores[testID] = FPSScore;
+            }
         }
-        else if (FPSScore) {
-            this._testScores[testID] = FPSScore;
+        else if (timeScore) {
+            this._testScores[testID] = timeScore;
         }
         else {
-            this._testScores[testID] = timeScore;
+            this._testScores[testID] = FPSScore;
         }
     }
 });
@@ -314,7 +315,7 @@ BenchmarkTestCases = [
             {
                 name: 'Test',
                 referenceFPS: 1.04,
-                referenceTime: 1130.5
+                referenceTime: 900
             }
         ]
     },
@@ -327,6 +328,7 @@ BenchmarkTestCases = [
                 name: 'Size8',
                 referenceFPS: 17.5,
                 referenceTime: 52.2
+            },
             {
                 name: 'BurstPipe',
                 referenceFPS: 20.5,
@@ -334,8 +336,8 @@ BenchmarkTestCases = [
             },
             {
                 name: 'Comet',
-                referenceFPS: 12.7,
-                referenceTime: 10
+                referenceFPS: 8,
+                referenceTime: 110
             }
         ]
     },
@@ -346,18 +348,13 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Position',
-                referenceFPS: 11,
-                referenceTime: 129.8
+                referenceFPS: 4.25,
+                referenceTime: 115
             },
             {
                 name: 'Actions',
-                referenceFPS: 11,
-                referenceTime: 299.47
-            },
-            {
-                name: 'Actions',
-                referenceFPS: 5.45,
-                referenceTime: 10
+                referenceFPS: 1.46,
+                referenceTime: 270
             }
         ]
     }
