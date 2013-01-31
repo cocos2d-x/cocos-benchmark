@@ -29,8 +29,9 @@ var DrawPrimitivesTestBenchmark = cc.Layer.extend({
     ctor:function () {
     },
     draw:function () {
-        this._super();
+       
         benchmarkControllerInstance.startTestPass();
+        var start=new Date;
         for (var i=0; i<DRAW_PRIMITIVES_TEST_LOOP; ++ i) {
             var s = cc.Director.getInstance().getWinSize();
 
@@ -122,6 +123,7 @@ var DrawPrimitivesTestBenchmark = cc.Layer.extend({
             cc.renderContext.fillStyle = "rgba(255,255,255,1)";
             cc.renderContext.strokeStyle = "rgba(255,255,255,1)";
         }
+
         benchmarkControllerInstance.stopTestPass();
     }
 });

@@ -26,7 +26,39 @@
 var TAG_INFO_LAYER = 1;
 var TAG_PARTICLE_SYSTEM = 3;
 var TAG_LABEL_ATLAS = 4;
-var PARTICLE_NODES = 300;
+var PARTICLE_NODES = 100;
+var VALID_DELTA_RATE =0.3
+
+////////////////////////////////////////////////////////
+//
+// Particle System Quad Stub for benchmarking
+//
+////////////////////////////////////////////////////////
+BenchmarkParticleSystemQuad = cc.ParticleSystemQuad.extend({
+  
+    draw: function() {
+        var currentParticleCount = this.getParticleCount();
+       // var particleCountGoal = cc.Director.getInstance().getRunningScene().getParticlesNum();
+        var particleCountGoal = PARTICLE_NODES;
+        // TODO: fix it, if current count is always smaller than goal, e.g. low performance :(
+        var valid = (Math.abs(particleCountGoal-currentParticleCount)/particleCountGoal) <= VALID_DELTA_RATE;
+       // var valid = currentParticleCount/particleCountGoal >= VALID_DELTA_RATE;
+        if (valid) { // only call if particles are enough
+                    
+              
+                benchmarkControllerInstance.startTestPass();
+        }
+        // call "ParticleSystemQuad.draw()
+        for(var i=0;i<2;i++)
+        this._super();
+    
+        if (valid) {
+             
+                benchmarkControllerInstance.stopTestPass();
+            
+        }
+    }
+});
 
 ////////////////////////////////////////////////////////
 //
@@ -70,8 +102,9 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         if (BENCHMARK_DEBUG) {
             var atlas = this.getChildByTag(TAG_LABEL_ATLAS);
             var emitter = this.getChildByTag(TAG_PARTICLE_SYSTEM);
-
+           
             var str = emitter.getParticleCount();
+
             atlas.setString(str);
         }
     },
@@ -93,7 +126,8 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         var texture = cc.TextureCache.getInstance().addImage("res/Images/fire.png");
         cc.TextureCache.getInstance().removeTexture(texture);
 
-        particleSystem = new cc.ParticleSystemQuad();
+       //  particleSystem = new cc.ParticleSystemQuad();
+         particleSystem = new BenchmarkParticleSystemQuad();
 
         switch (this._subtestNumber) {
             case 1:
@@ -144,9 +178,7 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
     },
     // TODO: find a better way to reduce error by sunzhuoshi
     draw: function() {
-        benchmarkControllerInstance.startTestPass();
-        this._super();
-        benchmarkControllerInstance.stopTestPass();
+
     }
 });
 
@@ -226,7 +258,7 @@ var ParticleSize8BenchmarkScene = ParticleMainScene.extend({
     doTest:function () {
         var s = cc.Director.getInstance().getWinSize();
         var particleSystem = this.getChildByTag(TAG_PARTICLE_SYSTEM);
-
+        
         // duration
         particleSystem.setDuration(-1);
 
@@ -410,6 +442,7 @@ var ParticleSize64BenchmarkScene = ParticleMainScene.extend({
     }
 });
 
+
 var ParticleDemo = cc.LayerGradient.extend({
     _emitter: null,
     _background: null,
@@ -476,6 +509,22 @@ var ParticleDemo = cc.LayerGradient.extend({
     }
 });
 
+
+BenchmarkParticleSystemQuad.create = function (pListFile) {
+    var ret = new BenchmarkParticleSystemQuad();
+    if (!pListFile || typeof(pListFile) === "number") {
+        var ton = pListFile || 100;
+        ret.setDrawMode(cc.PARTICLE_TEXTURE_MODE);
+        ret.initWithTotalParticles(ton);
+        return ret;
+    }
+
+    if (ret && ret.initWithFile(pListFile)) {
+        return ret;
+    }
+    return null;
+}
+
 var DemoParticleFromFile = ParticleDemo.extend({
     _title:"",
     ctor:function(filename) {
@@ -489,7 +538,7 @@ var DemoParticleFromFile = ParticleDemo.extend({
         this._background = null;
 
         var filename = "res/Particles/" + this._title + ".plist";
-        this._emitter = cc.ParticleSystem.create(filename);
+        this._emitter = BenchmarkParticleSystemQuad.create(filename);
         this.addChild(this._emitter, 10);
 
         if(this._title == "Flower"){
@@ -515,6 +564,8 @@ var DemoParticleFromFile = ParticleDemo.extend({
 
 var ParticleBurstPipeBenchmarkScene = BenchmarkBaseTestScene.extend({
     runTest: function () {
+        PARTICLE_NODES = 120;
+         VALID_DELTA_RATE = 0.4;
         this.addChild(new DemoParticleFromFile("BurstPipe"));
         cc.Director.getInstance().replaceScene(this);
     }
@@ -522,7 +573,10 @@ var ParticleBurstPipeBenchmarkScene = BenchmarkBaseTestScene.extend({
 
 var ParticleCometBenchmarkScene = BenchmarkBaseTestScene.extend({
     runTest: function () {
+        PARTICLE_NODES = 120;
+         VALID_DELTA_RATE = 0.4;
         this.addChild(new DemoParticleFromFile("Comet"));
         cc.Director.getInstance().replaceScene(this);
     }
 });
+

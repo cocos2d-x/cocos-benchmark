@@ -31,7 +31,7 @@
  ****************************************************************************/
 var MAX_SPRITES = 1000;
 var SPRITES_INCREASE = 50;
-var SPRITES_TEST = 200;
+var SPRITES_TEST = 500;
 
 var TAG_INFO_LAYER = 1;
 var TAG_MAIN_LAYER = 2;
@@ -39,6 +39,56 @@ var TAG_SPRITE_MENU_LAYER = (MAX_SPRITES + 1000);
 
 var s_nSpriteCurCase = 0;
 
+var temp1=0;
+var start=0;
+  var BenchmarkSprite=cc.Sprite.extend({
+    _totalCount:0,
+    draw:function(){
+    this._totalCount++;
+    temp1++
+ 
+    if( this._totalCount>10&&temp1%SPRITES_TEST==1) {  
+    // alert(temp1)
+     benchmarkControllerInstance.startTestPass();
+    // start=new Date;
+   
+}
+     
+     this._super();
+
+   
+  if(this._totalCount>10&&temp1%SPRITES_TEST==0) { 
+        //alert(temp1)
+    //    alert(new Date-start)
+     benchmarkControllerInstance.stopTestPass();
+     }
+    }
+});
+cc.Sprite.benchmarkCreate = function (fileName, rect) {
+    var argnum = arguments.length;
+    var sprite = new BenchmarkSprite();
+    if (argnum === 0) {
+        if (sprite.init())
+            return sprite;
+        return null;
+    } else if (argnum < 2) {
+        /** Creates an sprite with an image filename.
+         The rect used will be the size of the image.
+         The offset will be (0,0).
+         */
+        if (sprite && sprite.initWithFile(fileName)) {
+            return sprite;
+        }
+        return null;
+    } else {
+        /** Creates an sprite with an CCBatchNode and a rect
+         */
+        if (sprite && sprite.initWithFile(fileName, rect)) {
+            return sprite;
+        }
+        return null;
+    }
+};
 ////////////////////////////////////////////////////////
 //
 // SubTest
@@ -67,6 +117,7 @@ var SubTest = cc.Class.extend({
                 break;
         }
     },
+   
     createSpriteWithTag:function (tag) {
         cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_RGBA8888);
 
@@ -74,7 +125,11 @@ var SubTest = cc.Class.extend({
         switch (this._subtestNumber) {
             case 1:
             {
-                sprite = cc.Sprite.create("res/Images/grossinis_sister1.png");
+               
+                 
+                sprite = cc.Sprite.benchmarkCreate("res/Images/grossinis_sister1.png");
+               // sprite = cc.Sprite.create("res/Images/grossinis_sister1.png");
+               // alert(sprite)
                 this._parent.addChild(sprite, 0, tag + 100);
                 break;
             }
@@ -163,13 +218,13 @@ var SubTest = cc.Class.extend({
          */
 
         // purge textures
-        var mgr = cc.TextureCache.getInstance();
+       /* var mgr = cc.TextureCache.getInstance();
         //		[mgr removeAllTextures];
         mgr.removeTexture(mgr.addImage("res/Images/grossinis_sister1.png"));
         mgr.removeTexture(mgr.addImage("res/Images/grossini_dance_atlas.png"));
-        mgr.removeTexture(mgr.addImage("res/Images/spritesheet1.png"));
+        mgr.removeTexture(mgr.addImage("res/Images/spritesheet1.png"));*/
 
-        switch (this._subtestNumber) {
+        /*switch (this._subtestNumber) {
             case 1:
             case 4:
             case 7:
@@ -212,9 +267,9 @@ var SubTest = cc.Class.extend({
 
             default:
                 break;
-        }
+        }*/
 
-        cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_DEFAULT);
+       // cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_DEFAULT);
     }
 });
 
@@ -269,24 +324,24 @@ var SpriteMainScene = BenchmarkBaseTestScene.extend({
             }
         }
     },
-    testNCallback:function (sender) {
+    /*testNCallback:function (sender) {
         this._subtestNumber = sender.getTag();
         var menu = this.getChildByTag(TAG_SPRITE_MENU_LAYER);
         menu.restartCallback(sender);
-    },
+    },*/
     onIncrease:function (sender) {
         if (this._quantityNodes >= MAX_SPRITES)
             return;
 
-        for (var i = 0; i < SPRITES_INCREASE; i++) {
+       // for (var i = 0; i < SPRITES_INCREASE; i++) {
             var sprite = this._subTest.createSpriteWithTag(this._quantityNodes);
             this.doTest(sprite);
             this._quantityNodes++;
-        }
+       // }
 
         this.updateNodes();
     },
-    onDecrease:function (sender) {
+   /* onDecrease:function (sender) {
         if (this._quantityNodes <= 0)
             return;
 
@@ -307,7 +362,7 @@ var SpriteMainScene = BenchmarkBaseTestScene.extend({
     },
     getNodesNum:function () {
         return this._quantityNodes
-    }
+    }*/
 });
 
 
@@ -332,7 +387,7 @@ function performanceActions(sprite) {
     sprite.runAction(permanentScaleLoop);
 }
 
-function performanceActions20(sprite) {
+/*function performanceActions20(sprite) {
     var size = cc.Director.getInstance().getWinSize();
     if (Math.random() < 0.2)
         sprite.setPosition(cc.p(parseInt(Math.random() * size.width), parseInt(Math.random() * size.height)));
@@ -356,14 +411,14 @@ function performanceRotationScale(sprite) {
     sprite.setPosition(cc.p(parseInt(Math.random() * size.width), parseInt(Math.random() * size.height)));
     sprite.setRotation(Math.random() * 360);
     sprite.setScale(Math.random() * 2);
-}
+}*/
 
 function performancePosition(sprite) {
     var size = cc.Director.getInstance().getWinSize();
     sprite.setPosition(cc.p(parseInt(Math.random() * size.width), parseInt(Math.random() * size.height)));
 }
 
-function performanceout20(sprite) {
+/*function performanceout20(sprite) {
     var size = cc.Director.getInstance().getWinSize();
 
     if (Math.random() < 0.2)
@@ -380,7 +435,7 @@ function performanceScale(sprite) {
     var size = cc.Director.getInstance().getWinSize();
     sprite.setPosition(cc.p(parseInt(Math.random() * size.width), parseInt(Math.random() * size.height)));
     sprite.setScale(Math.random() * 100 / 50);
-}
+}*/
 
 
 var SpritePositionBenchmarkScene = SpriteMainScene.extend({
@@ -396,7 +451,7 @@ var SpritePositionBenchmarkScene = SpriteMainScene.extend({
     }
 });
 
-var SpriteScaleBenchmarkScene = SpriteMainScene.extend({
+/*var SpriteScaleBenchmarkScene = SpriteMainScene.extend({
     runTest:function () {
         this.initWithSubTest(1, SPRITES_TEST);
         cc.Director.getInstance().replaceScene(this);
@@ -446,7 +501,7 @@ var Sprite80outBenchmarkScene = SpriteMainScene.extend({
     title:function () {
         return "E (" + this._subtestNumber + ") 80% out";
     }
-});
+});*/
 
 var SpriteActionsBenchmarkScene = SpriteMainScene.extend({
     runTest:function () {
@@ -461,7 +516,7 @@ var SpriteActionsBenchmarkScene = SpriteMainScene.extend({
     }
 });
 
-var SpriteActions80outBenchmarkScene = SpriteMainScene.extend({
+/*var SpriteActions80outBenchmarkScene = SpriteMainScene.extend({
     runTest:function () {
         this.initWithSubTest(1, SPRITES_TEST);
         cc.Director.getInstance().replaceScene(this);
@@ -472,4 +527,4 @@ var SpriteActions80outBenchmarkScene = SpriteMainScene.extend({
     title:function () {
         return "G (" + this._subtestNumber + ") actions 80% out";
     }
-});
+});*/

@@ -49,6 +49,7 @@ BenchmarkEntryScene = cc.Scene.extend({
 // shared instance for BenchmarkEntryScene
 BenchmarkEntryScene.instance = null;
 
+
 BenchmarkBaseTestScene = cc.Scene.extend({
     _ID: 0,
     getID: function() {
@@ -86,10 +87,16 @@ BenchmarkController = cc.Class.extend({
     // call it in a test case to start a test pass
     startTestPass: function() {
         this._testPassBeginTime = (new Date).getTime();
+        //alert(new Date)
+
     },
     // call it in a test case to stop current running test pass
     stopTestPass: function() {
+        var testInfo = BenchmarkTestCases.getTestInfo(this._currentTestID);
+        if(this._currentTestPass <testInfo.times){
         this._testPassResults[this._currentTestPass] = new Date().getTime() - this._testPassBeginTime;
+        //alert(this._testPassResults[this._currentTestPass])
+       }
         this._currentTestPass ++;
         if (this._ifCurrentTestEnds()) {
             this._runNextTest();
@@ -122,6 +129,8 @@ BenchmarkController = cc.Class.extend({
             this._saveTimeTestResult(testID, testInfo);
             this._saveTestScores(testID, testInfo);
             if (testID >= BenchmarkTestCases.maxID()) {
+                
+               // alert(BenchmarkTestCases.maxID())
                 this.outputScore();
             }
         }
@@ -143,6 +152,7 @@ BenchmarkController = cc.Class.extend({
         var sum = 0;
         var score = 0;
         var length = BenchmarkTestCases.maxID() + 1;
+         //alert(this._testScores)
         for (var i=0; i<length; ++i) {
             sum += 1 / this._testScores[i];
         }
@@ -157,6 +167,7 @@ BenchmarkController = cc.Class.extend({
         var ID = this._currentTestID;
         ID ++;
         if (ID <= BenchmarkTestCases.maxID()) {
+            _testPassResults=[];
             this._runTest(ID);
         } else {
             this.stopBenchmark();
@@ -171,6 +182,7 @@ BenchmarkController = cc.Class.extend({
                 var testScene = new window[testSceneName];
                 this._currentTestID = ID;
                 this._currentTestPass = 0;
+                
                 testScene.setID(ID);
                 testScene.runTest();
             } catch (e) {
@@ -230,6 +242,7 @@ BenchmarkController = cc.Class.extend({
     _saveTimeTestResult: function(testID, testInfo) {
         var timeSum = 0, minTime = 0, maxTime = 0, meanTime = 0, maxDeltaPercent = 0;
         var length = this._testPassResults.length - testInfo.invalidTimes;
+       // alert(length)
         for (var i=0; i<length; ++i) {
             var time = this._testPassResults[i];
             timeSum += time;
@@ -247,6 +260,8 @@ BenchmarkController = cc.Class.extend({
             meanTime: meanTime,
             maxDeltaPercent: maxDeltaPercent
         }
+        benchmarkOutputInstance.writeln('  ' + testInfo.name + '(time): ' + meanTime + ' +/-' + maxDeltaPercent + '%');
+        this._testPassResults=[];
         console.log('  ' + testInfo.name + '(time): ' + meanTime + ' +/-' + maxDeltaPercent + '%');
     },
     _saveTestScores: function(testID, testInfo) {
@@ -260,7 +275,7 @@ BenchmarkController = cc.Class.extend({
             firstValue = false;
         }
         if (testInfo.times) {
-            timeScore = this._timeTestResults[testID].meanTime / testInfo.referenceTime;
+            timeScore = (testInfo.referenceTime / this._timeTestResults[testID].meanTime).toFixed(2);
             if (!firstValue) {
                 benchmarkOutputInstance.write(', ');
             }
@@ -268,7 +283,7 @@ BenchmarkController = cc.Class.extend({
         }
         benchmarkOutputInstance.writeln('');
         if (FPSScore && timeScore) {
-            this._testScores[testID] = (FPSScore + timeScore) / 2;
+            this._testScores[testID] = (Number(FPSScore) + Number(timeScore)) / 2;
         }
         else if (FPSScore) {
             this._testScores[testID] = FPSScore;
@@ -297,9 +312,10 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Test',
-                times: 0, // TODO: fill the correct value after adding time calculation code
-                referenceFPS: 2,
-                referenceTime: 0.5
+                referenceFPS: 0.88,
+                referenceTime: 1130.5
+                //times: 0, // TODO: fill the correct value after adding time calculation code
+ 
             }
         ]
     },
@@ -310,38 +326,36 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Size8',
-                times: 0, // TODO: fill the correct value after adding time calculation code
-                referenceFPS: 100,
-                referenceTime: 10
+                referenceFPS: 15.05,
+                referenceTime: 52.2
             },
             {
                 name: 'BurstPipe',
-                times: 0, // TODO: fill the correct value after adding time calculation code
-                referenceFPS: 150,
-                referenceTime: 10
+                referenceFPS: 10.39,
+                referenceTime: 70.67
             },
             {
                 name: 'Comet',
-                times: 0, // TODO: fill the correct value after adding time calculation code
                 referenceFPS: 150,
                 referenceTime: 10
+
             }
         ]
     },
     {
         category: 'Sprite',
         defaultDuration: 3000,
-        defaultTimes: 0,
+        defaultTimes: 10,
         tests: [
             {
                 name: 'Position',
-                referenceFPS: 100,
-                referenceTime: 10
+                referenceFPS: 7.36,
+                referenceTime: 129.8
             },
             {
                 name: 'Actions',
-                referenceFPS: 50,
-                referenceTime: 10
+                referenceFPS: 2.3,
+                referenceTime: 299.47
             }
         ]
     }
