@@ -13,12 +13,20 @@
             margin: 0 auto;
         }
         #menu {
-            width: 300px;
-            text-align: center;
+            height: 50px;
         }
-        .button {
-            margin: 10px 5%;
-            width: 30%;
+        .menu_item_wrapper {
+            float: left;
+            display: table;
+            height: 100%;
+        }
+        .menu_item_wrapper > div {
+            display: table-cell;
+            vertical-align: middle;
+        }
+        .menu_item_wrapper input[type="button"] {
+            margin: 10px;
+            width: 80px;
         }
         #output {
             border: 1px solid black;
@@ -27,7 +35,7 @@
         }
     </style>
     <script type="text/javascript">
-        var BENCHMARK_VERSION = 'v0.3.0'
+        var BENCHMARK_VERSION = 'v0.3.1'
         // append version to title
         document.title = document.title + ' ' + BENCHMARK_VERSION;
         // benchmark output to write test result
@@ -76,11 +84,21 @@
 <div id="Cocos2dGameContainer" style="background-color:rgba(0,0,0,0.1); width: 300px; height: 300px">
 </div>
 <div id="menu">
-    <label id="version">
-    <script>document.write(BENCHMARK_VERSION)</script>
-    </label>
-    <input class="button" id="action" type="button" onclick="BenchmarkActionButtonClick(this)" value=start />
-    <input class="button" id="clear" type="button" onclick="benchmarkOutputInstance.clear()" value=clear />
+    <div class="menu_item_wrapper" style="width: 20%">
+        <div>
+            <script>document.write(BENCHMARK_VERSION)</script>
+        </div>
+    </div>
+    <div class="menu_item_wrapper" style="width: 40%">
+        <div>
+            <input id="action" type="button" onclick="BenchmarkActionButtonClick(this)" value=start />
+        </div>
+    </div>
+    <div class="menu_item_wrapper" style="width: 40%">
+        <div>
+            <input id="clear" type="button" onclick="benchmarkOutputInstance.clear()" value=clear />
+        </div>
+    </div>
 </div>
 <pre id="output">&nbsp;<!-- &nbsp MUST NOT be deleted, to simplify javascript code  --></pre>
 </body>
