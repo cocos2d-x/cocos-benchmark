@@ -340,29 +340,7 @@ var SpriteMainScene = BenchmarkBaseTestScene.extend({
        // }
 
         this.updateNodes();
-    },
-   /* onDecrease:function (sender) {
-        if (this._quantityNodes <= 0)
-            return;
-
-        for (var i = 0; i < SPRITES_INCREASE; i++) {
-            this._quantityNodes--;
-            this._subTest.removeByTag(this._quantityNodes);
-        }
-
-        this.updateNodes();
-    },
-
-    doTest:function (sprite) {
-
-    },
-
-    getSubTestNum:function () {
-        return this._subtestNumber
-    },
-    getNodesNum:function () {
-        return this._quantityNodes
-    }*/
+    }
 });
 
 

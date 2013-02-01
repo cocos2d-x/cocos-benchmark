@@ -24,9 +24,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-// TODO: use all in one
-var ALL_IN_ONE = 0;
-var ALL_IN_ONE_FILE = 'cocos-benchmark-all.js';
+var ALL_IN_ONE = false; // use ALL_IN_ONE in release version to reduce loading time
+var ALL_IN_ONE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
 
 (function () {
     var config = {
@@ -37,13 +36,13 @@ var ALL_IN_ONE_FILE = 'cocos-benchmark-all.js';
         loadExtension:false,
         tag:'Cocos2dGameContainer', //the dom element to run cocos2d on
         engineDir:'./lib/cocos2d/',
-        //SingleEngineFile:'',
+        //SingleEngineFile: 'lib/lib/Cocos2d-html5-v2.1.min.js',
         appFiles:[
             'src/resources.js',
             'src/cocos-benchmark.js',
             'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',
             'src/tests/Particle/BenchmarkParticleTest.js',
-            'src/tests/Sprite/BenchmarkSpriteTest.js',
+            'src/tests/Sprite/BenchmarkSpriteTest.js'
         ]
     };
      function loadEnd() {
@@ -69,6 +68,4 @@ var ALL_IN_ONE_FILE = 'cocos-benchmark-all.js';
     }
     window.addEventListener?
     window.addEventListener('DOMContentLoaded',loadEnd):window.attachEvent('DOMContentLoaded',loadEnd);
-
-
 })();

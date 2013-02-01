@@ -1,2 +1,4 @@
 .idea
 .DS_Store
+
+cocos-benchmark-v*.js
