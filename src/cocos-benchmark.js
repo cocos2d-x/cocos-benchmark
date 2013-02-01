@@ -4,12 +4,34 @@
  * Date: 11/1/12
  * Time: 11:21 AM
  */
+var BenchmarkQueryParameters = (function() {
+    var result = {};
+    if (window.location.search)
+    {
+        var params = window.location.search.substr(1).split("&");
+        for (var i=0; i < params.length; ++i)
+        {
+            var tmp = params[i].split("=");
+            result[tmp[0]] = unescape(tmp[1]);
+        }
+    }
+    return result;
+}());
 
 // If show debug info(FPS, particle count and etc.) when benchmarking
 BENCHMARK_DEBUG = false; // if enabled, show debug info
 BENCHMARK_FPS = true;
 BENCHMARK_TIME = true;
 BENCHMARK_TIME_MAX_DELTA_PERCENT = 15; // only <= value will be counted
+
+if ('0' === BenchmarkQueryParameters.time) {
+    BENCHMARK_TIME = false;
+    benchmarkOutputInstance.writeln('time off');
+}
+if ('0' === BenchmarkQueryParameters.fps) {
+    BENCHMARK_FPS = false;
+    benchmarkOutputInstance.writeln('FPS off');
+}
 
 ////////////////////////////////////////////////////////
 //
@@ -134,6 +156,10 @@ BenchmarkController = cc.Class.extend({
         }
     },
     startBenchmark: function(button) {
+        if (!BENCHMARK_FPS && !BENCHMARK_TIME) {
+            alert('Both FPS and time are off!')
+            return;
+        }
         BenchmarkSetActionStop(button);
         this._runTest(0);
     },
