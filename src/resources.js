@@ -34,6 +34,7 @@ var s_pressSendScore = "res/Images/SendScoreButtonPressed.png";
 var s_stars2Grayscale = "res/Images/stars2-grayscale.png";
 var s_starsGrayscale = "res/Images/stars-grayscale.png";
 
+/*
 var s_grossini = "res/animations/grossini.png";
 var s_grossini_gray = "res/animations/grossini_gray.png";
 var s_grossini_blue = "res/animations/grossini_blue.png";
@@ -41,7 +42,6 @@ var s_grossini_aliases = "res/animations/grossini-aliases.png";
 var s_dragon_animation = "res/animations/dragon_animation.png";
 var s_ghosts = "res/animations/ghosts.png";
 var s_grossini_family = "res/animations/grossini_family.png";
-
 var s_boilingFoamPlist = "res/Images/BoilingFoam.plist";
 var s_grossiniPlist = "res/animations/grossini.plist";
 var s_grossini_grayPlist = "res/animations/grossini_gray.plist";
@@ -51,7 +51,7 @@ var s_ghostsPlist = "res/animations/ghosts.plist";
 var s_grossini_familyPlist = "res/animations/grossini_family.plist";
 var s_animations2Plist = "res/animations/animations-2.plist";
 var s_animationsPlist = "res/animations/animations.plist";
-
+*/
 var s_grossiniDance01 = "res/Images/grossini_dance_01.png";
 var s_grossiniDance02 = "res/Images/grossini_dance_02.png";
 var s_grossiniDance03 = "res/Images/grossini_dance_03.png";
@@ -117,6 +117,7 @@ var g_resources = [
     {type:"image", src:s_starsGrayscale},
     {type:"image", src:s_stars2Grayscale},
 
+    /*
     {type:"image", src:s_grossini},
     {type:"image", src:s_grossini_gray},
     {type:"image", src:s_grossini_blue},
@@ -139,12 +140,13 @@ var g_resources = [
     {type:"image", src:s_grossiniDance12},
     {type:"image", src:s_grossiniDance13},
     {type:"image", src:s_grossiniDance14},
-
+    */
     {type:"image", src:s_arrows},
     {type:"image", src:s_arrowsBar},
     {type:"image", src:s_arrows_hd},
     {type:"image", src:s_arrowsBar_hd},
 
+    /*
     {type:"plist", src:s_boilingFoamPlist},
     {type:"plist", src:s_animations2Plist},
     {type:"plist", src:s_animationsPlist},
@@ -154,7 +156,7 @@ var g_resources = [
     {type:"plist", src:s_grossini_aliasesPlist},
     {type:"plist", src:s_ghostsPlist},
     {type:"plist", src:s_grossini_familyPlist},
-
+    */
     {type:"plist", src:"res/Particles/BoilingFoam.plist"},
     {type:"plist", src:"res/Particles/BurstPipe.plist"},
     {type:"plist", src:"res/Particles/Comet.plist"},
