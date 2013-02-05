@@ -10,5 +10,5 @@ var g_resources = [
     {type:"image", src:s_fire},
 
     {type:"plist", src:"res/Particles/BurstPipe.plist"},
-    {type:"plist", src:"res/Particles/Comet.plist"},
+    {type:"plist", src:"res/Particles/Comet.plist"}
 ];
