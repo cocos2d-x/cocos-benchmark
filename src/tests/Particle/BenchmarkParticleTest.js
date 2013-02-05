@@ -27,7 +27,7 @@ var TAG_INFO_LAYER = 1;
 var TAG_PARTICLE_SYSTEM = 3;
 var TAG_LABEL_ATLAS = 4;
 var PARTICLE_NODES = 100;
-var VALID_DELTA_RATE =0.3
+var VALID_DELTA_RATE = 0.3;
 
 ////////////////////////////////////////////////////////
 //
@@ -44,18 +44,14 @@ BenchmarkParticleSystemQuad = cc.ParticleSystemQuad.extend({
         var valid = (Math.abs(particleCountGoal-currentParticleCount)/particleCountGoal) <= VALID_DELTA_RATE;
        // var valid = currentParticleCount/particleCountGoal >= VALID_DELTA_RATE;
         if (valid) { // only call if particles are enough
-                    
-              
-                benchmarkControllerInstance.startTestPass();
+            benchmarkControllerInstance.startTestPass();
         }
         // call "ParticleSystemQuad.draw()
         for(var i=0;i<2;i++)
         this._super();
     
         if (valid) {
-             
-                benchmarkControllerInstance.stopTestPass();
-            
+            benchmarkControllerInstance.stopTestPass();
         }
     }
 });
@@ -109,7 +105,7 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         }
     },
     createParticleSystem:function () {
-        var particleSystem = null;
+        var particleSystem;
 
         /*
          * Tests:
@@ -451,7 +447,7 @@ var ParticleDemo = cc.LayerGradient.extend({
     ctor:function() {
         this._super();
         cc.associateWithNative( this, cc.LayerGradient );
-        this.init( cc.c4b(0,0,0,255), cc.c4b(98,99,117,255));
+        this.init();
 
         this._emitter = null;
 
@@ -459,8 +455,6 @@ var ParticleDemo = cc.LayerGradient.extend({
         var label = cc.LabelTTF.create(this.title(), "Arial", 28);
         this.addChild(label, 100, 1000);
         label.setPosition(s.width / 2, s.height - 50);
-
-        var selfPoint = this;
 
         if (BENCHMARK_DEBUG) {
             var labelAtlas = cc.LabelAtlas.create("0123456789", s_fpsImages, 16, 24, '.');
@@ -481,7 +475,7 @@ var ParticleDemo = cc.LayerGradient.extend({
         return "No title";
     },
 
-    update:function (dt) {
+    update:function () {
         if (BENCHMARK_DEBUG) {
             if (this._emitter) {
                 var atlas = this.getChildByTag(TAG_LABEL_ATLAS);
@@ -510,7 +504,7 @@ BenchmarkParticleSystemQuad.create = function (pListFile) {
         return ret;
     }
     return null;
-}
+};
 
 var DemoParticleFromFile = ParticleDemo.extend({
     _title:"",

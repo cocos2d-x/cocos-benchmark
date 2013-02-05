@@ -4,6 +4,7 @@
     <title>cocos2d-html5 benchmark</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
     <link rel="shortcut icon" href="res/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="res/Images/Icon.png">
     <style type="text/css">
         html body {
             margin: 10px 0;
@@ -11,9 +12,6 @@
         body > * {
             width: 300px;
             margin: 0 auto;
-        }
-        #menu {
-            height: 50px;
         }
         .menu_item_wrapper {
             float: left;
@@ -31,11 +29,12 @@
         #output {
             border: 1px solid black;
             background-color: rgba(0, 0, 0, 0.1);
+            font-size: 14px;
             min-height: 100px;
         }
     </style>
     <script type="text/javascript">
-        var BENCHMARK_VERSION = 'v0.4.0'
+        var BENCHMARK_VERSION = 'v0.4.2'; // Modify version in build.xml, when all-in-one file used
         // append version to title
         document.title = document.title + ' ' + BENCHMARK_VERSION;
         // benchmark output to write test result
@@ -54,7 +53,7 @@
                 var output = document.getElementById('output');
                 output.firstChild.deleteData(0, output.firstChild.length);
             }
-        }
+        };
         function BenchmarkSetAction(button, action) {
             if (!button) {
                 button = document.getElementById('action');
@@ -83,9 +82,9 @@
 <body>
 <div id="Cocos2dGameContainer" style="background-color:rgba(0,0,0,0.1); width: 300px; height: 300px">
 </div>
-<div id="menu">
+<div style="height: 50px">
     <div class="menu_item_wrapper" style="width: 20%">
-        <div>
+        <div style="font-size: 16px">
             <script>document.write(BENCHMARK_VERSION)</script>
         </div>
     </div>

@@ -4,7 +4,14 @@
  * Date: 11/1/12
  * Time: 11:21 AM
  */
-var BenchmarkQueryParameters = (function() {
+// If show debug info(FPS, particle count and etc.) when benchmarking
+BENCHMARK_DEBUG = false; // if enabled, show debug info
+BENCHMARK_FPS = true;
+BENCHMARK_TIME = true;
+BENCHMARK_TIME_MAX_DELTA_PERCENT = 15; // only <= value will be counted
+benchmarkReady = false;
+
+BenchmarkQueryParameters = (function() {
     var result = {};
     if (window.location.search)
     {
@@ -12,17 +19,11 @@ var BenchmarkQueryParameters = (function() {
         for (var i=0; i < params.length; ++i)
         {
             var tmp = params[i].split("=");
-            result[tmp[0]] = unescape(tmp[1]);
+            result[tmp[0]] = decodeURI(tmp[1]);
         }
     }
     return result;
 }());
-
-// If show debug info(FPS, particle count and etc.) when benchmarking
-BENCHMARK_DEBUG = false; // if enabled, show debug info
-BENCHMARK_FPS = true;
-BENCHMARK_TIME = true;
-BENCHMARK_TIME_MAX_DELTA_PERCENT = 15; // only <= value will be counted
 
 if ('0' === BenchmarkQueryParameters.time) {
     BENCHMARK_TIME = false;
@@ -47,7 +48,6 @@ BenchmarkEntry = cc.Layer.extend({
 
         var sprite = cc.Sprite.create(s_benchmark);
         sprite.setPosition(cc.p(size.width / 2, size.height / 2));
-        sprite.setScale(0.7); // just fill the screen
 
         lazyLayer.addChild(sprite, 0);
 
@@ -68,6 +68,7 @@ BenchmarkEntryScene = cc.Scene.extend({
         var layer = new BenchmarkEntry();
         layer.init();
         this.addChild(layer);
+        benchmarkReady = true;
     }
 });
 
@@ -116,9 +117,9 @@ BenchmarkController = cc.Class.extend({
     // call it in a test case to stop current running test pass
     stopTestPass: function() {
         var testInfo = BenchmarkTestCases.getTestInfo(this._currentTestID);
-        if(this._currentTestPass <testInfo.times){
-        this._testPassResults[this._currentTestPass] = new Date().getTime() - this._testPassBeginTime;
-       }
+        if (this._currentTestPass <testInfo.times) {
+            this._testPassResults[this._currentTestPass] = new Date().getTime() - this._testPassBeginTime;
+        }
         this._currentTestPass ++;
         if (this._ifCurrentTestEnds()) {
             this._runNextTest();
@@ -126,6 +127,7 @@ BenchmarkController = cc.Class.extend({
     },
     onEnterTestScene: function(testScene) {
         var testInfo = BenchmarkTestCases.getTestInfo(testScene.getID());
+        this._testPassResults = [];
         if (testInfo.firstInCategory) {
             benchmarkOutputInstance.writeln(testInfo.category);
         }
@@ -157,11 +159,13 @@ BenchmarkController = cc.Class.extend({
     },
     startBenchmark: function(button) {
         if (!BENCHMARK_FPS && !BENCHMARK_TIME) {
-            alert('Both FPS and time are off!')
+            alert('Both FPS and time are off!');
             return;
         }
-        BenchmarkSetActionStop(button);
-        this._runTest(0);
+        if (benchmarkReady) {
+            BenchmarkSetActionStop(button);
+            this._runTest(0);
+        }
     },
     stopBenchmark: function(button) {
         BenchmarkSetActionStart(button);
@@ -174,14 +178,14 @@ BenchmarkController = cc.Class.extend({
     outputScore: function() {
         // use Harmonic Average value as the final score
         var sum = 0;
-        var score = 0;
+        var score;
         var length = BenchmarkTestCases.maxID() + 1;
         for (var i=0; i<length; ++i) {
             sum += 1 / this._testScores[i];
         }
         score = (length / sum).toFixed(2);
         benchmarkOutputInstance.writeln('Score: ' + score);
-        benchmarkOutputInstance.writeln('################################')
+        benchmarkOutputInstance.writeln('####################################')
     },
     _ifCurrentTestEnds: function() {
         var testInfo = BenchmarkTestCases.getTestInfo(this._currentTestID);
@@ -191,7 +195,6 @@ BenchmarkController = cc.Class.extend({
         var ID = this._currentTestID;
         ID ++;
         if (ID <= BenchmarkTestCases.maxID()) {
-            _testPassResults=[];
             this._runTest(ID);
         } else {
             this.stopBenchmark();
@@ -216,8 +219,7 @@ BenchmarkController = cc.Class.extend({
         }
     },
     _saveFPSTestResult: function(testID) {
-        var FPS = ((this._testSceneEndFrames - this._testSceneBeginFrames) / (this._testSceneEndTime - this._testSceneBeginTime) * 1000).toFixed(2);
-        this._FPSTestResults[testID] = FPS;
+        this._FPSTestResults[testID] = ((this._testSceneEndFrames - this._testSceneBeginFrames) / (this._testSceneEndTime - this._testSceneBeginTime) * 1000).toFixed(2);
     },
     _testTransitionTimerTimeout: function() {
         this._testTransitionTimerID = 0;
@@ -227,18 +229,18 @@ BenchmarkController = cc.Class.extend({
     },
     // TODO: used? by sunzhuoshi
     _getValidTestPassResults:function(){
-        var timeSum = 0, meanTime = 0;
+        var timeSum = 0, meanTime;
         var validResults = [];
-        for (var i=0; i<this._testPassResults.length; ++i) {
-            var time = this._testPassResults[i];
-            timeSum += time;
+        var i;
+        for (i=0; i<this._testPassResults.length; ++i) {
+            timeSum += this._testPassResults[i];
         }
         meanTime = timeSum / this._testPassResults.length;
-        for (var i=0; i<this._testPassResults.length; ++i) {
+        for (i=0; i<this._testPassResults.length; ++i) {
             validResults[i] = Math.abs((this._testPassResults[i] - meanTime).toFixed(3));
         }
         var length = validResults.length;
-        for (var i=0; i<length-1; i++) {
+        for (i=0; i<length-1; i++) {
             for (var j=i+1; j<length; j++) {
                 var temp;
                 if (validResults[i] > validResults[j]){
@@ -258,13 +260,13 @@ BenchmarkController = cc.Class.extend({
         var D2 = 0, current = 0;
         var length = results.length - invalidTimes;
         for(var i=0; i<length; i++){
-            current = Math.abs(results[i] - mean)
+            current = Math.abs(results[i] - mean);
             D2 += current * current;
         }
         return (Math.sqrt(D2/length*2.262)).toFixed(3);
     },
     _saveTimeTestResult: function(testID, testInfo) {
-        var timeSum = 0, minTime = 0, maxTime = 0, meanTime = 0, maxDeltaPercent = 0;
+        var timeSum = 0, minTime = 0, maxTime = 0, meanTime, maxDeltaPercent;
         var length = this._testPassResults.length - testInfo.invalidTimes;
         for (var i=0; i<length; ++i) {
             var time = this._testPassResults[i];
@@ -282,8 +284,7 @@ BenchmarkController = cc.Class.extend({
         this._timeTestResults[testID] = {
             meanTime: meanTime,
             maxDeltaPercent: maxDeltaPercent
-        }
-        this._testPassResults=[];
+        };
         if (BENCHMARK_DEBUG) {
             benchmarkOutputInstance.writeln('  ' + testInfo.name + '(time): ' + meanTime + ' +/-' + maxDeltaPercent + '%');
         }
@@ -393,7 +394,7 @@ BenchmarkTestCases.IDToIndices = function(ID) {
     var indices = {
         categoryIndex: 0,
         testIndex: 0
-    }
+    };
     for (var i=0; i<BenchmarkTestCases.length; ++i) {
         var oldTmp = tmp;
         tmp += BenchmarkTestCases[i].tests.length;
@@ -409,7 +410,7 @@ BenchmarkTestCases.IDToIndices = function(ID) {
     }
     indices.testIndex = ID - tmp;
     return indices;
-}
+};
 
 BenchmarkTestCases._maxID = 0;
 
@@ -421,7 +422,7 @@ BenchmarkTestCases.maxID = function() {
         this._maxID --;
     }
     return this._maxID;
-}
+};
 
 BenchmarkTestCases.getTestInfo = function(ID) {
     var testInfo = {
@@ -433,7 +434,7 @@ BenchmarkTestCases.getTestInfo = function(ID) {
         invalidTimes: 0, // TODO: check it
         referenceFPS: 0,
         referenceTime: 0
-    }
+    };
     var indices = this.IDToIndices(ID);
     var test = this[indices.categoryIndex].tests[indices.testIndex];
     var category = this[indices.categoryIndex];
@@ -441,17 +442,19 @@ BenchmarkTestCases.getTestInfo = function(ID) {
     testInfo.firstInCategory = (0 === indices.testIndex);
     testInfo.name = test.name;
     testInfo.duration = category.defaultDuration;
-    if (undefined !== test.duration) {
+    if (typeof test.duration !== 'undefined') {
         testInfo.duration = test.duration;
     }
     testInfo.times = category.defaultTimes;
-    if (undefined !== test.times) {
+    if (typeof test.times !== 'undefined') {
         testInfo.times = test.times;
     }
-    if (undefined !== test.invalidTimes) {
+    if (typeof test.invalidTimes !== 'undefined') {
         testInfo.invalidTimes = test.invalidTimes;
     }
     testInfo.referenceFPS = test.referenceFPS;
-    testInfo.referenceTime = test.referenceTime;
+    if (typeof test.referenceTime !== 'undefined') {
+        testInfo.referenceTime = test.referenceTime;
+    }
     return testInfo;
-}
+};
