@@ -7,7 +7,7 @@
     <target name="compile_Canvas">
         <!-- version MUST be same as BENCHMARK_VERSION defined in index.html -->
         <jscomp compilationLevel="simple" warning="quiet"
-                debug="false" output="cocos-benchmark-v0.4.1.js">
+                debug="false" output="cocos-benchmark-v0.4.2.js">
             <!-- NOT needed for all-in-one script
             <externs dir="${basedir}/lib/cocos2d">
                 <file name="cocos2d_externs.js"/>

@@ -4,7 +4,14 @@
  * Date: 11/1/12
  * Time: 11:21 AM
  */
-var BenchmarkQueryParameters = (function() {
+// If show debug info(FPS, particle count and etc.) when benchmarking
+BENCHMARK_DEBUG = false; // if enabled, show debug info
+BENCHMARK_FPS = true;
+BENCHMARK_TIME = true;
+BENCHMARK_TIME_MAX_DELTA_PERCENT = 15; // only <= value will be counted
+benchmarkReady = false;
+
+BenchmarkQueryParameters = (function() {
     var result = {};
     if (window.location.search)
     {
@@ -17,12 +24,6 @@ var BenchmarkQueryParameters = (function() {
     }
     return result;
 }());
-
-// If show debug info(FPS, particle count and etc.) when benchmarking
-BENCHMARK_DEBUG = false; // if enabled, show debug info
-BENCHMARK_FPS = true;
-BENCHMARK_TIME = true;
-BENCHMARK_TIME_MAX_DELTA_PERCENT = 15; // only <= value will be counted
 
 if ('0' === BenchmarkQueryParameters.time) {
     BENCHMARK_TIME = false;
@@ -67,6 +68,7 @@ BenchmarkEntryScene = cc.Scene.extend({
         var layer = new BenchmarkEntry();
         layer.init();
         this.addChild(layer);
+        benchmarkReady = true;
     }
 });
 
@@ -115,9 +117,9 @@ BenchmarkController = cc.Class.extend({
     // call it in a test case to stop current running test pass
     stopTestPass: function() {
         var testInfo = BenchmarkTestCases.getTestInfo(this._currentTestID);
-        if(this._currentTestPass <testInfo.times){
-        this._testPassResults[this._currentTestPass] = new Date().getTime() - this._testPassBeginTime;
-       }
+        if (this._currentTestPass <testInfo.times) {
+            this._testPassResults[this._currentTestPass] = new Date().getTime() - this._testPassBeginTime;
+        }
         this._currentTestPass ++;
         if (this._ifCurrentTestEnds()) {
             this._runNextTest();
@@ -125,6 +127,7 @@ BenchmarkController = cc.Class.extend({
     },
     onEnterTestScene: function(testScene) {
         var testInfo = BenchmarkTestCases.getTestInfo(testScene.getID());
+        this._testPassResults = [];
         if (testInfo.firstInCategory) {
             benchmarkOutputInstance.writeln(testInfo.category);
         }
@@ -159,8 +162,10 @@ BenchmarkController = cc.Class.extend({
             alert('Both FPS and time are off!');
             return;
         }
-        BenchmarkSetActionStop(button);
-        this._runTest(0);
+        if (benchmarkReady) {
+            BenchmarkSetActionStop(button);
+            this._runTest(0);
+        }
     },
     stopBenchmark: function(button) {
         BenchmarkSetActionStart(button);
@@ -180,7 +185,7 @@ BenchmarkController = cc.Class.extend({
         }
         score = (length / sum).toFixed(2);
         benchmarkOutputInstance.writeln('Score: ' + score);
-        benchmarkOutputInstance.writeln('################################')
+        benchmarkOutputInstance.writeln('####################################')
     },
     _ifCurrentTestEnds: function() {
         var testInfo = BenchmarkTestCases.getTestInfo(this._currentTestID);
@@ -190,7 +195,6 @@ BenchmarkController = cc.Class.extend({
         var ID = this._currentTestID;
         ID ++;
         if (ID <= BenchmarkTestCases.maxID()) {
-            this._testPassResults = [];
             this._runTest(ID);
         } else {
             this.stopBenchmark();
@@ -281,7 +285,6 @@ BenchmarkController = cc.Class.extend({
             meanTime: meanTime,
             maxDeltaPercent: maxDeltaPercent
         };
-        this._testPassResults=[];
         if (BENCHMARK_DEBUG) {
             benchmarkOutputInstance.writeln('  ' + testInfo.name + '(time): ' + meanTime + ' +/-' + maxDeltaPercent + '%');
         }
