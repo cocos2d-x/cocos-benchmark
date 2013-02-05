@@ -30,40 +30,29 @@
  THE SOFTWARE.
  ****************************************************************************/
 var MAX_SPRITES = 1000;
-var SPRITES_INCREASE = 50;
 var SPRITES_TEST = 500;
 
 var TAG_INFO_LAYER = 1;
-var TAG_MAIN_LAYER = 2;
-var TAG_SPRITE_MENU_LAYER = (MAX_SPRITES + 1000);
-
-var s_nSpriteCurCase = 0;
 
 var temp1=0;
 var start=0;
-  var BenchmarkSprite=cc.Sprite.extend({
+var BenchmarkSprite=cc.Sprite.extend({
     _totalCount:0,
     draw:function(){
-    this._totalCount++;
-    temp1++
- 
-    if( this._totalCount>10&&temp1%SPRITES_TEST==1) {  
-    // alert(temp1)
-     benchmarkControllerInstance.startTestPass();
-    // start=new Date;
-   
-}
-     
-     this._super();
+        this._totalCount++;
+        temp1++;
 
-   
-  if(this._totalCount>10&&temp1%SPRITES_TEST==0) { 
-        //alert(temp1)
-    //    alert(new Date-start)
-     benchmarkControllerInstance.stopTestPass();
-     }
+        if( this._totalCount>10 && temp1%SPRITES_TEST==1) {
+            benchmarkControllerInstance.startTestPass();
+        }
+        this._super();
+
+        if(this._totalCount>10 && temp1%SPRITES_TEST==0) {
+            benchmarkControllerInstance.stopTestPass();
+        }
     }
 });
+
 cc.Sprite.benchmarkCreate = function (fileName, rect) {
     var argnum = arguments.length;
     var sprite = new BenchmarkSprite();
@@ -119,17 +108,14 @@ var SubTest = cc.Class.extend({
     },
    
     createSpriteWithTag:function (tag) {
+        var idx, x, y, r, str;
         cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_RGBA8888);
 
-        var sprite = null;
+        var sprite;
         switch (this._subtestNumber) {
             case 1:
             {
-               
-                 
                 sprite = cc.Sprite.benchmarkCreate("res/Images/grossinis_sister1.png");
-               // sprite = cc.Sprite.create("res/Images/grossinis_sister1.png");
-               // alert(sprite)
                 this._parent.addChild(sprite, 0, tag + 100);
                 break;
             }
@@ -142,9 +128,9 @@ var SubTest = cc.Class.extend({
             }
             case 4:
             {
-                var idx = parseInt(Math.random() * 14) + 1;
+                idx = parseInt(Math.random() * 14) + 1;
                 idx = idx < 10 ? "0" + idx : idx.toString();
-                var str = "res/Images/grossini_dance_" + idx + ".png";
+                str = "res/Images/grossini_dance_" + idx + ".png";
                 sprite = cc.Sprite.create(str);
                 this._parent.addChild(sprite, 0, tag + 100);
                 break;
@@ -152,9 +138,9 @@ var SubTest = cc.Class.extend({
             case 5:
             case 6:
             {
-                var idx = 0 | (Math.random() * 14);
-                var x = (idx % 5) * 85;
-                var y = (0 | (idx / 5)) * 121;
+                idx = 0 | (Math.random() * 14);
+                x = (idx % 5) * 85;
+                y = (0 | (idx / 5)) * 121;
                 sprite = cc.Sprite.createWithTexture(this._batchNode.getTexture(), cc.rect(x, y, 85, 121));
                 this._batchNode.addChild(sprite, 0, tag + 100);
                 break;
@@ -162,13 +148,12 @@ var SubTest = cc.Class.extend({
 
             case 7:
             {
-                var y, x;
-                var r = 0 | (Math.random() * 64);
+                r = 0 | (Math.random() * 64);
 
                 y = parseInt(r / 8);
                 x = parseInt(r % 8);
 
-                var str = "res/Images/sprites_test/sprite-" + x + "-" + y + ".png";
+                str = "res/Images/sprites_test/sprite-" + x + "-" + y + ".png";
                 sprite = cc.Sprite.create(str);
                 this._parent.addChild(sprite, 0, tag + 100);
                 break;
@@ -177,8 +162,7 @@ var SubTest = cc.Class.extend({
             case 8:
             case 9:
             {
-                var y, x;
-                var r = 0 | (Math.random() * 64);
+                r = 0 | (Math.random() * 64);
 
                 y = (0 | (r / 8)) * 32;
                 x = (r % 8) * 32;
@@ -216,60 +200,6 @@ var SubTest = cc.Class.extend({
          *11: 64 (16-bit) PNG Batch Node of 32 x 32 each
          *12: 64 (4-bit) PVRTC Batch Node of 32 x 32 each
          */
-
-        // purge textures
-       /* var mgr = cc.TextureCache.getInstance();
-        //		[mgr removeAllTextures];
-        mgr.removeTexture(mgr.addImage("res/Images/grossinis_sister1.png"));
-        mgr.removeTexture(mgr.addImage("res/Images/grossini_dance_atlas.png"));
-        mgr.removeTexture(mgr.addImage("res/Images/spritesheet1.png"));*/
-
-        /*switch (this._subtestNumber) {
-            case 1:
-            case 4:
-            case 7:
-                break;
-            ///
-            case 2:
-                cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_RGBA8888);
-                this._batchNode = cc.SpriteBatchNode.create("res/Images/grossinis_sister1.png", 100);
-                p.addChild(this._batchNode, 0);
-                break;
-            case 3:
-                cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_RGBA4444);
-                this._batchNode = cc.SpriteBatchNode.create("res/Images/grossinis_sister1.png", 100);
-                p.addChild(this._batchNode, 0);
-                break;
-
-            ///
-            case 5:
-                cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_RGBA8888);
-                this._batchNode = cc.SpriteBatchNode.create("res/Images/grossini_dance_atlas.png", 100);
-                p.addChild(this._batchNode, 0);
-                break;
-            case 6:
-                cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_RGBA4444);
-                this._batchNode = cc.SpriteBatchNode.create("res/Images/grossini_dance_atlas.png", 100);
-                p.addChild(this._batchNode, 0);
-                break;
-
-            ///
-            case 8:
-                cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_RGBA8888);
-                this._batchNode = cc.SpriteBatchNode.create("res/Images/spritesheet1.png", 100);
-                p.addChild(this._batchNode, 0);
-                break;
-            case 9:
-                cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_RGBA4444);
-                this._batchNode = cc.SpriteBatchNode.create("res/Images/spritesheet1.png", 100);
-                p.addChild(this._batchNode, 0);
-                break;
-
-            default:
-                break;
-        }*/
-
-       // cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_DEFAULT);
     }
 });
 
@@ -310,7 +240,7 @@ var SpriteMainScene = BenchmarkBaseTestScene.extend({
         }
 
         while (this._quantityNodes < nodes) {
-            this.onIncrease(this);
+            this.onIncrease();
         }
     },
     updateNodes:function () {
@@ -324,97 +254,16 @@ var SpriteMainScene = BenchmarkBaseTestScene.extend({
             }
         }
     },
-    /*testNCallback:function (sender) {
-        this._subtestNumber = sender.getTag();
-        var menu = this.getChildByTag(TAG_SPRITE_MENU_LAYER);
-        menu.restartCallback(sender);
-    },*/
-    onIncrease:function (sender) {
+    onIncrease:function () {
         if (this._quantityNodes >= MAX_SPRITES)
             return;
 
-       // for (var i = 0; i < SPRITES_INCREASE; i++) {
-            var sprite = this._subTest.createSpriteWithTag(this._quantityNodes);
-            this.doTest(sprite);
-            this._quantityNodes++;
-       // }
-
+        var sprite = this._subTest.createSpriteWithTag(this._quantityNodes);
+        this.doTest(sprite);
+        this._quantityNodes++;
         this.updateNodes();
     }
 });
-
-
-////////////////////////////////////////////////////////
-//
-// For test functions
-//
-////////////////////////////////////////////////////////
-function performanceActions(sprite) {
-    var size = cc.Director.getInstance().getWinSize();
-    sprite.setPosition(cc.p(parseInt(Math.random() * size.width), parseInt(Math.random() * size.height)));
-
-    var period = 0.5 + (Math.random() * 1000) / 500.0;
-    var rot = cc.RotateBy.create(period, 360.0 * Math.random());
-    var rot_back = rot.reverse();
-    var permanentRotation = cc.RepeatForever.create(cc.Sequence.create(rot, rot_back, null));
-    sprite.runAction(permanentRotation);
-
-    var growDuration = 0.5 + (Math.random() * 1000) / 500.0;
-    var grow = cc.ScaleBy.create(growDuration, 0.5, 0.5);
-    var permanentScaleLoop = cc.RepeatForever.create(cc.Sequence._actionOneTwo(grow, grow.reverse()));
-    sprite.runAction(permanentScaleLoop);
-}
-
-/*function performanceActions20(sprite) {
-    var size = cc.Director.getInstance().getWinSize();
-    if (Math.random() < 0.2)
-        sprite.setPosition(cc.p(parseInt(Math.random() * size.width), parseInt(Math.random() * size.height)));
-    else
-        sprite.setPosition(cc.p(-1000, -1000));
-
-    var period = 0.5 + (Math.random() * 1000) / 500.0;
-    var rot = cc.RotateBy.create(period, 360.0 * Math.random());
-    var rot_back = rot.reverse();
-    var permanentRotation = cc.RepeatForever.create(cc.Sequence.create(rot, rot_back, null));
-    sprite.runAction(permanentRotation);
-
-    var growDuration = 0.5 + (Math.random() * 1000) / 500.0;
-    var grow = cc.ScaleBy.create(growDuration, 0.5, 0.5);
-    var permanentScaleLoop = cc.RepeatForever.create(cc.Sequence._actionOneTwo(grow, grow.reverse()));
-    sprite.runAction(permanentScaleLoop);
-}
-
-function performanceRotationScale(sprite) {
-    var size = cc.Director.getInstance().getWinSize();
-    sprite.setPosition(cc.p(parseInt(Math.random() * size.width), parseInt(Math.random() * size.height)));
-    sprite.setRotation(Math.random() * 360);
-    sprite.setScale(Math.random() * 2);
-}*/
-
-function performancePosition(sprite) {
-    var size = cc.Director.getInstance().getWinSize();
-    sprite.setPosition(cc.p(parseInt(Math.random() * size.width), parseInt(Math.random() * size.height)));
-}
-
-/*function performanceout20(sprite) {
-    var size = cc.Director.getInstance().getWinSize();
-
-    if (Math.random() < 0.2)
-        sprite.setPosition(cc.p(parseInt(Math.random() * size.width), parseInt(Math.random() * size.height)));
-    else
-        sprite.setPosition(cc.p(-1000, -1000));
-}
-
-function performanceOut100(sprite) {
-    sprite.setPosition(cc.p(-1000, -1000));
-}
-
-function performanceScale(sprite) {
-    var size = cc.Director.getInstance().getWinSize();
-    sprite.setPosition(cc.p(parseInt(Math.random() * size.width), parseInt(Math.random() * size.height)));
-    sprite.setScale(Math.random() * 100 / 50);
-}*/
-
 
 var SpritePositionBenchmarkScene = SpriteMainScene.extend({
     runTest:function () {
@@ -422,64 +271,13 @@ var SpritePositionBenchmarkScene = SpriteMainScene.extend({
         cc.Director.getInstance().replaceScene(this);
     },
     doTest:function (sprite) {
-        performancePosition(sprite);
+        var size = cc.Director.getInstance().getWinSize();
+        sprite.setPosition(cc.p(parseInt(Math.random() * size.width), parseInt(Math.random() * size.height)));
     },
     title:function () {
         return "A (" + this._subtestNumber + ") position";
     }
 });
-
-/*var SpriteScaleBenchmarkScene = SpriteMainScene.extend({
-    runTest:function () {
-        this.initWithSubTest(1, SPRITES_TEST);
-        cc.Director.getInstance().replaceScene(this);
-    },
-    doTest:function (sprite) {
-        performanceScale(sprite);
-    },
-    title:function () {
-        return "B (" + this._subtestNumber + ") scale";
-    }
-});
-
-var SpriteScaleAndRotateBenchmarkScene = SpriteMainScene.extend({
-    runTest:function () {
-        this.initWithSubTest(1, SPRITES_TEST);
-        cc.Director.getInstance().replaceScene(this);
-    },
-    doTest:function (sprite) {
-        performanceRotationScale(sprite);
-    },
-    title:function () {
-        return "C (" + this._subtestNumber + ") scale + rot";
-    }
-});
-
-var Sprite100outBenchmarkScene = SpriteMainScene.extend({
-    runTest:function () {
-        this.initWithSubTest(1, SPRITES_TEST);
-        cc.Director.getInstance().replaceScene(this);
-    },
-    doTest:function (sprite) {
-        performanceOut100(sprite);
-    },
-    title:function () {
-        return "D (" + this._subtestNumber + ") 100% out";
-    }
-});
-
-var Sprite80outBenchmarkScene = SpriteMainScene.extend({
-    runTest:function () {
-        this.initWithSubTest(1, SPRITES_TEST);
-        cc.Director.getInstance().replaceScene(this);
-    },
-    doTest:function (sprite) {
-        performanceout20(sprite);
-    },
-    title:function () {
-        return "E (" + this._subtestNumber + ") 80% out";
-    }
-});*/
 
 var SpriteActionsBenchmarkScene = SpriteMainScene.extend({
     runTest:function () {
@@ -487,22 +285,21 @@ var SpriteActionsBenchmarkScene = SpriteMainScene.extend({
         cc.Director.getInstance().replaceScene(this);
     },
     doTest:function (sprite) {
-        performanceActions(sprite);
+        var size = cc.Director.getInstance().getWinSize();
+        sprite.setPosition(cc.p(parseInt(Math.random() * size.width), parseInt(Math.random() * size.height)));
+
+        var period = 0.5 + (Math.random() * 1000) / 500.0;
+        var rot = cc.RotateBy.create(period, 360.0 * Math.random());
+        var rot_back = rot.reverse();
+        var permanentRotation = cc.RepeatForever.create(cc.Sequence.create(rot, rot_back, null));
+        sprite.runAction(permanentRotation);
+
+        var growDuration = 0.5 + (Math.random() * 1000) / 500.0;
+        var grow = cc.ScaleBy.create(growDuration, 0.5, 0.5);
+        var permanentScaleLoop = cc.RepeatForever.create(cc.Sequence._actionOneTwo(grow, grow.reverse()));
+        sprite.runAction(permanentScaleLoop);
     },
     title:function () {
         return "F (" + this._subtestNumber + ") actions";
     }
 });
-
-/*var SpriteActions80outBenchmarkScene = SpriteMainScene.extend({
-    runTest:function () {
-        this.initWithSubTest(1, SPRITES_TEST);
-        cc.Director.getInstance().replaceScene(this);
-    },
-    doTest:function (sprite) {
-        performanceActions20(sprite);
-    },
-    title:function () {
-        return "G (" + this._subtestNumber + ") actions 80% out";
-    }
-});*/

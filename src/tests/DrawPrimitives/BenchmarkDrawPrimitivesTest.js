@@ -31,7 +31,7 @@ var DrawPrimitivesTestBenchmark = cc.Layer.extend({
     draw:function () {
        
         benchmarkControllerInstance.startTestPass();
-        var start=new Date;
+
         for (var i=0; i<DRAW_PRIMITIVES_TEST_LOOP; ++ i) {
             var s = cc.Director.getInstance().getWinSize();
 
