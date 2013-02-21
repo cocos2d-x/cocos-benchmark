@@ -29,12 +29,11 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
 
 (function () {
     var engines = {
-        default: "v2.1.min",
         "v2.1.min": {
             file: "lib/Cocos2d-html5-v2.1.min.js"
         }
         // add more engine versions here
-    };
+    }
     var config = {
         COCOS2D_DEBUG:2, //0 to turn debug off, 1 for basic debug, and 2 for full debug
         box2d:false,
@@ -53,23 +52,39 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
     };
      function loadEnd() {
          if (SINGLE_FILE) {
-             var engine = BenchmarkQueryParameters.engine;
-             if (!engine) {
-                 engine = engines.default;
+             var currentEngineID = BenchmarkQueryParameters.engine;
+             var currentEngineInfo, ID;
+             if (currentEngineID) {
+                 currentEngineInfo = engines[currentEngineID];
              }
-             var engineItem = engines[engine];
-             if (engineItem) {
-                 config.engineDir = null;
-                 config.SingleEngineFile = engineItem.file;
-                 config.appFiles = [APP_SINGLE_FILE];
-                 var engineIDElement = document.getElementById('engine_id');
-                 if (engineIDElement) {
-                     engineIDElement.innerText = engine;
+             else {
+                 for (ID in engines) {
+                     currentEngineID = ID;
+                     currentEngineInfo = engines[ID];
+                     break;
                  }
-                 var engineLabelElement = document.getElementById('engine_label');
+             }
+             if (currentEngineInfo) {
+                 config.engineDir = null;
+                 config.SingleEngineFile = currentEngineInfo.file;
+                 config.appFiles = [APP_SINGLE_FILE];
+                 var engineSelect = document.getElementById('engine_select');
+                 if (engineSelect) {
+                    for (ID in engines) {
+                        var option = document.createElement("option");
+                        option.value = ID;
+                        option.text = ID;
+                        if (currentEngineID === ID) {
+                            option.selected = 'selected';
+                        }
+                        engineSelect.options.add(option, null);
+                    }
+                 }
+                 var engineLabelElement = document.getElementById('engine_menu');
                  if (engineLabelElement) {
                      engineLabelElement.style.display = 'block';
                  }
+                 benchmarkOutputInstance.writeln('Engine version: ' + currentEngineID);
              }
              else {
                  alert('invalid engine: ' + engine)
