@@ -7,7 +7,7 @@
     <target name="compile_Canvas">
         <!-- version MUST be same as BENCHMARK_VERSION defined in index.html -->
         <jscomp compilationLevel="simple" warning="quiet"
-                debug="false" output="cocos-benchmark-v0.5.0.js">
+                debug="false" output="cocos-benchmark-v0.5.1.js">
             <!-- cocos benchmark source -->
             <sources dir="${basedir}">
                 <file name="src/cocos-benchmark.js"/>

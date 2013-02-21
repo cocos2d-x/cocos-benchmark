@@ -42,7 +42,7 @@
         }
     </style>
     <script type="text/javascript">
-        var BENCHMARK_VERSION = 'v0.5.0'; // Modify version in build.xml, when single file used
+        var BENCHMARK_VERSION = 'v0.5.1'; // Modify version in build.xml, when single file used
         // append version to title
         document.title = document.title + ' ' + BENCHMARK_VERSION;
         // benchmark output to write test result
@@ -62,6 +62,38 @@
                 output.firstChild.deleteData(0, output.firstChild.length);
             }
         };
+        BenchmarkQueryParameters = (function() {
+            var result = {};
+            if (window.location.search)
+            {
+                var params = window.location.search.substr(1).split("&");
+                for (var i=0; i < params.length; ++i)
+                {
+                    var tmp = params[i].split("=");
+                    result[tmp[0]] = decodeURI(tmp[1]);
+                }
+                result['__length'] = params.length;
+            }
+            result.toString = function() {
+                var ret = '', key, i = 0;
+                if (result['__length']) {
+                    ret += '?';
+                }
+                for(key in result) {
+                    if (key !== 'toString' && key !== '__length') {
+                        if (0 < i) {
+                            ret += '&';
+                        }
+                        ++i;
+                        ret += key;
+                        ret += '=';
+                        ret += result[key];
+                    }
+                }
+                return ret;
+            }
+            return result;
+        }());
         function BenchmarkSetAction(button, action) {
             if (!button) {
                 button = document.getElementById('action');
@@ -74,7 +106,7 @@
         function BenchmarkSetActionStop(button) {
             BenchmarkSetAction(button, 'stop');
         };
-        function BenchmarkActionButtonClick(button) {
+        function BenchmarkOnActionButtonClick(button) {
             if (button.value == 'start') {
                 if (typeof benchmarkControllerInstance !== 'undefined') { // loaded
                     benchmarkControllerInstance.startBenchmark(button);
@@ -84,19 +116,11 @@
                 benchmarkControllerInstance.stopBenchmark(button);
             }
         };
-        BenchmarkQueryParameters = (function() {
-            var result = {};
-            if (window.location.search)
-            {
-                var params = window.location.search.substr(1).split("&");
-                for (var i=0; i < params.length; ++i)
-                {
-                    var tmp = params[i].split("=");
-                    result[tmp[0]] = decodeURI(tmp[1]);
-                }
-            }
-            return result;
-        }());
+        function BenchmarkOnEngineChange(select) {
+            var selectOption = select.options[select.selectedIndex];
+            BenchmarkQueryParameters.engine = selectOption.value;
+            window.location.search = BenchmarkQueryParameters.toString();
+        };
     </script>
     <script src="cocos2d.js"></script>
 </head>
@@ -109,14 +133,16 @@
             <div class="menu_item_text">
                 version: <script>document.write(BENCHMARK_VERSION)</script>
             </div>
-            <div class="menu_item_text" id="engine_label" style="display: none">
-                engine: <span id="engine_id"></span>
+            <div class="menu_item_text" id="engine_menu" style="display: none">
+                engine:
+                <select id="engine_select" onchange="BenchmarkOnEngineChange(this)">
+                </select>
             </div>
         </div>
     </div>
     <div class="menu_item_wrapper" style="width: 25%">
         <div>
-            <input id="action" type="button" onclick="BenchmarkActionButtonClick(this)" value=start />
+            <input id="action" type="button" onclick="BenchmarkOnActionButtonClick(this)" value=start />
         </div>
     </div>
     <div class="menu_item_wrapper" style="width: 25%">
