@@ -17,7 +17,8 @@ fi
 
 project=cocos-benchmark
 distr_files=(cocos2d.js main.js index.html)
-distr_dirs=(res)
+# DO NOT ADD the last '/'
+distr_dirs=(res lib/lib)
 root_dir=$(pwd)
 archive_dir=$(pwd)/archive
 usage() 
@@ -45,8 +46,8 @@ if [ $# -lt 1 ]; then
 	usage
 fi
 version=$1
-all_in_one_name=$project-v$version.js
-all_in_one=$root_dir/$all_in_one_name
+single_file_name=$project-v$version.js
+single_file=$root_dir/$single_file_name
 version_dir=$archive_dir/v$version
 tar_file_name=$project-v$version.tar.gz
 tar_file=$archive_dir/$tar_file_name
@@ -58,8 +59,8 @@ create_version_dir()
 echo 'start'
 create_version_dir
 
-echo 'setting ALL_IN_ONE...'
-sed -i "" "s/ALL_IN_ONE = false/ALL_IN_ONE = true/g" cocos2d.js
+echo 'setting SINGLE_FILE...'
+sed -i "" "s/SINGLE_FILE = false/SINGLE_FILE = true/g" cocos2d.js
 check_error
 
 echo 'compiling...'
@@ -67,12 +68,12 @@ ant
 if [ $? -ne 0 ]; then
     exit $?
 fi
-echo $all_in_one
-if [ ! -f $all_in_one ]; then
-	echo $all_in_one_name NOT found, check build.xml
+echo $single_file
+if [ ! -f $single_file ]; then
+	echo $single_file_name NOT found, check build.xml
 	exit 1
 else
-	cp -fv $all_in_one $version_dir/
+	cp -fv $single_file $version_dir/
 	check_error
 fi
 for file in ${distr_files[@]}; do

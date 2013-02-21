@@ -24,10 +24,17 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-var ALL_IN_ONE = false; // use ALL_IN_ONE in release version to reduce loading time
-var ALL_IN_ONE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
+var SINGLE_FILE = true; // use SINGLE_FILE in release version to reduce loading time
+var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
 
 (function () {
+    var engines = {
+        default: "v2.1.min",
+        "v2.1.min": {
+            file: "lib/Cocos2d-html5-v2.1.min.js"
+        }
+        // add more engine versions here
+    };
     var config = {
         COCOS2D_DEBUG:2, //0 to turn debug off, 1 for basic debug, and 2 for full debug
         box2d:false,
@@ -36,7 +43,6 @@ var ALL_IN_ONE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
         loadExtension:false,
         tag:'Cocos2dGameContainer', //the dom element to run cocos2d on
         engineDir:'./lib/cocos2d/',
-        //SingleEngineFile: 'lib/lib/Cocos2d-html5-v2.1.min.js',
         appFiles:[
             'src/resources.js',
             'src/cocos-benchmark.js',
@@ -46,21 +52,40 @@ var ALL_IN_ONE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
         ]
     };
      function loadEnd() {
+         if (SINGLE_FILE) {
+             var engine = BenchmarkQueryParameters.engine;
+             if (!engine) {
+                 engine = engines.default;
+             }
+             var engineItem = engines[engine];
+             if (engineItem) {
+                 config.engineDir = null;
+                 config.SingleEngineFile = engineItem.file;
+                 config.appFiles = [APP_SINGLE_FILE];
+                 var engineIDElement = document.getElementById('engine_id');
+                 if (engineIDElement) {
+                     engineIDElement.innerText = engine;
+                 }
+                 var engineLabelElement = document.getElementById('engine_label');
+                 if (engineLabelElement) {
+                     engineLabelElement.style.display = 'block';
+                 }
+             }
+             else {
+                 alert('invalid engine: ' + engine)
+                 return;
+             }
+         }
         //first load engine file if specified
         var script = document.createElement('script');
-        if (!ALL_IN_ONE) {
-            if (config.SingleEngineFile && !config.engineDir) {
-                script.src = config.SingleEngineFile;
-            }
-            else if (config.engineDir && !config.SingleEngineFile) {
-                script.src = config.engineDir + 'platform/jsloader.js';
-            }
-            else {
-                alert('You must specify either the single engine file OR the engine directory in "cocos2d.js"');
-            }
+        if (config.SingleEngineFile && !config.engineDir) {
+            script.src = config.SingleEngineFile;
+        }
+        else if (config.engineDir && !config.SingleEngineFile) {
+            script.src = config.engineDir + 'platform/jsloader.js';
         }
         else {
-            script.src = ALL_IN_ONE_FILE;
+            alert('You must specify either the single engine file OR the engine directory in "cocos2d.js"');
         }
         document.body.appendChild(script);
         document.ccConfig = config;

@@ -7,23 +7,9 @@
 // If show debug info(FPS, particle count and etc.) when benchmarking
 BENCHMARK_DEBUG = false; // if enabled, show debug info
 BENCHMARK_FPS = true;
-BENCHMARK_TIME = true;
+BENCHMARK_TIME = false;
 BENCHMARK_TIME_MAX_DELTA_PERCENT = 15; // only <= value will be counted
 benchmarkReady = false;
-
-BenchmarkQueryParameters = (function() {
-    var result = {};
-    if (window.location.search)
-    {
-        var params = window.location.search.substr(1).split("&");
-        for (var i=0; i < params.length; ++i)
-        {
-            var tmp = params[i].split("=");
-            result[tmp[0]] = decodeURI(tmp[1]);
-        }
-    }
-    return result;
-}());
 
 if ('0' === BenchmarkQueryParameters.time) {
     BENCHMARK_TIME = false;
