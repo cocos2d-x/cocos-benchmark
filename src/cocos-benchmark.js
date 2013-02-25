@@ -11,15 +11,26 @@ BENCHMARK_TIME = false;
 BENCHMARK_TIME_MAX_DELTA_PERCENT = 15; // only <= value will be counted
 benchmarkReady = false;
 
-if ('0' === BenchmarkQueryParameters.time) {
-    BENCHMARK_TIME = false;
-    benchmarkOutputInstance.writeln('time off');
+if (typeof BenchmarkQueryParameters.time !== 'undefined') {
+    if ('0' === BenchmarkQueryParameters.time) {
+        BENCHMARK_TIME = false;
+        benchmarkOutputInstance.writeln('time off');
+    }
+    else {
+        BENCHMARK_TIME = true;
+        benchmarkOutputInstance.writeln('time on');
+    }
 }
-if ('0' === BenchmarkQueryParameters.fps) {
-    BENCHMARK_FPS = false;
-    benchmarkOutputInstance.writeln('FPS off');
+if (typeof BenchmarkQueryParameters.fps !== 'undefined') {
+    if ('0' === BenchmarkQueryParameters.fps) {
+        BENCHMARK_FPS = false;
+        benchmarkOutputInstance.writeln('FPS off');
+    }
+    else {
+        BENCHMARK_FPS = true
+        benchmarkOutputInstance.writeln('FPS on');
+    }
 }
-
 ////////////////////////////////////////////////////////
 //
 // Default benchmark scene
