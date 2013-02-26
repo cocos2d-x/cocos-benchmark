@@ -45,6 +45,7 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
         appFiles:[
             'src/resources.js',
             'src/cocos-benchmark.js',
+            //'src/BenchmarkDevController.js', // use it to test error and get reference values
             'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',
             'src/tests/Particle/BenchmarkParticleTest.js',
             'src/tests/Sprite/BenchmarkSpriteTest.js'
@@ -68,17 +69,30 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
                  config.engineDir = null;
                  config.SingleEngineFile = currentEngineInfo.file;
                  config.appFiles = [APP_SINGLE_FILE];
-                 var engineSelect = document.getElementById('engine_select');
-                 if (engineSelect) {
-                    for (ID in engines) {
-                        var option = document.createElement("option");
-                        option.value = ID;
-                        option.text = ID;
-                        if (currentEngineID === ID) {
-                            option.selected = 'selected';
-                        }
-                        engineSelect.options.add(option, null);
-                    }
+                 var engineLength = 0;
+                 for (ID in engines) {
+                     engineLength ++;
+                 }
+                 if (1 === engineLength) {
+                     var engineVersion = document.getElementById('engine_version');
+                     if (engineVersion) {
+                         engineVersion.innerHTML = currentEngineID;
+                         engineVersion.style.display = 'block';
+                     }
+                 }
+                 else if (1 < engineLength) {
+                     var engineSelect = document.getElementById('engine_select');
+                     if (engineSelect) {
+                         for (ID in engines) {
+                             var option = document.createElement("option");
+                             option.value = ID;
+                             option.text = ID;
+                             if (currentEngineID === ID) {
+                                 option.selected = 'selected';
+                             }
+                             engineSelect.options.add(option, null);
+                         }
+                     }
                  }
                  var engineLabelElement = document.getElementById('engine_menu');
                  if (engineLabelElement) {

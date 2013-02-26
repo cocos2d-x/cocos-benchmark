@@ -11,15 +11,26 @@ BENCHMARK_TIME = false;
 BENCHMARK_TIME_MAX_DELTA_PERCENT = 15; // only <= value will be counted
 benchmarkReady = false;
 
-if ('0' === BenchmarkQueryParameters.time) {
-    BENCHMARK_TIME = false;
-    benchmarkOutputInstance.writeln('time off');
+if (typeof BenchmarkQueryParameters.time !== 'undefined') {
+    if ('0' === BenchmarkQueryParameters.time) {
+        BENCHMARK_TIME = false;
+        benchmarkOutputInstance.writeln('time off');
+    }
+    else {
+        BENCHMARK_TIME = true;
+        benchmarkOutputInstance.writeln('time on');
+    }
 }
-if ('0' === BenchmarkQueryParameters.fps) {
-    BENCHMARK_FPS = false;
-    benchmarkOutputInstance.writeln('FPS off');
+if (typeof BenchmarkQueryParameters.fps !== 'undefined') {
+    if ('0' === BenchmarkQueryParameters.fps) {
+        BENCHMARK_FPS = false;
+        benchmarkOutputInstance.writeln('FPS off');
+    }
+    else {
+        BENCHMARK_FPS = true
+        benchmarkOutputInstance.writeln('FPS on');
+    }
 }
-
 ////////////////////////////////////////////////////////
 //
 // Default benchmark scene
@@ -93,6 +104,7 @@ BenchmarkController = cc.Class.extend({
     _FPSTestResults: [],
     _timeTestResults: [],
     _testScores: [],
+    _finalScore: 0,
     _testPassResults: [],
     _currentTestID: 0,
     _currentTestPass: 0,
@@ -164,13 +176,12 @@ BenchmarkController = cc.Class.extend({
     outputScore: function() {
         // use Harmonic Average value as the final score
         var sum = 0;
-        var score;
         var length = BenchmarkTestCases.maxID() + 1;
         for (var i=0; i<length; ++i) {
             sum += 1 / this._testScores[i];
         }
-        score = (length / sum).toFixed(2);
-        benchmarkOutputInstance.writeln('Score: ' + score);
+        this._finalScore = (length / sum).toFixed(2);
+        benchmarkOutputInstance.writeln('Score: ' + this._finalScore);
         benchmarkOutputInstance.writeln('####################################')
     },
     _ifCurrentTestEnds: function() {
@@ -279,20 +290,25 @@ BenchmarkController = cc.Class.extend({
         var FPSScore = 0;
         var timeScore = 0;
         var firstValue = true;
-        benchmarkOutputInstance.write('  ' + testInfo.name + ': ');
+        var name = '  ' + testInfo.name + ': ';
+        var text1 = '', text2 = '';
         if (testInfo.duration && BENCHMARK_FPS) {
             FPSScore = (this._FPSTestResults[testID] / testInfo.referenceFPS).toFixed(2);
-            benchmarkOutputInstance.write(this._FPSTestResults[testID] + '(' + FPSScore + ')');
+            text1 = this._FPSTestResults[testID];
+            text2 = '(' + FPSScore + ')';
             firstValue = false;
         }
         if (testInfo.times && BENCHMARK_TIME) {
             timeScore = (testInfo.referenceTime / this._timeTestResults[testID].meanTime).toFixed(2);
-            if (!firstValue) {
-                benchmarkOutputInstance.write(', ');
+            if (firstValue) {
+                text1 = this._timeTestResults[testID].meanTime;
+                text2 = '(' + timeScore + ')';
             }
-            benchmarkOutputInstance.write(this._timeTestResults[testID].meanTime + '(' + timeScore + ')');
+            else {
+                text2 += ', ' + this._timeTestResults[testID].meanTime + '(' + timeScore + ')';
+            }
         }
-        benchmarkOutputInstance.writeln('');
+        benchmarkOutputInstance.writeln(name, '%25', text1, text2);
         if (FPSScore && timeScore) {
             if (this._timeTestResults[testID].maxDeltaPercent <= BENCHMARK_TIME_MAX_DELTA_PERCENT) {
                 this._testScores[testID] = (Number(FPSScore) + Number(timeScore)) / 2;
@@ -327,7 +343,7 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Test',
-                referenceFPS: 1.04,
+                referenceFPS: 1.16,
                 referenceTime: 900
             }
         ]
@@ -339,17 +355,17 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Size8',
-                referenceFPS: 17.5,
+                referenceFPS: 19.68,
                 referenceTime: 52.2
             },
             {
                 name: 'BurstPipe',
-                referenceFPS: 20.5,
+                referenceFPS: 12.55,
                 referenceTime: 70.67
             },
             {
                 name: 'Comet',
-                referenceFPS: 8,
+                referenceFPS: 7.83,
                 referenceTime: 110
             }
         ]
@@ -361,12 +377,12 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Position',
-                referenceFPS: 4.25,
+                referenceFPS: 4.44,
                 referenceTime: 115
             },
             {
                 name: 'Actions',
-                referenceFPS: 1.46,
+                referenceFPS: 3.03,
                 referenceTime: 270
             }
         ]

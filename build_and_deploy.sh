@@ -1,4 +1,5 @@
 #!/bin/sh
+compile_target=
 upload_server=
 upload_user=
 upload_dir=
@@ -64,7 +65,7 @@ sed -i "" "s/SINGLE_FILE = false/SINGLE_FILE = true/g" cocos2d.js
 check_error
 
 echo 'compiling...'
-ant
+ant $compile_target
 if [ $? -ne 0 ]; then
     exit $?
 fi

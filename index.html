@@ -42,20 +42,47 @@
         }
     </style>
     <script type="text/javascript">
-        var BENCHMARK_VERSION = 'v0.5.1'; // Modify version in build.xml, when single file used
+        var BENCHMARK_VERSION = 'v0.5.2'; // Modify version in build.xml, when single file used
         // append version to title
         document.title = document.title + ' ' + BENCHMARK_VERSION;
         // benchmark output to write test result
         benchmarkOutputInstance = {
-            write: function(text) {
+            _format: function(args) {
+                var text = '', i, width = 0;
+                for (i=0; i<args.length; ++i) {
+                    var arg = args[i];
+                    if (typeof args[i] === 'string') {
+                        if (0 === arg.indexOf('%')) {
+                            width = Number(arg.substr(1));
+                            if (width) {
+                                continue;
+                            }
+                        }
+                    }
+                    if (width) {
+                        var j = 0;
+                        var paddingLength = width - arg.length - text.length;
+                        for (j=0; j<paddingLength; ++j) {
+                            text += ' ';
+                        }
+                        width = 0;
+                    }
+                    text += arg;
+                }
+                return text;
+            },
+            _write: function(text) {
                 var output = document.getElementById('output');
                 if (1 === output.firstChild.length) {
                     output.firstChild.deleteData(0, output.firstChild.length);
                 }
                 output.firstChild.appendData(text);
             },
-            writeln: function(text) {
-                this.write(text + '\n');
+            write: function() {
+                this._write(this._format(arguments));
+            },
+            writeln: function() {
+                this._write(this._format(arguments) + '\n');
             },
             clear: function() {
                 var output = document.getElementById('output');
@@ -131,11 +158,13 @@
     <div class="menu_item_wrapper" style="width: 50%">
         <div>
             <div class="menu_item_text">
-                version: <script>document.write(BENCHMARK_VERSION)</script>
+                <span style="float: left">version:&nbsp;</span>
+                <span id="benchmark_version"><script>document.write(BENCHMARK_VERSION)</script></span>
             </div>
             <div class="menu_item_text" id="engine_menu" style="display: none">
-                engine:
-                <select id="engine_select" onchange="BenchmarkOnEngineChange(this)">
+                <span style="float: left">engine:&nbsp;</span>
+                <span id="engine_version" style="display: none"></span>
+                <select id="engine_select" style="display: none" onchange="BenchmarkOnEngineChange(this)">
                 </select>
             </div>
         </div>
