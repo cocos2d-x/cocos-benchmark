@@ -1,16 +1,34 @@
 <?xml version="1.0"?>
-<project name="Javascript compress project" basedir="." default="compile_Canvas">
+<project name="Javascript compress project" basedir="." default="release">
 
     <taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask"
              classpath="${basedir}/lib/tools/compiler/compiler.jar"/>
 
-    <target name="compile_Canvas">
+    <target name="release">
         <!-- version MUST be same as BENCHMARK_VERSION defined in index.html -->
         <jscomp compilationLevel="simple" warning="quiet"
-                debug="false" output="cocos-benchmark-v0.5.1.js">
+                debug="false" output="cocos-benchmark-v0.5.2.js">
             <!-- cocos benchmark source -->
             <sources dir="${basedir}">
                 <file name="src/cocos-benchmark.js"/>
+                <file name="src/resources.js"/>
+            </sources>
+            <!-- cocos benchmark test cases source -->
+            <sources dir="${basedir}/src/tests">
+                <file name="DrawPrimitives/BenchmarkDrawPrimitivesTest.js"/>
+                <file name="Particle/BenchmarkParticleTest.js"/>
+                <file name="Sprite/BenchmarkSpriteTest.js"/>
+            </sources>
+        </jscomp>
+    </target>
+    <target name="dev">
+        <!-- version MUST be same as BENCHMARK_VERSION defined in index.html -->
+        <jscomp compilationLevel="simple" warning="quiet"
+                debug="false" output="cocos-benchmark-v0.5.2-dev.js">
+            <!-- cocos benchmark source -->
+            <sources dir="${basedir}">
+                <file name="src/cocos-benchmark.js"/>
+                <file name="src/BenchmarkDevController.js"/>
                 <file name="src/resources.js"/>
             </sources>
             <!-- cocos benchmark test cases source -->
