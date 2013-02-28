@@ -29,8 +29,11 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
 
 (function () {
     var engines = {
-        "v2.1.min": {
-            file: "lib/Cocos2d-html5-v2.1.min.js"
+        'v2.1.0.min': {
+            file: 'lib/Cocos2d-html5-v2.1.0.min.js'
+        },
+        "v2.1.1.min": {
+            file: 'lib/Cocos2d-html5-v2.1.1.min.js'
         }
         // add more engine versions here
     }
@@ -92,6 +95,7 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
                              }
                              engineSelect.options.add(option, null);
                          }
+                         engineSelect.style.display = 'block';
                      }
                  }
                  var engineLabelElement = document.getElementById('engine_menu');
