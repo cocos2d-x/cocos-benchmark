@@ -30,15 +30,21 @@ var cocos2dApp = cc.Application.extend({
         this._super();
         this.startScene = scene;
         cc.COCOS2D_DEBUG = this.config['COCOS2D_DEBUG'];
+        cc.initDebugSetting();
         cc.setup(this.config['tag']);
-        cc.AudioEngine.getInstance().init("mp3,ogg");
-        cc.Loader.getInstance().onloading = function () {
-            cc.LoaderScene.getInstance().draw();
-        };
-        cc.Loader.getInstance().onload = function () {
+        cc.AudioEngine.getInstance().init();
+        if (cc.Loader.preload) {
             cc.AppController.shareAppController().didFinishLaunchingWithOptions();
-        };
-        cc.Loader.getInstance().preload(g_resources);
+        }
+        else { // v2.1.1
+            cc.Loader.getInstance().onloading = function () {
+                cc.LoaderScene.getInstance().draw();
+            };
+            cc.Loader.getInstance().onload = function () {
+                cc.AppController.shareAppController().didFinishLaunchingWithOptions();
+            };
+            cc.Loader.getInstance().preload(g_resources);
+        }
     },
     applicationDidFinishLaunching:function () {
         // initialize director
@@ -53,9 +59,16 @@ var cocos2dApp = cc.Application.extend({
         director.setAnimationInterval(1.0 / this.config['frameRate']);
 
         // create a scene, and run
-        director.runWithScene(new this.startScene());
-
+        if (cc.Loader.preload) {
+            cc.Loader.preload(g_resources, this.runStartScene, this);
+        }
+        else { // v2.1.1
+            this.runStartScene();
+        }
         return true;
+    },
+    runStartScene: function() {
+        cc.Director.getInstance().replaceScene(new this.startScene());
     }
 });
 var benchmark = new cocos2dApp(BenchmarkEntryScene);
