@@ -40,16 +40,16 @@ BenchmarkEntry = cc.Layer.extend({
     init:function () {
         this._super();
         var size = cc.Director.getInstance().getWinSize();
-        var lazyLayer = new cc.LazyLayer();
-        this.addChild(lazyLayer);
+        var layer = new cc.Layer();
+        this.addChild(layer);
 
         var sprite = cc.Sprite.create(s_benchmark);
         sprite.setPosition(cc.p(size.width / 2, size.height / 2));
 
-        lazyLayer.addChild(sprite, 0);
+        layer.addChild(sprite, 0);
 
         this.setTouchEnabled(false);
-        lazyLayer.adjustSizeForCanvas();
+
         return true;
     }
 });
