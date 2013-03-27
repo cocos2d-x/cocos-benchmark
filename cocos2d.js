@@ -51,7 +51,8 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
             //'src/BenchmarkDevController.js', // use it to test error and get reference values
             'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',
             'src/tests/Particle/BenchmarkParticleTest.js',
-            'src/tests/Sprite/BenchmarkSpriteTest.js'
+            'src/tests/Sprite/BenchmarkSpriteTest.js',
+            'src/tests/TileMap/BenchmarkTileMapTest.js'
         ]
     };
      function loadEnd() {

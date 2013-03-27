@@ -202,7 +202,7 @@ BenchmarkController = cc.Class.extend({
             var testInfo = BenchmarkTestCases.getTestInfo(ID);
             var testSceneName = testInfo.category + testInfo.name + 'BenchmarkScene';
             try {
-                console.log(testSceneName);
+                cc.log(testSceneName);
                 var testScene = new window[testSceneName];
                 this._currentTestID = ID;
                 this._currentTestPass = 0;
@@ -386,6 +386,16 @@ BenchmarkTestCases = [
                 referenceTime: 270
             }
         ]
+    },
+    {
+        category: 'TileMap',
+        defaultDuration: 3000,
+        tests: [
+            {
+                name: 'Isometric',
+                referenceFPS: 5 // TODO: fill the reference value
+            }
+        ]
     }
 ];
 
@@ -447,7 +457,9 @@ BenchmarkTestCases.getTestInfo = function(ID) {
     if (typeof test.duration !== 'undefined') {
         testInfo.duration = test.duration;
     }
-    testInfo.times = category.defaultTimes;
+    if (typeof category.defaultTimes !== 'undefined') {
+        testInfo.times = category.defaultTimes;
+    }
     if (typeof test.times !== 'undefined') {
         testInfo.times = test.times;
     }
