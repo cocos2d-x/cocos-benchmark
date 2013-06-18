@@ -45,7 +45,10 @@ BenchmarkEntry = cc.Layer.extend({
 
         var sprite = cc.Sprite.create(s_benchmark);
         sprite.setPosition(cc.p(size.width / 2, size.height / 2));
-
+        sprite.setScale(
+            size.width/sprite.getContentSize().width,
+            size.height/sprite.getContentSize().height
+        );
         layer.addChild(sprite, 0);
 
         this.setTouchEnabled(false);

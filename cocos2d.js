@@ -56,6 +56,23 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
         ]
     };
      function loadEnd() {
+         //< pc support hack
+         if (BenchmarkQueryParameters.v == 'pc') {
+             var PC_SIZE = '600px';
+             var PC_TITLE_SUFFIX = '(for PC)';
+             var gameContainer = document.getElementById('Cocos2dGameContainer');
+             gameContainer.style.width = PC_SIZE;
+             gameContainer.style.height = PC_SIZE;
+             var i, rules = document.styleSheets[0].rules;
+             for (i=0; i<rules.length; ++i) {
+                 if (rules[i].selectorText == 'body > *') {
+                     rules[i].style.width = PC_SIZE;
+                     break;
+                 }
+             }
+             document.title += PC_TITLE_SUFFIX;
+         }
+         //>
          if (SINGLE_FILE) {
              var currentEngineID = BenchmarkQueryParameters.engine;
              var currentEngineInfo, ID;
