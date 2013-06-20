@@ -26,10 +26,7 @@
 var DRAW_PRIMITIVES_TEST_LOOP = 200;
 
 var DrawPrimitivesTestBenchmark = cc.Layer.extend({
-    ctor:function () {
-    },
     draw:function () {
-       
         benchmarkControllerInstance.startTestPass();
 
         for (var i=0; i<DRAW_PRIMITIVES_TEST_LOOP; ++ i) {
