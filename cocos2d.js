@@ -36,13 +36,14 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
             file: 'lib/Cocos2d-html5-v2.1.1.min.js'
         }
         // add more engine versions here
-    }
+    };
     var config = {
         COCOS2D_DEBUG:2, //0 to turn debug off, 1 for basic debug, and 2 for full debug
         box2d:false,
         showFPS:true,
         frameRate: 1000, // MAX frame rate possible
         loadExtension:false,
+        renderMode: 1   , // 1 for canvas, 2 for WebGL
         tag:'Cocos2dGameContainer', //the dom element to run cocos2d on
         engineDir:'./lib/cocos2d/',
         appFiles:[
