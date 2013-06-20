@@ -34,28 +34,11 @@ var SPRITES_TEST = 500;
 
 var TAG_INFO_LAYER = 1;
 
-var temp1=0;
 var start=0;
-var BenchmarkSprite=cc.Sprite.extend({
-    _totalCount:0,
-    draw:function(){
-        this._totalCount++;
-        temp1++;
-
-        if( this._totalCount>10 && temp1%SPRITES_TEST==1) {
-            benchmarkControllerInstance.startTestPass();
-        }
-        this._super();
-
-        if(this._totalCount>10 && temp1%SPRITES_TEST==0) {
-            benchmarkControllerInstance.stopTestPass();
-        }
-    }
-});
 
 cc.Sprite.benchmarkCreate = function (fileName, rect) {
     var argnum = arguments.length;
-    var sprite = new BenchmarkSprite();
+    var sprite = new cc.Sprite();
     if (argnum === 0) {
         if (sprite.init())
             return sprite;

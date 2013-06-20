@@ -31,33 +31,6 @@ var VALID_DELTA_RATE = 0.3;
 
 ////////////////////////////////////////////////////////
 //
-// Particle System Quad Stub for benchmarking
-//
-////////////////////////////////////////////////////////
-BenchmarkParticleSystemQuad = cc.ParticleSystemQuad.extend({
-  
-    draw: function() {
-        var currentParticleCount = this.getParticleCount();
-       // var particleCountGoal = cc.Director.getInstance().getRunningScene().getParticlesNum();
-        var particleCountGoal = PARTICLE_NODES;
-        // TODO: fix it, if current count is always smaller than goal, e.g. low performance :(
-        var valid = (Math.abs(particleCountGoal-currentParticleCount)/particleCountGoal) <= VALID_DELTA_RATE;
-       // var valid = currentParticleCount/particleCountGoal >= VALID_DELTA_RATE;
-        if (valid) { // only call if particles are enough
-            benchmarkControllerInstance.startTestPass();
-        }
-        // call "ParticleSystemQuad.draw()
-        for(var i=0;i<2;i++)
-        this._super();
-    
-        if (valid) {
-            benchmarkControllerInstance.stopTestPass();
-        }
-    }
-});
-
-////////////////////////////////////////////////////////
-//
 // ParticleMainScene
 //
 ////////////////////////////////////////////////////////
@@ -122,8 +95,7 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         var texture = cc.TextureCache.getInstance().addImage("res/Images/fire.png");
         cc.TextureCache.getInstance().removeTexture(texture);
 
-       //  particleSystem = new cc.ParticleSystemQuad();
-         particleSystem = new BenchmarkParticleSystemQuad();
+        particleSystem = new cc.ParticleSystemQuad();
 
         switch (this._subtestNumber) {
             case 1:
@@ -490,22 +462,6 @@ var ParticleDemo = cc.LayerGradient.extend({
     }
 });
 
-
-BenchmarkParticleSystemQuad.create = function (pListFile) {
-    var ret = new BenchmarkParticleSystemQuad();
-    if (!pListFile || typeof(pListFile) === "number") {
-        var ton = pListFile || 100;
-        ret.setDrawMode(cc.PARTICLE_TEXTURE_MODE);
-        ret.initWithTotalParticles(ton);
-        return ret;
-    }
-
-    if (ret && ret.initWithFile(pListFile)) {
-        return ret;
-    }
-    return null;
-};
-
 var DemoParticleFromFile = ParticleDemo.extend({
     _title:"",
     _emitterPosition: {x: 0, y:0},
@@ -521,7 +477,7 @@ var DemoParticleFromFile = ParticleDemo.extend({
         this._background = null;
 
         var filename = "res/Particles/" + this._title + ".plist";
-        this._emitter = BenchmarkParticleSystemQuad.create(filename);
+        this._emitter = cc.ParticleSystemQuad.create(filename);
         this.addChild(this._emitter, 10);
 
         if(this._title == "Flower"){
