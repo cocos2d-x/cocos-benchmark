@@ -68,7 +68,12 @@ var cocos2dApp = cc.Application.extend({
         return true;
     },
     runStartScene: function() {
-        cc.Director.getInstance().replaceScene(new this.startScene());
+        if (cc.Director.getInstance().getRunningScene()) {
+            cc.Director.getInstance().replaceScene(new this.startScene());
+        }
+        else {
+            cc.Director.getInstance().runWithScene(new this.startScene());
+        }
     }
 });
 var benchmark = new cocos2dApp(BenchmarkEntryScene);

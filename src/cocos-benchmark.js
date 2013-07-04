@@ -6,31 +6,8 @@
  */
 // If show debug info(FPS, particle count and etc.) when benchmarking
 BENCHMARK_DEBUG = false; // if enabled, show debug info
-BENCHMARK_FPS = true;
-BENCHMARK_TIME = false;
-BENCHMARK_TIME_MAX_DELTA_PERCENT = 15; // only <= value will be counted
 benchmarkReady = false;
 
-if (typeof BenchmarkQueryParameters.time !== 'undefined') {
-    if ('0' === BenchmarkQueryParameters.time) {
-        BENCHMARK_TIME = false;
-        benchmarkOutputInstance.writeln('time off');
-    }
-    else {
-        BENCHMARK_TIME = true;
-        benchmarkOutputInstance.writeln('time on');
-    }
-}
-if (typeof BenchmarkQueryParameters.fps !== 'undefined') {
-    if ('0' === BenchmarkQueryParameters.fps) {
-        BENCHMARK_FPS = false;
-        benchmarkOutputInstance.writeln('FPS off');
-    }
-    else {
-        BENCHMARK_FPS = true
-        benchmarkOutputInstance.writeln('FPS on');
-    }
-}
 ////////////////////////////////////////////////////////
 //
 // Default benchmark scene
@@ -45,7 +22,10 @@ BenchmarkEntry = cc.Layer.extend({
 
         var sprite = cc.Sprite.create(s_benchmark);
         sprite.setPosition(cc.p(size.width / 2, size.height / 2));
-
+        sprite.setScale(
+            size.width/sprite.getContentSize().width,
+            size.height/sprite.getContentSize().height
+        );
         layer.addChild(sprite, 0);
 
         this.setTouchEnabled(false);
@@ -99,30 +79,12 @@ BenchmarkController = cc.Class.extend({
     _testSceneEndTime: 0,
     _testSceneBeginFrames: 0,
     _testSceneEndFrames: 0,
-    _testPassBeginTime: 0,
     _testTransitionTimerID: 0,
     _FPSTestResults: [],
-    _timeTestResults: [],
     _testScores: [],
     _finalScore: 0,
-    _testPassResults: [],
     _currentTestID: 0,
     _currentTestPass: 0,
-    // call it in a test case to start a test pass
-    startTestPass: function() {
-        this._testPassBeginTime = (new Date).getTime();
-    },
-    // call it in a test case to stop current running test pass
-    stopTestPass: function() {
-        var testInfo = BenchmarkTestCases.getTestInfo(this._currentTestID);
-        if (this._currentTestPass <testInfo.times) {
-            this._testPassResults[this._currentTestPass] = new Date().getTime() - this._testPassBeginTime;
-        }
-        this._currentTestPass ++;
-        if (this._ifCurrentTestEnds()) {
-            this._runNextTest();
-        }
-    },
     onEnterTestScene: function(testScene) {
         var testInfo = BenchmarkTestCases.getTestInfo(testScene.getID());
         this._testPassResults = [];
@@ -148,7 +110,6 @@ BenchmarkController = cc.Class.extend({
             this._testSceneEndTime = (new Date).getTime();
             this._testSceneEndFrames = cc.Director.getInstance().getTotalFrames();
             this._saveFPSTestResult(testID);
-            this._saveTimeTestResult(testID, testInfo);
             this._saveTestScores(testID, testInfo);
             if (testID >= BenchmarkTestCases.maxID()) {
                 this.outputScore();
@@ -156,10 +117,6 @@ BenchmarkController = cc.Class.extend({
         }
     },
     startBenchmark: function(button) {
-        if (!BENCHMARK_FPS && !BENCHMARK_TIME) {
-            alert('Both FPS and time are off!');
-            return;
-        }
         if (benchmarkReady) {
             BenchmarkSetActionStop(button);
             this._runTest(0);
@@ -202,7 +159,7 @@ BenchmarkController = cc.Class.extend({
             var testInfo = BenchmarkTestCases.getTestInfo(ID);
             var testSceneName = testInfo.category + testInfo.name + 'BenchmarkScene';
             try {
-                console.log(testSceneName);
+                cc.log(testSceneName);
                 var testScene = new window[testSceneName];
                 this._currentTestID = ID;
                 this._currentTestPass = 0;
@@ -224,104 +181,19 @@ BenchmarkController = cc.Class.extend({
             this._runNextTest();
         }
     },
-    // TODO: used? by sunzhuoshi
-    _getValidTestPassResults:function(){
-        var timeSum = 0, meanTime;
-        var validResults = [];
-        var i;
-        for (i=0; i<this._testPassResults.length; ++i) {
-            timeSum += this._testPassResults[i];
-        }
-        meanTime = timeSum / this._testPassResults.length;
-        for (i=0; i<this._testPassResults.length; ++i) {
-            validResults[i] = Math.abs((this._testPassResults[i] - meanTime).toFixed(3));
-        }
-        var length = validResults.length;
-        for (i=0; i<length-1; i++) {
-            for (var j=i+1; j<length; j++) {
-                var temp;
-                if (validResults[i] > validResults[j]){
-                    temp = validResults[i];
-                    validResults[i] = validResults[j];
-                    validResults[j] = temp;
-                    temp = this._testPassResults[i];
-                    this._testPassResults[i] = this._testPassResults[j];
-                    this._testPassResults[j] = temp;
-                }
-            }
-        }
-        return validResults;
-    },
-    _getConfidenceInterval:function(results, mean){
-        var invalidTimes = BenchmarkTestCases.getTestInfo(this._currentTestID).invalidTimes;
-        var D2 = 0, current = 0;
-        var length = results.length - invalidTimes;
-        for(var i=0; i<length; i++){
-            current = Math.abs(results[i] - mean);
-            D2 += current * current;
-        }
-        return (Math.sqrt(D2/length*2.262)).toFixed(3);
-    },
-    _saveTimeTestResult: function(testID, testInfo) {
-        var timeSum = 0, minTime = 0, maxTime = 0, meanTime, maxDeltaPercent;
-        var length = this._testPassResults.length - testInfo.invalidTimes;
-        for (var i=0; i<length; ++i) {
-            var time = this._testPassResults[i];
-            timeSum += time;
-            if (time > maxTime || 0 === maxTime) {
-                maxTime = time;
-            }
-            if (time < minTime || 0 === minTime) {
-                minTime = time;
-            }
-        }
-        meanTime = (timeSum / length).toFixed(2);
-        maxDeltaPercent = this._getConfidenceInterval(this._testPassResults, meanTime);
-        maxDeltaPercent = (maxDeltaPercent/meanTime*100).toFixed(2);
-        this._timeTestResults[testID] = {
-            meanTime: meanTime,
-            maxDeltaPercent: maxDeltaPercent
-        };
-        if (BENCHMARK_DEBUG) {
-            benchmarkOutputInstance.writeln('  ' + testInfo.name + '(time): ' + meanTime + ' +/-' + maxDeltaPercent + '%');
-        }
-    },
     _saveTestScores: function(testID, testInfo) {
         var FPSScore = 0;
-        var timeScore = 0;
         var firstValue = true;
         var name = '  ' + testInfo.name + ': ';
         var text1 = '', text2 = '';
-        if (testInfo.duration && BENCHMARK_FPS) {
+        if (testInfo.duration) {
             FPSScore = (this._FPSTestResults[testID] / testInfo.referenceFPS).toFixed(2);
             text1 = this._FPSTestResults[testID];
             text2 = '(' + FPSScore + ')';
             firstValue = false;
         }
-        if (testInfo.times && BENCHMARK_TIME) {
-            timeScore = (testInfo.referenceTime / this._timeTestResults[testID].meanTime).toFixed(2);
-            if (firstValue) {
-                text1 = this._timeTestResults[testID].meanTime;
-                text2 = '(' + timeScore + ')';
-            }
-            else {
-                text2 += ', ' + this._timeTestResults[testID].meanTime + '(' + timeScore + ')';
-            }
-        }
         benchmarkOutputInstance.writeln(name, '%25', text1, text2);
-        if (FPSScore && timeScore) {
-            if (this._timeTestResults[testID].maxDeltaPercent <= BENCHMARK_TIME_MAX_DELTA_PERCENT) {
-                this._testScores[testID] = (Number(FPSScore) + Number(timeScore)) / 2;
-            } else {
-                this._testScores[testID] = FPSScore;
-            }
-        }
-        else if (timeScore) {
-            this._testScores[testID] = timeScore;
-        }
-        else {
-            this._testScores[testID] = FPSScore;
-        }
+        this._testScores[testID] = FPSScore;
     }
 });
 
@@ -329,67 +201,62 @@ benchmarkControllerInstance = new BenchmarkController;
 
 // Test cases data
 // category: API category
-// times: run times in time mode
-// duration: duration(ms) in FPS mode
-// invalidTimes: it is applied in time mode. when some browsers such as firefox is not very stable, we can deduce the invalid times with times
+// duration: duration(ms)
 // referenceFPS: FPS test value on the reference platform
-// referenceTime: time test value on the reference platform
-// TODO: fill the correct reference FPS and time on K800
 BenchmarkTestCases = [
     {
         category: 'DrawPrimitives',
         defaultDuration: 2000,
-        defaultTimes: 10,
         tests: [
             {
                 name: 'Test',
-                referenceFPS: 1.16,
-                referenceTime: 900
+                referenceFPS: 1.16
             }
         ]
     },
     {
         category: 'Particle',
         defaultDuration: 5000,
-        defaultTimes: 10,
         tests: [
             {
                 name: 'Size8',
-                referenceFPS: 19.68,
-                referenceTime: 52.2
+                referenceFPS: 19.68
             },
             {
                 name: 'BurstPipe',
-                referenceFPS: 12.55,
-                referenceTime: 70.67
+                referenceFPS: 12.55
             },
             {
                 name: 'Comet',
-                referenceFPS: 7.83,
-                referenceTime: 110
+                referenceFPS: 7.83
             }
         ]
     },
     {
         category: 'Sprite',
         defaultDuration: 3000,
-        defaultTimes: 10,
         tests: [
             {
                 name: 'Position',
-                referenceFPS: 4.44,
-                referenceTime: 115
+                referenceFPS: 4.44
             },
             {
                 name: 'Actions',
-                referenceFPS: 3.03,
-                referenceTime: 270
+                referenceFPS: 3.03
+            }
+        ]
+    },
+    {
+        category: 'TileMap',
+        defaultDuration: 3000,
+        tests: [
+            {
+                name: 'Isometric',
+                referenceFPS: 5 // TODO: fill the reference value
             }
         ]
     }
 ];
-
-BenchmarkTestCases.invalidTimes = 0; // TODO: check it
 
 BenchmarkTestCases.IDToIndices = function(ID) {
     var tmp = 0;
@@ -447,16 +314,6 @@ BenchmarkTestCases.getTestInfo = function(ID) {
     if (typeof test.duration !== 'undefined') {
         testInfo.duration = test.duration;
     }
-    testInfo.times = category.defaultTimes;
-    if (typeof test.times !== 'undefined') {
-        testInfo.times = test.times;
-    }
-    if (typeof test.invalidTimes !== 'undefined') {
-        testInfo.invalidTimes = test.invalidTimes;
-    }
     testInfo.referenceFPS = test.referenceFPS;
-    if (typeof test.referenceTime !== 'undefined') {
-        testInfo.referenceTime = test.referenceTime;
-    }
     return testInfo;
 };

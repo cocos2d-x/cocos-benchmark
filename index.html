@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
     <link rel="shortcut icon" href="res/favicon.ico">
     <link rel="apple-touch-icon-precomposed" sizes="57x57" href="res/Images/Icon.png">
+    <!-- MUST be the first style, due to hack code -->
     <style type="text/css">
         html body {
             margin: 10px 0;
@@ -42,7 +43,7 @@
         }
     </style>
     <script type="text/javascript">
-        var BENCHMARK_VERSION = 'v0.5.2'; // Modify version in build.xml, when single file used
+        var BENCHMARK_VERSION = 'v0.7.0'; // Modify version in build.xml, when single file used
         // append version to title
         document.title = document.title + ' ' + BENCHMARK_VERSION;
         // benchmark output to write test result
@@ -118,7 +119,7 @@
                     }
                 }
                 return ret;
-            }
+            };
             return result;
         }());
         function BenchmarkSetAction(button, action) {
@@ -126,13 +127,13 @@
                 button = document.getElementById('action');
             }
             button.value = action;
-        };
+        }
         function BenchmarkSetActionStart(button) {
             BenchmarkSetAction(button, 'start');
-        };
+        }
         function BenchmarkSetActionStop(button) {
             BenchmarkSetAction(button, 'stop');
-        };
+        }
         function BenchmarkOnActionButtonClick(button) {
             if (button.value == 'start') {
                 if (typeof benchmarkControllerInstance !== 'undefined') { // loaded
@@ -142,12 +143,12 @@
             else if (button.value == 'stop') {
                 benchmarkControllerInstance.stopBenchmark(button);
             }
-        };
+        }
         function BenchmarkOnEngineChange(select) {
             var selectOption = select.options[select.selectedIndex];
             BenchmarkQueryParameters.engine = selectOption.value;
             window.location.search = BenchmarkQueryParameters.toString();
-        };
+        }
     </script>
     <script src="cocos2d.js"></script>
 </head>

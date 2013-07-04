@@ -36,13 +36,14 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
             file: 'lib/Cocos2d-html5-v2.1.1.min.js'
         }
         // add more engine versions here
-    }
+    };
     var config = {
         COCOS2D_DEBUG:2, //0 to turn debug off, 1 for basic debug, and 2 for full debug
         box2d:false,
         showFPS:true,
         frameRate: 1000, // MAX frame rate possible
         loadExtension:false,
+        renderMode: 1   , // 1 for canvas, 2 for WebGL
         tag:'Cocos2dGameContainer', //the dom element to run cocos2d on
         engineDir:'./lib/cocos2d/',
         appFiles:[
@@ -51,10 +52,28 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
             //'src/BenchmarkDevController.js', // use it to test error and get reference values
             'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',
             'src/tests/Particle/BenchmarkParticleTest.js',
-            'src/tests/Sprite/BenchmarkSpriteTest.js'
+            'src/tests/Sprite/BenchmarkSpriteTest.js',
+            'src/tests/TileMap/BenchmarkTileMapTest.js'
         ]
     };
      function loadEnd() {
+         //< pc support hack
+         if (BenchmarkQueryParameters.v == 'pc') {
+             var PC_SIZE = '600px';
+             var PC_TITLE_SUFFIX = '(for PC)';
+             var gameContainer = document.getElementById('Cocos2dGameContainer');
+             gameContainer.style.width = PC_SIZE;
+             gameContainer.style.height = PC_SIZE;
+             var i, rules = document.styleSheets[0].rules;
+             for (i=0; i<rules.length; ++i) {
+                 if (rules[i].selectorText == 'body > *') {
+                     rules[i].style.width = PC_SIZE;
+                     break;
+                 }
+             }
+             document.title += PC_TITLE_SUFFIX;
+         }
+         //>
          if (SINGLE_FILE) {
              var currentEngineID = BenchmarkQueryParameters.engine;
              var currentEngineInfo, ID;
