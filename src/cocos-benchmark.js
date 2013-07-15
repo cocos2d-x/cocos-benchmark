@@ -6,33 +6,6 @@
  */
 // If show debug info(FPS, particle count and etc.) when benchmarking
 BENCHMARK_DEBUG = false; // if enabled, show debug info
-benchmarkReady = false;
-
-////////////////////////////////////////////////////////
-//
-// Default benchmark scene
-//
-////////////////////////////////////////////////////////
-BenchmarkEntry = cc.Layer.extend({
-    init:function () {
-        this._super();
-        var size = cc.Director.getInstance().getWinSize();
-        var layer = new cc.Layer();
-        this.addChild(layer);
-
-        var sprite = cc.Sprite.create(s_benchmark);
-        sprite.setPosition(cc.p(size.width / 2, size.height / 2));
-        sprite.setScale(
-            size.width/sprite.getContentSize().width,
-            size.height/sprite.getContentSize().height
-        );
-        layer.addChild(sprite, 0);
-
-        this.setTouchEnabled(false);
-
-        return true;
-    }
-});
 
 // Scene showed when no benchmark running
 BenchmarkEntryScene = cc.Scene.extend({
@@ -45,13 +18,12 @@ BenchmarkEntryScene = cc.Scene.extend({
         var layer = new BenchmarkEntry();
         layer.init();
         this.addChild(layer);
-        benchmarkReady = true;
+        benchmarkControllerInstance.ready = true;
     }
 });
 
 // shared instance for BenchmarkEntryScene
 BenchmarkEntryScene.instance = null;
-
 
 BenchmarkBaseTestScene = cc.Scene.extend({
     _ID: 0,
@@ -74,30 +46,56 @@ BenchmarkBaseTestScene = cc.Scene.extend({
     }
 });
 
+// Only for reference
+/*
+BenchmarkControllerDelegate = {
+    onBeginTestCase: function(testInfo) {},
+    onEndTestCase: function(testID, testInfo) {},
+    onStartBenchmark: function() {}, // start action
+    onStopBenchmark: function() {}, // stop action
+    onEndBenchmark: function() {}, // all test cased done
+    onError: function(e) {}
+});
+*/
+
 BenchmarkController = cc.Class.extend({
     _testSceneBeginTime: 0,
     _testSceneEndTime: 0,
     _testSceneBeginFrames: 0,
     _testSceneEndFrames: 0,
     _testTransitionTimerID: 0,
-    _FPSTestResults: [],
+    _testFPSList: [],
     _testScores: [],
     _finalScore: 0,
     _currentTestID: 0,
-    _currentTestPass: 0,
+    _delegate: null,
+    ready: false,
+    getTestFPS: function(testID) {
+        return this._testFPSList[testID];
+    },
+    getTestScore: function(testID) {
+        return this._testScores[testID];
+    },
+    getFinalScore: function() {
+        return this._finalScore;
+    },
+    setDelegate: function(delegate) {
+        this._delegate = delegate;
+    },
     onEnterTestScene: function(testScene) {
         var testInfo = BenchmarkTestCases.getTestInfo(testScene.getID());
-        this._testPassResults = [];
-        if (testInfo.firstInCategory) {
-            benchmarkOutputInstance.writeln(testInfo.category);
-        }
         this._testSceneBeginTime = (new Date).getTime();
         this._testSceneBeginFrames = cc.Director.getInstance().getTotalFrames();
         if (0 < testInfo.duration) {
-            this._testTransitionTimerID = setTimeout(function() {
+            this._testTransitionTimerID = setTimeout(
+                function() {
                     benchmarkControllerInstance._testTransitionTimerTimeout()
                 },
-                testInfo.duration);
+                testInfo.duration
+            );
+        }
+        if (this._delegate && this._delegate.onBeginTestCase) {
+            this._delegate.onBeginTestCase(testInfo);
         }
     },
     onExitTestScene: function(testScene) {
@@ -109,28 +107,34 @@ BenchmarkController = cc.Class.extend({
             var testInfo = BenchmarkTestCases.getTestInfo(testID);
             this._testSceneEndTime = (new Date).getTime();
             this._testSceneEndFrames = cc.Director.getInstance().getTotalFrames();
-            this._saveFPSTestResult(testID);
-            this._saveTestScores(testID, testInfo);
+            this._saveTestData(testID, testInfo);
+            if (this._delegate && this._delegate.onEndTestCase) {
+                this._delegate.onEndTestCase(testID, testInfo)
+            }
             if (testID >= BenchmarkTestCases.maxID()) {
-                this.outputScore();
+                this.endBenchmark();
             }
         }
     },
-    startBenchmark: function(button) {
-        if (benchmarkReady) {
-            BenchmarkSetActionStop(button);
+    startBenchmark: function() {
+        if (this.ready) {
             this._runTest(0);
+            if (this._delegate && this._delegate.onStartBenchmark) {
+                this._delegate.onStartBenchmark();
+            }
         }
     },
-    stopBenchmark: function(button) {
-        BenchmarkSetActionStart(button);
+    stopBenchmark: function() {
         cc.Director.getInstance().replaceScene(BenchmarkEntryScene.instance);
         if (this._testTransitionTimerID) {
             clearTimeout(this._testTransitionTimerID);
             this._testTransitionTimerID = 0;
         }
+        if (this._delegate && this._delegate.onStopBenchmark) {
+            this._delegate.onStopBenchmark();
+        }
     },
-    outputScore: function() {
+    endBenchmark: function() {
         // use Harmonic Average value as the final score
         var sum = 0;
         var length = BenchmarkTestCases.maxID() + 1;
@@ -138,12 +142,13 @@ BenchmarkController = cc.Class.extend({
             sum += 1 / this._testScores[i];
         }
         this._finalScore = (length / sum).toFixed(2);
-        benchmarkOutputInstance.writeln('Score: ' + this._finalScore);
-        benchmarkOutputInstance.writeln('####################################')
+        if (this._delegate && this._delegate.onEndBenchmark) {
+            this._delegate.onEndBenchmark();
+        }
     },
     _ifCurrentTestEnds: function() {
         var testInfo = BenchmarkTestCases.getTestInfo(this._currentTestID);
-        return !this._testTransitionTimerID && this._currentTestPass >= testInfo.times;
+        return !this._testTransitionTimerID;
     },
     _runNextTest: function() {
         var ID = this._currentTestID;
@@ -162,18 +167,16 @@ BenchmarkController = cc.Class.extend({
                 cc.log(testSceneName);
                 var testScene = new window[testSceneName];
                 this._currentTestID = ID;
-                this._currentTestPass = 0;
-                
+
                 testScene.setID(ID);
                 testScene.runTest();
             } catch (e) {
-                benchmarkOutputInstance.writeln('Exception occurred, stopped:\n' + e);
                 this.stopBenchmark();
+                if (this._delegate && this._delegate.onError) {
+                    this._delegate.onError(e);
+                }
             }
         }
-    },
-    _saveFPSTestResult: function(testID) {
-        this._FPSTestResults[testID] = ((this._testSceneEndFrames - this._testSceneBeginFrames) / (this._testSceneEndTime - this._testSceneBeginTime) * 1000).toFixed(2);
     },
     _testTransitionTimerTimeout: function() {
         this._testTransitionTimerID = 0;
@@ -181,23 +184,17 @@ BenchmarkController = cc.Class.extend({
             this._runNextTest();
         }
     },
-    _saveTestScores: function(testID, testInfo) {
-        var FPSScore = 0;
-        var firstValue = true;
-        var name = '  ' + testInfo.name + ': ';
-        var text1 = '', text2 = '';
-        if (testInfo.duration) {
-            FPSScore = (this._FPSTestResults[testID] / testInfo.referenceFPS).toFixed(2);
-            text1 = this._FPSTestResults[testID];
-            text2 = '(' + FPSScore + ')';
-            firstValue = false;
-        }
-        benchmarkOutputInstance.writeln(name, '%25', text1, text2);
-        this._testScores[testID] = FPSScore;
+    _saveTestData: function(testID, testInfo) {
+        var FPS = ((this._testSceneEndFrames - this._testSceneBeginFrames) /
+            (this._testSceneEndTime - this._testSceneBeginTime) * 1000).toFixed(2);
+        this._testFPSList[testID] = FPS;
+        this._testScores[testID] = (FPS / testInfo.referenceFPS).toFixed(2);
     }
 });
 
 benchmarkControllerInstance = new BenchmarkController;
+
+BenchmarkOnControllerLoadEnd(benchmarkControllerInstance);
 
 // Test cases data
 // category: API category
@@ -299,10 +296,7 @@ BenchmarkTestCases.getTestInfo = function(ID) {
         firstInCategory: false,
         name: '',
         duration: 0,
-        times: 0,
-        invalidTimes: 0, // TODO: check it
-        referenceFPS: 0,
-        referenceTime: 0
+        referenceFPS: 0
     };
     var indices = this.IDToIndices(ID);
     var test = this[indices.categoryIndex].tests[indices.testIndex];

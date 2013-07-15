@@ -122,26 +122,14 @@
             };
             return result;
         }());
-        function BenchmarkSetAction(button, action) {
-            if (!button) {
-                button = document.getElementById('action');
-            }
-            button.value = action;
-        }
-        function BenchmarkSetActionStart(button) {
-            BenchmarkSetAction(button, 'start');
-        }
-        function BenchmarkSetActionStop(button) {
-            BenchmarkSetAction(button, 'stop');
-        }
         function BenchmarkOnActionButtonClick(button) {
             if (button.value == 'start') {
                 if (typeof benchmarkControllerInstance !== 'undefined') { // loaded
-                    benchmarkControllerInstance.startBenchmark(button);
+                    benchmarkControllerInstance.startBenchmark();
                 }
             }
             else if (button.value == 'stop') {
-                benchmarkControllerInstance.stopBenchmark(button);
+                benchmarkControllerInstance.stopBenchmark();
             }
         }
         function BenchmarkOnEngineChange(select) {
@@ -149,8 +137,43 @@
             BenchmarkQueryParameters.engine = selectOption.value;
             window.location.search = BenchmarkQueryParameters.toString();
         }
+        function BenchmarkOnControllerLoadEnd(controller) {
+            var controllerDelegate = {
+                _setAction: function(action) {
+                    document.getElementById('action').value = action;
+                },
+                onBeginTestCase: function(testInfo) {
+                    if (testInfo.firstInCategory) {
+                        benchmarkOutputInstance.writeln(testInfo.category);
+                    }
+                },
+                onEndTestCase: function(testID, testInfo) {
+                    var name = '  ' + testInfo.name + ': ';
+                    var FPS = '', score = '';
+                    if (testInfo.duration) {
+                        FPS = controller.getTestFPS(testID);
+                        score = '(' + controller.getTestScore(testID) + ')';
+                    }
+                    benchmarkOutputInstance.writeln(name, '%25', FPS, score);
+                },
+                onStartBenchmark: function() {
+                    this._setAction('stop');
+                },
+                onStopBenchmark: function() {
+                    this._setAction('start');
+                },
+                onEndBenchmark: function() {
+                    benchmarkOutputInstance.writeln('Score: ' + controller.getFinalScore());
+                    benchmarkOutputInstance.writeln('####################################');
+                },
+                onError: function(e) {
+                    benchmarkOutputInstance.writeln('Exception occurred, stopped:\n' + e);
+                }
+            };
+            controller.setDelegate(controllerDelegate);
+        }
     </script>
-    <script src="cocos2d.js"></script>
+    <script src="Resources-html5/cocos2d.js"></script>
 </head>
 <body>
 <div id="Cocos2dGameContainer" style="background-color:rgba(0,0,0,0.1); width: 300px; height: 300px">

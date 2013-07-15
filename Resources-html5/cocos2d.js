@@ -49,6 +49,7 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
         appFiles:[
             'src/resources.js',
             'src/cocos-benchmark.js',
+            'src/cocos-benchmark-html5.js',
             //'src/BenchmarkDevController.js', // use it to test error and get reference values
             'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',
             'src/tests/Particle/BenchmarkParticleTest.js',
@@ -82,9 +83,11 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
              }
              else {
                  for (ID in engines) {
-                     currentEngineID = ID;
-                     currentEngineInfo = engines[ID];
-                     break;
+                     if (engines.hasOwnProperty(ID)) {
+                         currentEngineID = ID;
+                         currentEngineInfo = engines[ID];
+                         break;
+                     }
                  }
              }
              if (currentEngineInfo) {
