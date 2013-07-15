@@ -1,0 +1,3 @@
+# view AndroidManifest.xml #generated:13
+-keep class net.sunzhuoshi.CocosBenchmark.CocosBenchmark { <init>(...); }
+

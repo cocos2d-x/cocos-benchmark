@@ -22,3 +22,4 @@ cocos-benchmark-v*.js
 /proj.android/bin/dexedLibs/
 /proj.android/libs/x86/libcocos2djs.so
 /proj.android/local.properties
+/proj.android/bin/jarlist.cache

@@ -45,7 +45,7 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
         loadExtension:false,
         renderMode: 1   , // 1 for canvas, 2 for WebGL
         tag:'Cocos2dGameContainer', //the dom element to run cocos2d on
-        engineDir:'./lib/cocos2d/',
+        engineDir:'./lib/cocos2d-html5/cocos2d/',
         appFiles:[
             'src/resources.js',
             'src/cocos-benchmark.js',
