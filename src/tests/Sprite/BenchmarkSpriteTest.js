@@ -48,14 +48,14 @@ cc.Sprite.benchmarkCreate = function (fileName, rect) {
          The rect used will be the size of the image.
          The offset will be (0,0).
          */
-        if (sprite && sprite.initWithFile(fileName)) {
+        if (sprite.init(fileName)) {
             return sprite;
         }
         return null;
     } else {
         /** Creates an sprite with an CCBatchNode and a rect
          */
-        if (sprite && sprite.initWithFile(fileName, rect)) {
+        if (sprite.init(fileName, rect)) {
             return sprite;
         }
         return null;
@@ -274,12 +274,12 @@ var SpriteActionsBenchmarkScene = SpriteMainScene.extend({
         var period = 0.5 + (Math.random() * 1000) / 500.0;
         var rot = cc.RotateBy.create(period, 360.0 * Math.random());
         var rot_back = rot.reverse();
-        var permanentRotation = cc.RepeatForever.create(cc.Sequence.create(rot, rot_back, null));
+        var permanentRotation = cc.RepeatForever.create(cc.Sequence.create(rot, rot_back));
         sprite.runAction(permanentRotation);
 
         var growDuration = 0.5 + (Math.random() * 1000) / 500.0;
         var grow = cc.ScaleBy.create(growDuration, 0.5, 0.5);
-        var permanentScaleLoop = cc.RepeatForever.create(cc.Sequence._actionOneTwo(grow, grow.reverse()));
+        var permanentScaleLoop = cc.RepeatForever.create(cc.Sequence.create(grow, grow.reverse()));
         sprite.runAction(permanentScaleLoop);
     },
     title:function () {

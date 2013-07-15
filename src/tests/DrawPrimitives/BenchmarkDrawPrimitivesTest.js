@@ -23,7 +23,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-var DRAW_PRIMITIVES_TEST_LOOP = 200;
+var DRAW_PRIMITIVES_TEST_LOOP = 20;
 
 var DrawPrimitivesTestBenchmark = cc.Layer.extend({
     draw:function () {

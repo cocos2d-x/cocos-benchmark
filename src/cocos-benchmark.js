@@ -9,11 +9,6 @@ BENCHMARK_DEBUG = false; // if enabled, show debug info
 
 // Scene showed when no benchmark running
 BenchmarkEntryScene = cc.Scene.extend({
-    ctor: function() {
-        this._super();
-        // set the shared instance to this
-        BenchmarkEntryScene.instance = this;
-    },
     onEnter:function () {
         var layer = new BenchmarkEntry();
         layer.init();
@@ -22,8 +17,15 @@ BenchmarkEntryScene = cc.Scene.extend({
     }
 });
 
-// shared instance for BenchmarkEntryScene
-BenchmarkEntryScene.instance = null;
+BenchmarkEntryScene._instance = null;
+
+BenchmarkEntryScene.getInstance = function() {
+    if (!this._instance) {
+        this._instance = new BenchmarkEntryScene();
+        this._instance.retain();
+    }
+    return this._instance;
+};
 
 BenchmarkBaseTestScene = cc.Scene.extend({
     _ID: 0,
@@ -53,7 +55,7 @@ BenchmarkControllerDelegate = {
     onEndTestCase: function(testID, testInfo) {},
     onStartBenchmark: function() {}, // start action
     onStopBenchmark: function() {}, // stop action
-    onEndBenchmark: function() {}, // all test cased done
+    onBenchmarkDone: function() {}, // all test cases done
     onError: function(e) {}
 });
 */
@@ -63,9 +65,9 @@ BenchmarkController = cc.Class.extend({
     _testSceneEndTime: 0,
     _testSceneBeginFrames: 0,
     _testSceneEndFrames: 0,
-    _testTransitionTimerID: 0,
     _testFPSList: [],
     _testScores: [],
+    _testInterrupted: false,
     _finalScore: 0,
     _currentTestID: 0,
     _delegate: null,
@@ -87,11 +89,12 @@ BenchmarkController = cc.Class.extend({
         this._testSceneBeginTime = (new Date).getTime();
         this._testSceneBeginFrames = cc.Director.getInstance().getTotalFrames();
         if (0 < testInfo.duration) {
-            this._testTransitionTimerID = setTimeout(
-                function() {
-                    benchmarkControllerInstance._testTransitionTimerTimeout()
-                },
-                testInfo.duration
+            cc.Director.getInstance().getScheduler().scheduleCallbackForTarget(
+                this,
+                this._runNextTest,
+                0,
+                false,
+                testInfo.duration / 1000
             );
         }
         if (this._delegate && this._delegate.onBeginTestCase) {
@@ -99,10 +102,7 @@ BenchmarkController = cc.Class.extend({
         }
     },
     onExitTestScene: function(testScene) {
-        if (this._testTransitionTimerID) { // stop manually
-            clearTimeout(this._testTransitionTimerID);
-            this._testTransitionTimerID = 0;
-        } else {
+        if (!this._testInterrupted) {
             var testID = testScene.getID();
             var testInfo = BenchmarkTestCases.getTestInfo(testID);
             this._testSceneEndTime = (new Date).getTime();
@@ -112,29 +112,31 @@ BenchmarkController = cc.Class.extend({
                 this._delegate.onEndTestCase(testID, testInfo)
             }
             if (testID >= BenchmarkTestCases.maxID()) {
-                this.endBenchmark();
+                this.benchmarkDone();
             }
         }
     },
     startBenchmark: function() {
         if (this.ready) {
+            this._testInterrupted = false;
             this._runTest(0);
             if (this._delegate && this._delegate.onStartBenchmark) {
                 this._delegate.onStartBenchmark();
             }
         }
     },
-    stopBenchmark: function() {
-        cc.Director.getInstance().replaceScene(BenchmarkEntryScene.instance);
-        if (this._testTransitionTimerID) {
-            clearTimeout(this._testTransitionTimerID);
-            this._testTransitionTimerID = 0;
+    stopBenchmark: function(interrupted) {
+        if (typeof interrupted === 'undefined') {
+            interrupted = true;
         }
+        this._testInterrupted = interrupted;
+        cc.Director.getInstance().replaceScene(BenchmarkEntryScene.getInstance());
+        cc.Director.getInstance().getScheduler().unscheduleAllCallbacksForTarget(this);
         if (this._delegate && this._delegate.onStopBenchmark) {
             this._delegate.onStopBenchmark();
         }
     },
-    endBenchmark: function() {
+    benchmarkDone: function() {
         // use Harmonic Average value as the final score
         var sum = 0;
         var length = BenchmarkTestCases.maxID() + 1;
@@ -142,13 +144,9 @@ BenchmarkController = cc.Class.extend({
             sum += 1 / this._testScores[i];
         }
         this._finalScore = (length / sum).toFixed(2);
-        if (this._delegate && this._delegate.onEndBenchmark) {
-            this._delegate.onEndBenchmark();
+        if (this._delegate && this._delegate.onBenchmarkDone) {
+            this._delegate.onBenchmarkDone();
         }
-    },
-    _ifCurrentTestEnds: function() {
-        var testInfo = BenchmarkTestCases.getTestInfo(this._currentTestID);
-        return !this._testTransitionTimerID;
     },
     _runNextTest: function() {
         var ID = this._currentTestID;
@@ -156,7 +154,7 @@ BenchmarkController = cc.Class.extend({
         if (ID <= BenchmarkTestCases.maxID()) {
             this._runTest(ID);
         } else {
-            this.stopBenchmark();
+            this.stopBenchmark(false);
         }
     },
     _runTest: function(ID) {
@@ -165,23 +163,19 @@ BenchmarkController = cc.Class.extend({
             var testSceneName = testInfo.category + testInfo.name + 'BenchmarkScene';
             try {
                 cc.log(testSceneName);
-                var testScene = new window[testSceneName];
+                var testScene = eval("new " + testSceneName + "()");
                 this._currentTestID = ID;
 
                 testScene.setID(ID);
                 testScene.runTest();
             } catch (e) {
+                cc.log(e);
                 this.stopBenchmark();
                 if (this._delegate && this._delegate.onError) {
                     this._delegate.onError(e);
                 }
+                throw e;
             }
-        }
-    },
-    _testTransitionTimerTimeout: function() {
-        this._testTransitionTimerID = 0;
-        if (this._ifCurrentTestEnds()) {
-            this._runNextTest();
         }
     },
     _saveTestData: function(testID, testInfo) {
@@ -194,7 +188,10 @@ BenchmarkController = cc.Class.extend({
 
 benchmarkControllerInstance = new BenchmarkController;
 
-BenchmarkOnControllerLoadEnd(benchmarkControllerInstance);
+
+if (typeof BenchmarkOnControllerLoadEnd === 'function') {
+    BenchmarkOnControllerLoadEnd(benchmarkControllerInstance);
+}
 
 // Test cases data
 // category: API category

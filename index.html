@@ -162,7 +162,7 @@
                 onStopBenchmark: function() {
                     this._setAction('start');
                 },
-                onEndBenchmark: function() {
+                onBenchmarkDone: function() {
                     benchmarkOutputInstance.writeln('Score: ' + controller.getFinalScore());
                     benchmarkOutputInstance.writeln('####################################');
                 },
