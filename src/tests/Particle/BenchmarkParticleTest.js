@@ -29,6 +29,14 @@ var TAG_LABEL_ATLAS = 4;
 var PARTICLE_NODES = 100;
 var VALID_DELTA_RATE = 0.3;
 
+// support multi-version APIs
+var ParticleSystemQuad = cc.ParticleSystemQuad;
+
+if (typeof ParticleSystemQuad !== 'function') {
+    ParticleSystemQuad = cc.ParticleSystem;
+}
+
+
 ////////////////////////////////////////////////////////
 //
 // ParticleMainScene
@@ -95,12 +103,7 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         var texture = cc.TextureCache.getInstance().addImage("res/Images/fire.png");
         cc.TextureCache.getInstance().removeTexture(texture);
 
-        if (typeof cc.ParticleSystemQuad === 'function') {
-            particleSystem = new cc.ParticleSystemQuad();
-        }
-        else {
-            particleSystem = new cc.ParticleSystem();
-        }
+        particleSystem = new ParticleSystemQuad();
 
         switch (this._subtestNumber) {
             case 1:
@@ -478,11 +481,8 @@ var DemoParticleFromFile = ParticleDemo.extend({
     onEnter:function () {
         this._super();
         this.setColor(cc.c3b(0,0,0));
-        this.removeChild(this._background, true);
-        this._background = null;
-
         var filename = "res/Particles/" + this._title + ".plist";
-        this._emitter = cc.ParticleSystemQuad.create(filename);
+        this._emitter = ParticleSystemQuad.create(filename);
         this.addChild(this._emitter, 10);
 
         if(this._title == "Flower"){
