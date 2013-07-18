@@ -85,31 +85,31 @@ BenchmarkController = cc.Class.extend({
         this._delegate = delegate;
     },
     onEnterTestScene: function(testScene) {
-        var testInfo = BenchmarkTestCases.getTestInfo(testScene.getID());
+        var testCase = BenchmarkTestCases.get(testScene.getID());
         this._testSceneBeginTime = (new Date).getTime();
         this._testSceneBeginFrames = cc.Director.getInstance().getTotalFrames();
-        if (0 < testInfo.duration) {
+        if (0 < testCase.duration) {
             cc.Director.getInstance().getScheduler().scheduleCallbackForTarget(
                 this,
                 this._runNextTest,
                 0,
                 false,
-                testInfo.duration / 1000
+                testCase.duration / 1000
             );
         }
         if (this._delegate && this._delegate.onBeginTestCase) {
-            this._delegate.onBeginTestCase(testInfo);
+            this._delegate.onBeginTestCase(testCase);
         }
     },
     onExitTestScene: function(testScene) {
         if (!this._testInterrupted) {
             var testID = testScene.getID();
-            var testInfo = BenchmarkTestCases.getTestInfo(testID);
+            var testCase = BenchmarkTestCases.get(testID);
             this._testSceneEndTime = (new Date).getTime();
             this._testSceneEndFrames = cc.Director.getInstance().getTotalFrames();
-            this._saveTestData(testID, testInfo);
+            this._saveTestData(testID, testCase);
             if (this._delegate && this._delegate.onEndTestCase) {
-                this._delegate.onEndTestCase(testID, testInfo)
+                this._delegate.onEndTestCase(testID, testCase)
             }
             if (testID >= BenchmarkTestCases.maxID()) {
                 this.benchmarkDone();
@@ -159,8 +159,8 @@ BenchmarkController = cc.Class.extend({
     },
     _runTest: function(ID) {
         if (0 <= ID && ID <= BenchmarkTestCases.maxID()) {
-            var testInfo = BenchmarkTestCases.getTestInfo(ID);
-            var testSceneName = testInfo.category + testInfo.name + 'BenchmarkScene';
+            var testCase = BenchmarkTestCases.get(ID);
+            var testSceneName = testCase.category + testCase.name + 'BenchmarkScene';
             try {
                 cc.log(testSceneName);
                 var testScene = eval("new " + testSceneName + "()");
@@ -213,7 +213,7 @@ BenchmarkTestCases = [
         defaultDuration: 5000,
         tests: [
             {
-                name: 'Size8',
+                name: 'Size32',
                 referenceFPS: 19.68
             },
             {
@@ -287,7 +287,7 @@ BenchmarkTestCases.maxID = function() {
     return this._maxID;
 };
 
-BenchmarkTestCases.getTestInfo = function(ID) {
+BenchmarkTestCases.get = function(ID) {
     var testInfo = {
         category: '',
         firstInCategory: false,
