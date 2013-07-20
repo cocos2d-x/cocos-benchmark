@@ -8,6 +8,7 @@ require("jsb_sys.js");
 var appFiles = [
     'src/resources.js',
     'src/BenchmarkConfig.js',
+    'src/BenchmarkConfig-iOS.js',
     'src/APIWrapper.js',
     'src/BenchmarkTestScene.js',
     'src/BenchmarkEntryScene.js',

@@ -30,13 +30,25 @@ BenchmarkEntry = cc.Layer.extend({
         var infoLabel = cc.LabelTTF.create();
         infoLabel.setPosition(cc.p(panelSize.width / 2, panelSize.height / 2));
         infoLabel.setFontSize(30);
-        infoLabel.setString('    cocos-benchmark v0.7.0\n\n' +
-            ' Engine:  cocos2d-x 2.1.4\n' +
-            ' Device:  iPhone 5\n' +
-            ' OS:        iOS 6.1.4\n' +
-            ' CPU:     A5\n' +
-            ' MEM:    1GB'
-            );
+        var infoText = '    cocos-benchmark {version}\n\n' +
+            ' Engine:       {engine}\n' +
+            ' Model:       {model}\n' +
+            ' OS:             {OS}\n' +
+            ' Processor:  {processor}\n' +
+            ' Memory:     {memory}';
+        var version = __getVersion();
+        var index1 = version.indexOf('-x-');
+        var index2 = version.indexOf('-', index1 + 3);
+        var version = version.substring(index1 + 3, index2);
+        infoText = infoText.replace('{version}', BenchmarkConfig.VERSION);
+        infoText = infoText.replace('{engine}', 'cocos2d-x ' + version);
+        infoText = infoText.replace('{model}', 'Unknown');
+        infoText = infoText.replace('{OS}', __getOS());
+        infoText = infoText.replace('{processor}', 'Unknown');
+        infoText = infoText.replace('{memory}', 'Unknown');
+
+        infoLabel.setString(infoText);
+
         infoLabel.setDimensions(panelSize);
         colorLayer.addChild(infoLabel);
 
