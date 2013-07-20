@@ -1,10 +1,10 @@
-var s_pathSister1 = "res/Images/grossinis_sister1.png";
-var s_benchmark = "res/Images/benchmark.png";
-var s_fire = "res/Images/fire.png";
-var s_pathClose = "res/Images/close.png";
-var s_fpsImages = "res/Fonts/fps_images.png";
+s_pathSister1 = "res/Images/grossinis_sister1.png";
+s_benchmark = "res/Images/benchmark.png";
+s_fire = "res/Images/fire.png";
+s_pathClose = "res/Images/close.png";
+s_fpsImages = "res/Fonts/fps_images.png";
 
-var g_resources = [
+g_resources = [
     //image resources
     {type:"image", src:s_pathSister1},
     {type:"image", src:s_benchmark},

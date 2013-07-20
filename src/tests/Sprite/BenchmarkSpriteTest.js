@@ -209,7 +209,7 @@ var SpriteMainScene = BenchmarkBaseTestScene.extend({
         this._lastRenderedCount = 0;
         this._quantityNodes = 0;
 
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             // add title label
             var label = cc.LabelTTF.create(this.title(), "Arial", 40);
             this.addChild(label, 1);
@@ -227,7 +227,7 @@ var SpriteMainScene = BenchmarkBaseTestScene.extend({
         }
     },
     updateNodes:function () {
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             if (this._quantityNodes != this._lastRenderedCount) {
                 var infoLabel = this.getChildByTag(TAG_INFO_LAYER);
                 var str = this._quantityNodes + " nodes";

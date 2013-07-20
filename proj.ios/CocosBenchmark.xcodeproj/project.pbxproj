@@ -155,6 +155,10 @@
 		1AB87014175E0768005D39BF /* WebSocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AB87012175E0768005D39BF /* WebSocket.cpp */; };
 		1AB87017175E0773005D39BF /* jsb_websocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AB87015175E0773005D39BF /* jsb_websocket.cpp */; };
 		1AB8701E175E07C6005D39BF /* libwebsockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AB8701D175E07C6005D39BF /* libwebsockets.a */; };
+		65790D191797C13600D39F3A /* Icon-57.png in Resources */ = {isa = PBXBuildFile; fileRef = 65790D151797C13600D39F3A /* Icon-57.png */; };
+		65790D1A1797C13600D39F3A /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 65790D161797C13600D39F3A /* Icon-72.png */; };
+		65790D1B1797C13600D39F3A /* Icon-114.png in Resources */ = {isa = PBXBuildFile; fileRef = 65790D171797C13600D39F3A /* Icon-114.png */; };
+		65790D1C1797C13600D39F3A /* Icon-144.png in Resources */ = {isa = PBXBuildFile; fileRef = 65790D181797C13600D39F3A /* Icon-144.png */; };
 		65966362178E635000F61680 /* libcocos2dx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6596635B178E5F2300F61680 /* libcocos2dx.a */; };
 		65966368178FE02C00F61680 /* res in Resources */ = {isa = PBXBuildFile; fileRef = 65966366178FE02C00F61680 /* res */; };
 		65966369178FE02C00F61680 /* src in Resources */ = {isa = PBXBuildFile; fileRef = 65966367178FE02C00F61680 /* src */; };
@@ -479,6 +483,10 @@
 		1AB87016175E0773005D39BF /* jsb_websocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsb_websocket.h; sourceTree = "<group>"; };
 		1AB8701B175E07C6005D39BF /* libwebsockets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libwebsockets.h; sourceTree = "<group>"; };
 		1AB8701D175E07C6005D39BF /* libwebsockets.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwebsockets.a; sourceTree = "<group>"; };
+		65790D151797C13600D39F3A /* Icon-57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-57.png"; sourceTree = "<group>"; };
+		65790D161797C13600D39F3A /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
+		65790D171797C13600D39F3A /* Icon-114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-114.png"; sourceTree = "<group>"; };
+		65790D181797C13600D39F3A /* Icon-144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-144.png"; sourceTree = "<group>"; };
 		65966360178E60D500F61680 /* Resources-iOS */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "Resources-iOS"; path = "../Resources-iOS"; sourceTree = "<group>"; };
 		65966366178FE02C00F61680 /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; name = res; path = ../res; sourceTree = "<group>"; };
 		65966367178FE02C00F61680 /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; name = src; path = ../src; sourceTree = "<group>"; };
@@ -540,6 +548,10 @@
 				D446FDA616102D86000ADA7B /* Default-568h@2x.png */,
 				D446FDA216102D7D000ADA7B /* Default.png */,
 				D446FDA416102D82000ADA7B /* Default@2x.png */,
+				65790D151797C13600D39F3A /* Icon-57.png */,
+				65790D161797C13600D39F3A /* Icon-72.png */,
+				65790D171797C13600D39F3A /* Icon-114.png */,
+				65790D181797C13600D39F3A /* Icon-144.png */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1197,6 +1209,10 @@
 				15A3D38D1682F0B6002FB0C5 /* CMakeLists.txt in Resources */,
 				65966368178FE02C00F61680 /* res in Resources */,
 				65966369178FE02C00F61680 /* src in Resources */,
+				65790D191797C13600D39F3A /* Icon-57.png in Resources */,
+				65790D1A1797C13600D39F3A /* Icon-72.png in Resources */,
+				65790D1B1797C13600D39F3A /* Icon-114.png in Resources */,
+				65790D1C1797C13600D39F3A /* Icon-144.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1214,7 +1230,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp -rf ${SRCROOT}/../Resources-iOS/* ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}\n\n\n";
+			shellScript = "echo cp -rf ${SRCROOT}/../Resources-iOS/* ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}\ncp -rf ${SRCROOT}/../Resources-iOS/* ${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}\n\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

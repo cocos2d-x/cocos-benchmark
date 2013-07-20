@@ -29,14 +29,6 @@ var TAG_LABEL_ATLAS = 4;
 var PARTICLE_NODES = 100;
 var VALID_DELTA_RATE = 0.3;
 
-// support multi-version APIs
-var ParticleSystemQuad = cc.ParticleSystemQuad;
-
-if (typeof ParticleSystemQuad !== 'function') {
-    ParticleSystemQuad = cc.ParticleSystem;
-}
-
-
 ////////////////////////////////////////////////////////
 //
 // ParticleMainScene
@@ -53,7 +45,7 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         this._lastRenderedCount = 0;
         this._quantityParticles = particles;
 
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             var infoLabel = cc.LabelTTF.create("0 nodes", "Marker Felt", 30);
             infoLabel.setColor(cc.c3b(0, 200, 20));
             infoLabel.setPosition(cc.p(s.width / 2, s.height - 90));
@@ -76,7 +68,7 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         this.schedule(this.step);
     },
     step:function () {
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             var atlas = this.getChildByTag(TAG_LABEL_ATLAS);
             var emitter = this.getChildByTag(TAG_PARTICLE_SYSTEM);
            
@@ -103,7 +95,7 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         var texture = cc.TextureCache.getInstance().addImage("res/Images/fire.png");
         cc.TextureCache.getInstance().removeTexture(texture);
 
-        particleSystem = new ParticleSystemQuad();
+        particleSystem = new APIWrapper.ParticleSystem();
 
         switch (this._subtestNumber) {
             case 1:
@@ -134,7 +126,7 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_RGBA8888);
     },
     updateQuantityLabel:function () {
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             if (this._quantityParticles != this._lastRenderedCount) {
                 var infoLabel = this.getChildByTag(TAG_INFO_LAYER);
                 var str = this._quantityParticles + " particles";
@@ -436,7 +428,7 @@ var ParticleDemo = cc.LayerGradient.extend({
         this.addChild(label, 100, 1000);
         label.setPosition(s.width / 2, s.height - 50);
 
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             var labelAtlas = cc.LabelAtlas.create("0123456789", s_fpsImages, 16, 24, '.');
             this.addChild(labelAtlas, 100, TAG_LABEL_ATLAS);
             labelAtlas.setPosition(s.width - 66, 50);
@@ -446,7 +438,7 @@ var ParticleDemo = cc.LayerGradient.extend({
 
     onEnter:function () {
         this._super();
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             var pLabel = this.getChildByTag(1000);
             pLabel.setString(this.title());
         }
@@ -456,7 +448,7 @@ var ParticleDemo = cc.LayerGradient.extend({
     },
 
     update:function () {
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             if (this._emitter) {
                 var atlas = this.getChildByTag(TAG_LABEL_ATLAS);
                 atlas.setString(this._emitter.getParticleCount().toFixed(0));
@@ -482,7 +474,7 @@ var DemoParticleFromFile = ParticleDemo.extend({
         this._super();
         this.setColor(cc.c3b(0,0,0));
         var filename = "res/Particles/" + this._title + ".plist";
-        this._emitter = ParticleSystemQuad.create(filename);
+        this._emitter = APIWrapper.ParticleSystem.create(filename);
         this.addChild(this._emitter, 10);
 
         if(this._title == "Flower"){

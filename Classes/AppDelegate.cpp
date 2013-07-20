@@ -31,10 +31,7 @@ bool AppDelegate::applicationDidFinishLaunching()
     // initialize director
     CCDirector *pDirector = CCDirector::sharedDirector();
     pDirector->setOpenGLView(CCEGLView::sharedOpenGLView());
-    
-    // turn on display FPS
-    pDirector->setDisplayStats(true);
-    
+        
     // set FPS.
     pDirector->setAnimationInterval(1.0 / 9999);
     

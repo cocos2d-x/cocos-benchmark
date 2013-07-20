@@ -83,7 +83,7 @@ BenchmarkDevController = BenchmarkController.extend({
 });
 
 benchmarkControllerInstance = new BenchmarkDevController;
-var benchmarkVersionElement = document.getElementById('benchmark_version');
+benchmarkVersionElement = document.getElementById('benchmark_version');
 if (benchmarkVersionElement) {
     if (-1 === BENCHMARK_VERSION.indexOf('dev')) {
         benchmarkVersionElement.innerHTML = BENCHMARK_VERSION + '-dev';

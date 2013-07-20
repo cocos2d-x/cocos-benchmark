@@ -160,6 +160,7 @@
                     this._setAction('stop');
                 },
                 onStopBenchmark: function() {
+                    cc.Director.getInstance().replaceScene(BenchmarkEntryScene.getInstance());
                     this._setAction('start');
                 },
                 onBenchmarkDone: function() {
@@ -173,7 +174,7 @@
             controller.setDelegate(controllerDelegate);
         }
     </script>
-    <script src="Resources-html5/cocos2d.js"></script>
+    <script src="cocos2d.js"></script>
 </head>
 <body>
 <div id="Cocos2dGameContainer" style="background-color:rgba(0,0,0,0.1); width: 300px; height: 300px">

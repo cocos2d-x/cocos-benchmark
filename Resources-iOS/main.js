@@ -7,14 +7,40 @@ require("jsb_sys.js");
 
 var appFiles = [
     'src/resources.js',
-    'src/cocos-benchmark.js',
-    'src/cocos-benchmark-native.js',
-    //"src/BenchmarkDevController.js", // use it to test error and get reference values
+    'src/BenchmarkConfig.js',
+    'src/APIWrapper.js',
+    'src/BenchmarkTestScene.js',
+    'src/BenchmarkEntryScene.js',
+    'src/BenchmarkEntryScene-native.js',
+    'src/BenchmarkResultScene-native.js',
+    'src/BenchmarkTestCases.js',
+    'src/BenchmarkController.js',
+    //'src/BenchmarkDevController.js', // use it to test error and get reference values
     'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',
     'src/tests/Particle/BenchmarkParticleTest.js',
     'src/tests/Sprite/BenchmarkSpriteTest.js',
     'src/tests/TileMap/BenchmarkTileMapTest.js'
 ];
+
+function BenchmarkOnControllerLoadEnd(controller) {
+    var controllerDelegate = {
+        onBeginTestCase: function(testInfo) {
+        },
+        onEndTestCase: function(testID, testInfo) {
+        },
+        onStartBenchmark: function() {
+        },
+        onStopBenchmark: function() {
+            cc.Director.getInstance().replaceScene(BenchmarkResultScene.getInstance());
+        },
+        onBenchmarkDone: function() {
+        },
+        onError: function(e) {
+            cc.log('Exception occurred, stopped:\n' + e);
+        }
+    };
+    controller.setDelegate(controllerDelegate);
+}
 
 function main()
 {

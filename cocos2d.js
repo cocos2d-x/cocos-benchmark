@@ -48,8 +48,13 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
         engineDir:'./lib/cocos2d-html5/cocos2d/',
         appFiles:[
             'src/resources.js',
-            'src/cocos-benchmark.js',
-            'src/cocos-benchmark-html5.js',
+            'src/BenchmarkConfig.js',
+            'src/APIWrapper.js',
+            'src/BenchmarkTestScene.js',
+            'src/BenchmarkEntryScene.js',
+            'src/BenchmarkEntryScene-html5.js',
+            'src/BenchmarkTestCases.js',
+            'src/BenchmarkController.js',
             //'src/BenchmarkDevController.js', // use it to test error and get reference values
             'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',
             'src/tests/Particle/BenchmarkParticleTest.js',
@@ -127,7 +132,7 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
                  benchmarkOutputInstance.writeln('Engine version: ' + currentEngineID);
              }
              else {
-                 alert('invalid engine: ' + engine)
+                 alert('invalid engine: ' + currentEngineID)
                  return;
              }
          }
