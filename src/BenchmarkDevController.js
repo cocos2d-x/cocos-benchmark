@@ -46,7 +46,7 @@ BenchmarkDevController = BenchmarkController.extend({
         benchmarkOutputInstance.clear();
         for (j=0; j<testScores.length; ++j) {
             var testScoreStatisticalDispersion = this.getStatisticalDispersion(testScores[j]);
-            benchmarkOutputInstance.writeln(BenchmarkTestCases.getTestInfo(j).name, '%25', testScoreStatisticalDispersion.average.toFixed(2),
+            benchmarkOutputInstance.writeln(BenchmarkTestCases.get(j).name, '%25', testScoreStatisticalDispersion.average.toFixed(2),
                 ' +/- ' + (testScoreStatisticalDispersion.standardDeviation / testScoreStatisticalDispersion.average * 100).toFixed(1) + '%');
         }
         finalScoreStatisticalDispersion = this.getStatisticalDispersion(finalScores);
@@ -55,17 +55,17 @@ BenchmarkDevController = BenchmarkController.extend({
         benchmarkOutputInstance.writeln('####################################')
         benchmarkOutputInstance.writeln('Reference values:');
         for (j=0; j<testScores.length; ++j) {
-            var testInfo = BenchmarkTestCases.getTestInfo(j);
+            var testInfo = BenchmarkTestCases.get(j);
             var testScoreStatisticalDispersion = this.getStatisticalDispersion(testScores[j]);
             benchmarkOutputInstance.writeln(testInfo.name + ':', '%25',  'FPS=', (testInfo.referenceFPS * testScoreStatisticalDispersion.average).toFixed(2));
         }
     },
-    outputScore: function() {
+    benchmarkDone: function() {
         this._super();
         var benchmarkScore = {
             testScores: [],
-            finalScore: Number(this._finalScore)
-        }
+            finalScore: this.getFinalScore()
+        };
         var i;
         for (i=0; i<this._testScores.length; ++i) {
             benchmarkScore.testScores[i] = Number(this._testScores[i]);
@@ -83,6 +83,11 @@ BenchmarkDevController = BenchmarkController.extend({
 });
 
 benchmarkControllerInstance = new BenchmarkDevController;
+
+if (typeof BenchmarkOnControllerLoadEnd === 'function') {
+    BenchmarkOnControllerLoadEnd(benchmarkControllerInstance);
+}
+
 benchmarkVersionElement = document.getElementById('benchmark_version');
 if (benchmarkVersionElement) {
     if (-1 === BENCHMARK_VERSION.indexOf('dev')) {

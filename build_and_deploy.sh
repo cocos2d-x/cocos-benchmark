@@ -19,7 +19,7 @@ fi
 project=cocos-benchmark
 distr_files=(cocos2d.js main.js index.html)
 # DO NOT ADD the last '/'
-distr_dirs=(res lib/lib)
+distr_dirs=(res engines)
 root_dir=$(pwd)
 archive_dir=$(pwd)/archive
 usage() 
@@ -77,14 +77,19 @@ else
 	cp -fv $single_file $version_dir/
 	check_error
 fi
+
 for file in ${distr_files[@]}; do
 	cp -fv $file $version_dir/ 
 	check_error
 done
+
 for dir in ${distr_dirs[@]}; do
 	rsync -av --exclude=".*" $dir $version_dir/
 	check_error
 done
+
+rsync -av --exclude=".*" $root_dir/Resources-html5/ $version_dir/
+
 cd $version_dir
 echo "removing hidden file(s)..."
 rm -rf .DS_Store

@@ -2,15 +2,21 @@
 <project name="Javascript compress project" basedir="." default="release">
 
     <taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask"
-             classpath="${basedir}/lib/tools/compiler/compiler.jar"/>
+             classpath="${basedir}/lib/cocos2d-html5/tools/compiler/compiler.jar"/>
 
     <target name="release">
         <!-- version MUST be same as BENCHMARK_VERSION defined in index.html -->
         <jscomp compilationLevel="simple" warning="quiet"
-                debug="false" output="cocos-benchmark-v0.7.0.js">
+                debug="false" output="cocos-benchmark-v0.8.0.js">
             <!-- cocos benchmark source -->
             <sources dir="${basedir}">
-                <file name="src/cocos-benchmark.js"/>
+                <file name="src/APIWrapper.js"/>
+                <file name="src/BenchmarkConfig.js"/>
+                <file name="src/BenchmarkController.js"/>
+                <file name="src/BenchmarkEntryScene.js"/>
+                <file name="src/BenchmarkEntryScene-html5.js"/>
+                <file name="src/BenchmarkTestCases.js"/>
+                <file name="src/BenchmarkTestScene.js"/>
                 <file name="src/resources.js"/>
             </sources>
             <!-- cocos benchmark test cases source -->
@@ -25,11 +31,17 @@
     <target name="dev">
         <!-- version MUST be same as BENCHMARK_VERSION defined in index.html -->
         <jscomp compilationLevel="simple" warning="quiet"
-                debug="false" output="cocos-benchmark-v0.6.0-dev.js">
+                debug="false" output="cocos-benchmark-v0.8.0-dev.js">
             <!-- cocos benchmark source -->
             <sources dir="${basedir}">
-                <file name="src/cocos-benchmark.js"/>
+                <file name="src/APIWrapper.js"/>
+                <file name="src/BenchmarkConfig.js"/>
+                <file name="src/BenchmarkController.js"/>
                 <file name="src/BenchmarkDevController.js"/>
+                <file name="src/BenchmarkEntryScene.js"/>
+                <file name="src/BenchmarkEntryScene-html5.js"/>
+                <file name="src/BenchmarkTestCases.js"/>
+                <file name="src/BenchmarkTestScene.js"/>
                 <file name="src/resources.js"/>
             </sources>
             <!-- cocos benchmark test cases source -->

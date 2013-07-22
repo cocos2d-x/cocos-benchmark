@@ -35,7 +35,7 @@ BenchmarkController = cc.Class.extend({
         return this._testScores[testID];
     },
     getFinalScore: function() {
-        return this._finalScore;
+        return Number(this._finalScore);
     },
     setDelegate: function(delegate) {
         this._delegate = delegate;

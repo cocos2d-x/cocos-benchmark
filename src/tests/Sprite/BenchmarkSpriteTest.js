@@ -36,31 +36,6 @@ var TAG_INFO_LAYER = 1;
 
 var start=0;
 
-cc.Sprite.benchmarkCreate = function (fileName, rect) {
-    var argnum = arguments.length;
-    var sprite = new cc.Sprite();
-    if (argnum === 0) {
-        if (sprite.init())
-            return sprite;
-        return null;
-    } else if (argnum < 2) {
-        /** Creates an sprite with an image filename.
-         The rect used will be the size of the image.
-         The offset will be (0,0).
-         */
-        if (sprite.init(fileName)) {
-            return sprite;
-        }
-        return null;
-    } else {
-        /** Creates an sprite with an CCBatchNode and a rect
-         */
-        if (sprite.init(fileName, rect)) {
-            return sprite;
-        }
-        return null;
-    }
-};
 ////////////////////////////////////////////////////////
 //
 // SubTest
@@ -98,7 +73,7 @@ var SubTest = cc.Class.extend({
         switch (this._subtestNumber) {
             case 1:
             {
-                sprite = cc.Sprite.benchmarkCreate("res/Images/grossinis_sister1.png");
+                sprite = cc.Sprite.create("res/Images/grossinis_sister1.png");
                 this._parent.addChild(sprite, 0, tag + 100);
                 break;
             }
