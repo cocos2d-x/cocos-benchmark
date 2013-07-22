@@ -78,6 +78,7 @@ BenchmarkDevHack = function() {
             this._reset_();
         }
         else {
+            benchmarkOutputInstance.writeln("<<<<<<<<<<<<<<<< " + this._benchmarkTime_ + " >>>>>>>>>>>>>>>>");
             this.startBenchmark();
         }
     };
