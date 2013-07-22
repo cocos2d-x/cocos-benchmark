@@ -37,7 +37,7 @@
                 <file name="src/APIWrapper.js"/>
                 <file name="src/BenchmarkConfig.js"/>
                 <file name="src/BenchmarkController.js"/>
-                <file name="src/BenchmarkDevController.js"/>
+                <file name="src/BenchmarkControllerDevHack-html5.js"/>
                 <file name="src/BenchmarkEntryScene.js"/>
                 <file name="src/BenchmarkEntryScene-html5.js"/>
                 <file name="src/BenchmarkTestCases.js"/>
