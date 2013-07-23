@@ -15,7 +15,7 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Test',
-                referenceFPS: 1.16
+                referenceFPS: 52.54
             }
         ]
     },
@@ -25,15 +25,15 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Size32',
-                referenceFPS: 19.68
+                referenceFPS: 16.79
             },
             {
                 name: 'BurstPipe',
-                referenceFPS: 12.55
+                referenceFPS: 18.85
             },
             {
                 name: 'Comet',
-                referenceFPS: 7.83
+                referenceFPS: 10.63
             }
         ]
     },
@@ -43,11 +43,11 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Position',
-                referenceFPS: 4.44
+                referenceFPS: 3.47
             },
             {
                 name: 'Actions',
-                referenceFPS: 3.03
+                referenceFPS: 2.42
             }
         ]
     },
@@ -57,7 +57,7 @@ BenchmarkTestCases = [
         tests: [
             {
                 name: 'Isometric',
-                referenceFPS: 5 // TODO: fill the reference value
+                referenceFPS: 3.73
             }
         ]
     }
