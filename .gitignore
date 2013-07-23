@@ -3,6 +3,7 @@
 
 cocos-benchmark-v*.js
 /archive/
+*.ap_
 *.apk
 *.d
 *.jsc

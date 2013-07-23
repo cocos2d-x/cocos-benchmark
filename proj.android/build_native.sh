@@ -70,8 +70,11 @@ fi
 mkdir "$APP_ANDROID_ROOT"/assets
 mkdir "$APP_ANDROID_ROOT"/assets/res
 
-# copy Resources/* into assets' root
-cp -rf "$APP_ROOT"/Resources/* "$APP_ANDROID_ROOT"/assets
+# copy res/* into assets' root
+cp -rf "$APP_ROOT"/res "$APP_ANDROID_ROOT"/assets
+
+# copy src/* into assets' root
+cp -rf "$APP_ROOT"/src "$APP_ANDROID_ROOT"/assets
 
 # copy Resources-android/* into assets' root
 cp -rf "$APP_ROOT"/Resources-android/* "$APP_ANDROID_ROOT"/assets

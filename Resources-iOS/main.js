@@ -16,7 +16,6 @@ var appFiles = [
     'src/BenchmarkResultScene-native.js',
     'src/BenchmarkTestCases.js',
     'src/BenchmarkController.js',
-    //'src/BenchmarkDevController.js', // use it to test error and get reference values
     'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',
     'src/tests/Particle/BenchmarkParticleTest.js',
     'src/tests/Sprite/BenchmarkSpriteTest.js',
