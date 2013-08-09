@@ -4,10 +4,10 @@
  * Date: 2/25/13
  * Time: 11:51 AM
  */
-BENCHMARK_TIMES = 10;
+var BENCHMARK_TIMES = 10;
 
-BenchmarkDevHack = function() {
-    var controller = benchmarkControllerInstance;
+(function() {
+    var controller = BenchmarkController.getInstance();
     var getStatisticalDispersion = function(dataArray) {
         var i, sum = 0, average, standardDeviation;
         for (i=0; i<dataArray.length; ++i) {
@@ -89,7 +89,5 @@ BenchmarkDevHack = function() {
             benchmarkVersionElement.innerHTML = BENCHMARK_VERSION + '-dev';
         }
     }
-};
-
-BenchmarkDevHack();
+})();
 

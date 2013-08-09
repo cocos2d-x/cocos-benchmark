@@ -5,7 +5,7 @@
  * Time: 12:10 PM
  */
 
-BenchmarkTestResultBar = cc.Node.extend({
+var BenchmarkTestResultBar = cc.Node.extend({
     _testName: null,
     _FPS: null,
     _score: null,
@@ -132,19 +132,20 @@ BenchmarkResult = cc.Layer.extend({
         return true;
     },
     _tick: function() {
+        var benchmarkController = BenchmarkController.getInstance();
         var i;
         this._tickCount ++;
         for (i=0; i<this._resultBars.length; ++i) {
             var resultBar = this._resultBars[i];
             resultBar.setFPS(
-                (benchmarkControllerInstance.getTestFPS(i) * this._tickCount / BenchmarkResult.MAX_TICK_COUNT).toFixed(2)
+                (benchmarkController.getTestFPS(i) * this._tickCount / BenchmarkResult.MAX_TICK_COUNT).toFixed(2)
             );
             resultBar.setScore(
-                (benchmarkControllerInstance.getTestScore(i) * this._tickCount / BenchmarkResult.MAX_TICK_COUNT).toFixed(2)
+                (benchmarkController.getTestScore(i) * this._tickCount / BenchmarkResult.MAX_TICK_COUNT).toFixed(2)
             )
         }
         this.finalScoreBar.setScore(
-            (benchmarkControllerInstance.getFinalScore() * this._tickCount / BenchmarkResult.MAX_TICK_COUNT).toFixed(2)
+            (benchmarkController.getFinalScore() * this._tickCount / BenchmarkResult.MAX_TICK_COUNT).toFixed(2)
         );
     },
     backToEntry: function() {

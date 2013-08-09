@@ -16,7 +16,7 @@
  });
  */
 
-BenchmarkController = cc.Class.extend({
+var BenchmarkController = cc.Class.extend({
     _testSceneBeginTime: 0,
     _testSceneEndTime: 0,
     _testSceneBeginFrames: 0,
@@ -115,12 +115,18 @@ BenchmarkController = cc.Class.extend({
     _runTest: function(ID) {
         if (0 <= ID && ID <= BenchmarkTestCases.maxID()) {
             var testCase = BenchmarkTestCases.get(ID);
-            var testSceneName = testCase.category + testCase.name + 'BenchmarkScene';
+            var testClassName = testCase.category + testCase.name + 'Benchmark';
+            var testSceneName = testClassName + 'Scene';
             try {
-                cc.log(testSceneName);
-                var testScene = eval("new " + testSceneName + "()");
+                cc.log(testClassName);
+                var testScene;
+                if (eval('typeof ' + testSceneName) !== 'undefined') {
+                    testScene = eval("new " + testSceneName + "()");
+                }
+                else {
+                    testScene = eval('BenchmarkTestScene.create(' + testClassName + ')');
+                }
                 this._currentTestID = ID;
-
                 testScene.setID(ID);
                 testScene.runTest();
             } catch (e) {
@@ -141,9 +147,15 @@ BenchmarkController = cc.Class.extend({
     }
 });
 
-benchmarkControllerInstance = new BenchmarkController;
+BenchmarkController._instance = null;
 
+BenchmarkController.getInstance = function() {
+    if (!this._instance) {
+        this._instance = new BenchmarkController();
+    }
+    return this._instance;
+};
 
 if (typeof BenchmarkOnControllerLoadEnd === 'function') {
-    BenchmarkOnControllerLoadEnd(benchmarkControllerInstance);
+    BenchmarkOnControllerLoadEnd(BenchmarkController.getInstance());
 }

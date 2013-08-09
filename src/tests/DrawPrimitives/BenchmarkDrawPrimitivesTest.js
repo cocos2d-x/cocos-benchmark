@@ -25,64 +25,76 @@
  ****************************************************************************/
 var DRAW_PRIMITIVES_TEST_LOOP = 20;
 
-var DrawPrimitivesTestBenchmark = cc.Layer.extend({
+var DrawPrimitivesBaseBenchmark = cc.Layer.extend({
     ctor: function() {
         this._super();
+        var drawNode = cc.DrawNode.create();
         var winSize = cc.Director.getInstance().getWinSize();
+        this.addChild(drawNode, 10);
+        this.drawTest(drawNode, winSize);
+    },
+    drawTest: function(drawNode, winSize) {
+    }
+});
 
-        var draw = cc.DrawNode.create();
-        this.addChild( draw, 10 );
-
-        //
-        // Circles
-        //
-        for( var i=0; i < 10; i++) {
-            draw.drawDot( cc.p(winSize.width/2, winSize.height/2), 10*(10-i), cc.c4f( Math.random(), Math.random(), Math.random(), 1) );
+var DrawPrimitivesDrawDotBenchmark = DrawPrimitivesBaseBenchmark.extend({
+    drawTest: function(drawNode, winSize) {
+        var CIRCLE_COUNT = Math.max(winSize.width, winSize.height);
+        var i;
+        for (i=0; i<CIRCLE_COUNT; i++) {
+            drawNode.drawDot(
+                cc.p(winSize.width / 2, winSize.height / 2),
+                CIRCLE_COUNT - i,
+                cc.c4f(Math.random(), Math.random(), Math.random(), 1)
+            );
         }
+    }
+});
 
-        //
-        // Polygons
-        //
-        var points = [ cc.p(winSize.height/4,0), cc.p(winSize.width,winSize.height/5), cc.p(winSize.width/3*2,winSize.height) ];
-        draw.drawPoly(points, cc.c4f(1,0,0,0.5), 4, cc.c4f(0,0,1,1) );
-
-        // star poly (triggers bugs)
-        var o=80;
-        var w=20;
-        var h=50;
+var DrawPrimitivesDrawPolyBenchmark = DrawPrimitivesBaseBenchmark.extend({
+    _drawStar: function(drawNode, x, y, w, h) {
         var star = [
-                  cc.p(o+w,o-h), cc.p(o+w*2, o),                  // lower spike
-                  cc.p(o + w*2 + h, o+w ), cc.p(o + w*2, o+w*2),  // right spike
-                  cc.p(o +w, o+w*2+h), cc.p(o,o+w*2),             // top spike
-                  cc.p(o -h, o+w), cc.p(o,o)                     // left spike
-                  ];
-        draw.drawPoly(star, cc.c4f(1,0,0,0.5), 1, cc.c4f(0,0,1,1) );
-
-        // star poly (doesn't trigger bug... order is important un tesselation is supported.
-        o=180;
-        w=20;
-        h=50;
-        star = [
-              cc.p(o,o), cc.p(o+w,o-h), cc.p(o+w*2, o),       // lower spike
-              cc.p(o + w*2 + h, o+w ), cc.p(o + w*2, o+w*2),  // right spike
-              cc.p(o +w, o+w*2+h), cc.p(o,o+w*2),             // top spike
-              cc.p(o -h, o+w)                                 // left spike
-              ];
-        draw.drawPoly(star, cc.c4f(1,0,0,0.5), 1, cc.c4f(0,0,1,1) );
-
-        //
-        // Segments
-        //
-        draw.drawSegment( cc.p(20,winSize.height), cc.p(20,winSize.height/2), 10, cc.c4f(0, 1, 0, 1) );
-        draw.drawSegment( cc.p(10,winSize.height/2), cc.p(winSize.width/2, winSize.height/2), 40, cc.c4f(1, 0, 1, 0.5) );
+            cc.p(x-w, y-w), cc.p(x, y-h-w), cc.p(x+w, y-w),
+            cc.p(x+h+w, y), cc.p(x+w, y+w),
+            cc.p(x, y+h+w), cc.p(x-w, y+w), cc.p(x-h-w, y)
+        ];
+        drawNode.drawPoly(star, cc.c4f(1,0,0,1), 1, cc.c4f(0,0,1,1) );
+    },
+    drawTest: function(drawNode, winSize) {
+        var w = 10;
+        var h = 20;
+        var row = 15, column = 15;
+        var i, j;
+        for (i=0; i<row; ++i) {
+            for (j=0; j<column; ++j) {
+                this._drawStar(
+                    drawNode,
+                    (winSize.width - 2 * w - 2 * h) / (column - 1) * j + w + h,
+                    (winSize.height - 2 * w - 2 * h) / (row - 1) * i + w + h,
+                    w,
+                    h
+                );
+            }
+        }
+        this._drawStar(drawNode, winSize.width / 2, winSize.height / 2, w * 2, h * 2);
     }
 });
 
-var DrawPrimitivesTestBenchmarkScene = BenchmarkBaseTestScene.extend({
-    runTest:function () {
-        var layer = new DrawPrimitivesTestBenchmark();
-        this.addChild(layer);
-        cc.Director.getInstance().replaceScene(this);
+var DrawPrimitivesDrawSegmentBenchmark = DrawPrimitivesBaseBenchmark.extend({
+    drawTest: function(drawNode, winSize) {
+        var SEGMENT_COUNT = 100;
+        var RADIUS_UNIT = Math.sqrt(winSize.width * winSize.width + winSize.height * winSize.height) / SEGMENT_COUNT;
+        var i;
+        for (i=0; i<SEGMENT_COUNT; ++i) {
+            var fromPoint = cc.p(winSize.width / 2 / SEGMENT_COUNT * i, winSize.height / 2 / SEGMENT_COUNT * i);
+            var toPoint = cc.p(winSize.width - winSize.width / SEGMENT_COUNT / 2 * i, winSize.height - winSize.height / SEGMENT_COUNT / 2 * i);
+            var radius = cc.pDistance(fromPoint, toPoint) / 2;
+            drawNode.drawSegment(
+                fromPoint,
+                toPoint,
+                radius,
+                cc.c4f(Math.random(), Math.random(), Math.random(), 1)
+            );
+        }
     }
 });
-

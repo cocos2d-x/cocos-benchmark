@@ -54,6 +54,7 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
             'src/BenchmarkEntryScene.js',
             'src/BenchmarkEntryScene-html5.js',
             'src/BenchmarkTestCases.js',
+            'src/BenchmarkTestCases-html5.js',
             'src/BenchmarkController.js',
             //'src/BenchmarkControllerDevHack-html5.js', // use it to test error and get reference values
             'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',

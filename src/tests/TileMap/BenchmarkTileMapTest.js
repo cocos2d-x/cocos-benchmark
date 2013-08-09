@@ -4,7 +4,8 @@
  * Date: 3/27/13
  * Time: 12:23 PM
  */
-var TileMapIsometricBenchmarkScene = BenchmarkBaseTestScene.extend({
+// TODO: find why cc.LayerColor.extend failed
+var TileMapIsometricBenchmarkScene = BenchmarkTestScene.extend({
     ctor: function() {
         this._super();
         var winSize = cc.Director.getInstance().getWinSize();

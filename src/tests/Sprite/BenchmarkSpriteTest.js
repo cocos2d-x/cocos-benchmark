@@ -166,7 +166,7 @@ var SubTest = cc.Class.extend({
 // SpriteMainScene
 //
 ////////////////////////////////////////////////////////
-var SpriteMainScene = BenchmarkBaseTestScene.extend({
+var SpriteMainScene = BenchmarkTestScene.extend({
     _lastRenderedCount:null,
     _quantityNodes:null,
     _subTest:null,

@@ -9,7 +9,7 @@
 // Default benchmark scene
 //
 ////////////////////////////////////////////////////////
-BenchmarkEntry = cc.Layer.extend({
+var BenchmarkEntry = cc.Layer.extend({
     init:function () {
         this._super();
         var size = cc.Director.getInstance().getWinSize();

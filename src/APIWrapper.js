@@ -5,7 +5,7 @@
  * Date: 7/18/13
  * Time: 10:25 AM
  */
-APIWrapper = {};
+var APIWrapper = {};
 
 APIWrapper.ParticleSystem = null;
 

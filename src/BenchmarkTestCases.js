@@ -8,59 +8,7 @@
 // category: API category
 // duration: duration(ms)
 // referenceFPS: FPS test value on the reference platform
-BenchmarkTestCases = [
-    {
-        category: 'DrawPrimitives',
-        defaultDuration: 2000,
-        tests: [
-            {
-                name: 'Test',
-                referenceFPS: 52.54
-            }
-        ]
-    },
-    {
-        category: 'Particle',
-        defaultDuration: 5000,
-        tests: [
-            {
-                name: 'Size32',
-                referenceFPS: 16.79
-            },
-            {
-                name: 'BurstPipe',
-                referenceFPS: 18.85
-            },
-            {
-                name: 'Comet',
-                referenceFPS: 10.63
-            }
-        ]
-    },
-    {
-        category: 'Sprite',
-        defaultDuration: 3000,
-        tests: [
-            {
-                name: 'Position',
-                referenceFPS: 3.47
-            },
-            {
-                name: 'Actions',
-                referenceFPS: 2.42
-            }
-        ]
-    },
-    {
-        category: 'TileMap',
-        defaultDuration: 3000,
-        tests: [
-            {
-                name: 'Isometric',
-                referenceFPS: 3.73
-            }
-        ]
-    }
+var BenchmarkTestCases = [
 ];
 
 BenchmarkTestCases.IDToIndices = function(ID) {

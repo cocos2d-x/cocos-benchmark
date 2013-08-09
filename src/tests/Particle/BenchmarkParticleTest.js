@@ -27,14 +27,12 @@ var TAG_INFO_LAYER = 1;
 var TAG_PARTICLE_SYSTEM = 3;
 var TAG_LABEL_ATLAS = 4;
 var PARTICLE_NODES = 100;
-var VALID_DELTA_RATE = 0.3;
-
 ////////////////////////////////////////////////////////
 //
 // ParticleMainScene
 //
 ////////////////////////////////////////////////////////
-var ParticleMainScene = BenchmarkBaseTestScene.extend({
+var ParticleMainScene = BenchmarkTestScene.extend({
     _lastRenderedCount:null,
     _quantityParticles:null,
     _subtestNumber:null,
@@ -490,20 +488,16 @@ var DemoParticleFromFile = ParticleDemo.extend({
     }
 });
 
-var ParticleBurstPipeBenchmarkScene = BenchmarkBaseTestScene.extend({
+var ParticleBurstPipeBenchmarkScene = BenchmarkTestScene.extend({
     runTest: function () {
-        PARTICLE_NODES = 120;
-        VALID_DELTA_RATE = 0.4;
         var winSize = cc.Director.getInstance().getWinSize();
         this.addChild(new DemoParticleFromFile("BurstPipe", {x: winSize.width/2, y: winSize.height-50}));
         cc.Director.getInstance().replaceScene(this);
     }
 });
 
-var ParticleCometBenchmarkScene = BenchmarkBaseTestScene.extend({
+var ParticleCometBenchmarkScene = BenchmarkTestScene.extend({
     runTest: function () {
-        PARTICLE_NODES = 120;
-        VALID_DELTA_RATE = 0.4;
         var winSize = cc.Director.getInstance().getWinSize();
         this.addChild(new DemoParticleFromFile("Comet", {x: winSize.width-60, y: 60}));
         cc.Director.getInstance().replaceScene(this);

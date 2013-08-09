@@ -9,7 +9,7 @@
 // Default benchmark scene
 //
 ////////////////////////////////////////////////////////
-BenchmarkEntry = cc.Layer.extend({
+var BenchmarkEntry = cc.Layer.extend({
     init: function () {
         this._super();
         var winSize = cc.Director.getInstance().getWinSize();
@@ -68,6 +68,6 @@ BenchmarkEntry = cc.Layer.extend({
         return true;
     },
     startBenchmark: function() {
-        benchmarkControllerInstance.startBenchmark();
+        BenchmarkController.getInstance().startBenchmark();
     }
 });

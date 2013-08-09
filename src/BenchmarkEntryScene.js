@@ -5,12 +5,12 @@
  * Time: 10:26 AM
  */
 // Scene showed when no benchmark running
-BenchmarkEntryScene = cc.Scene.extend({
+var BenchmarkEntryScene = cc.Scene.extend({
     onEnter:function () {
         var layer = new BenchmarkEntry();
         layer.init();
         this.addChild(layer);
-        benchmarkControllerInstance.ready = true;
+        BenchmarkController.getInstance().ready = true;
     }
 });
 
