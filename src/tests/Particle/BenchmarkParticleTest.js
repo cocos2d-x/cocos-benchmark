@@ -90,7 +90,7 @@ var ParticleMainScene = BenchmarkTestScene.extend({
         }
         //todo
         // remove the "fire.png" from the TextureCache cache.
-        var texture = cc.TextureCache.getInstance().addImage("res/Images/fire.png");
+        var texture = cc.TextureCache.getInstance().addImage(s_fire);
         cc.TextureCache.getInstance().removeTexture(texture);
 
         particleSystem = new APIWrapper.ParticleSystem();
@@ -99,17 +99,17 @@ var ParticleMainScene = BenchmarkTestScene.extend({
             case 1:
                 cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_RGBA8888);
                 particleSystem.initWithTotalParticles(this._quantityParticles);
-                particleSystem.setTexture(cc.TextureCache.getInstance().addImage("res/Images/fire.png"));
+                particleSystem.setTexture(cc.TextureCache.getInstance().addImage(s_fire));
                 break;
             case 2:
                 cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_RGBA4444);
                 particleSystem.initWithTotalParticles(this._quantityParticles);
-                particleSystem.setTexture(cc.TextureCache.getInstance().addImage("res/Images/fire.png"));
+                particleSystem.setTexture(cc.TextureCache.getInstance().addImage(s_fire));
                 break;
             case 3:
                 cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_A8);
                 particleSystem.initWithTotalParticles(this._quantityParticles);
-                particleSystem.setTexture(cc.TextureCache.getInstance().addImage("res/Images/fire.png"));
+                particleSystem.setTexture(cc.TextureCache.getInstance().addImage(s_fire));
                 break;
             default:
                 particleSystem = null;

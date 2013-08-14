@@ -1,8 +1,8 @@
 s_pathSister1 = "res/Images/grossinis_sister1.png";
 s_benchmark = "res/Images/benchmark.png";
 s_fire = "res/Images/fire.png";
-s_pathClose = "res/Images/close.png";
 s_fpsImages = "res/Fonts/fps_images.png";
+s_testTileMap = "res/TileMaps/test.tmx";
 
 g_resources = [
     //image resources
@@ -14,6 +14,6 @@ g_resources = [
     {type:"plist", src:"res/Particles/BurstPipe.plist"},
     {type:"plist", src:"res/Particles/Comet.plist"},
     //tile maps
-    {type:"image", src:"res/TileMaps/iso-test.png"},
-    {type:"tmx", src:"res/TileMaps/iso-test-zorder.tmx"}
+    {type:"image", src:"res/TileMaps/test.png"},
+    {type:"tmx", src:s_testTileMap}
 ];

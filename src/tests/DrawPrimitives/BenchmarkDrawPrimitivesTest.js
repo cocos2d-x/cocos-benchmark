@@ -69,14 +69,13 @@ var DrawPrimitivesDrawPolyBenchmark = DrawPrimitivesBaseBenchmark.extend({
             for (j=0; j<column; ++j) {
                 this._drawStar(
                     drawNode,
-                    (winSize.width - 2 * w - 2 * h) / (column - 1) * j + w + h,
-                    (winSize.height - 2 * w - 2 * h) / (row - 1) * i + w + h,
+                    winSize.width / column * j,
+                    winSize.height / row * i,
                     w,
                     h
                 );
             }
         }
-        this._drawStar(drawNode, winSize.width / 2, winSize.height / 2, w * 2, h * 2);
     }
 });
 
