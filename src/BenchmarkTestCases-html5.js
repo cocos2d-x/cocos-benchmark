@@ -11,15 +11,15 @@ var BenchmarkHtml5TestCases = [
         tests: [
             {
                 name: 'DrawDot',
-                referenceFPS: 52.54
+                referenceFPS: 5.78
             },
             {
                 name: 'DrawPoly',
-                referenceFPS: 52.54
+                referenceFPS: 11.03
             },
             {
                 name: 'DrawSegment',
-                referenceFPS: 52.54
+                referenceFPS: 11.40
             }
         ]
     },
@@ -29,15 +29,15 @@ var BenchmarkHtml5TestCases = [
         tests: [
             {
                 name: 'Size8',
-                referenceFPS: 16.79
+                referenceFPS: 34.15
             },
             {
                 name: 'BurstPipe',
-                referenceFPS: 18.85
+                referenceFPS: 19.68
             },
             {
                 name: 'Comet',
-                referenceFPS: 10.63
+                referenceFPS: 11.19
             }
         ]
     },
@@ -47,11 +47,11 @@ var BenchmarkHtml5TestCases = [
         tests: [
             {
                 name: 'Position',
-                referenceFPS: 3.47
+                referenceFPS: 3.75
             },
             {
                 name: 'Actions',
-                referenceFPS: 2.42
+                referenceFPS: 2.39
             }
         ]
     },
@@ -61,7 +61,7 @@ var BenchmarkHtml5TestCases = [
         tests: [
             {
                 name: 'Isometric',
-                referenceFPS: 3.73
+                referenceFPS: 3.94
             }
         ]
     }
