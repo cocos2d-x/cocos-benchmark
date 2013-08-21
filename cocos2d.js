@@ -130,7 +130,7 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
                  if (engineLabelElement) {
                      engineLabelElement.style.display = 'block';
                  }
-                 benchmarkOutputInstance.writeln('Engine version: ' + currentEngineID);
+                 BenchmarkOutput.getInstance().writeln('Engine version: ' + currentEngineID);
              }
              else {
                  alert('invalid engine: ' + currentEngineID)

@@ -56,7 +56,7 @@ var cocos2dApp = cc.Application.extend({
         var director = cc.Director.getInstance();
         // turn on/off display FPS
         if (BenchmarkConfig.DEBUG) {
-            benchmarkOutputInstance.writeln('Debug mode: on');
+            BenchmarkOutput.getInstance().writeln('Debug mode: on');
             director.setDisplayStats(this.config['showFPS']);
         }
 

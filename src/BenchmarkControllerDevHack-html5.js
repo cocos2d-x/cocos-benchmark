@@ -18,10 +18,10 @@ var BENCHMARK_TIMES = 10;
         for (i=0; i<dataArray.length; ++i) {
             sum += (dataArray[i] - average) * (dataArray[i] - average);
         }
-        standardDevication = Math.sqrt(sum / dataArray.length);
+        standardDeviation = Math.sqrt(sum / dataArray.length);
         return {
             average: average,
-            standardDeviation: standardDevication
+            standardDeviation: standardDeviation
         }
     };
     controller._benchmarkTime_ = 0;
@@ -43,21 +43,21 @@ var BENCHMARK_TIMES = 10;
                 testScores[j][i] = this._benchmarkScores_[i].testScores[j];
             }
         }
-        benchmarkOutputInstance.clear();
+        BenchmarkOutput.getInstance().clear();
         for (j=0; j<testScores.length; ++j) {
             var testScoreStatisticalDispersion = getStatisticalDispersion(testScores[j]);
-            benchmarkOutputInstance.writeln(BenchmarkTestCases.get(j).name, '%25', testScoreStatisticalDispersion.average.toFixed(2),
+            BenchmarkOutput.getInstance().writeln(BenchmarkTestCases.get(j).name, '%25', testScoreStatisticalDispersion.average.toFixed(2),
                 ' +/- ' + (testScoreStatisticalDispersion.standardDeviation / testScoreStatisticalDispersion.average * 100).toFixed(1) + '%');
         }
         finalScoreStatisticalDispersion = getStatisticalDispersion(finalScores);
-        benchmarkOutputInstance.writeln('Score:', '%25', finalScoreStatisticalDispersion.average.toFixed(2),
+        BenchmarkOutput.getInstance().writeln('Score:', '%25', finalScoreStatisticalDispersion.average.toFixed(2),
             ' +/- ' + (finalScoreStatisticalDispersion.standardDeviation / finalScoreStatisticalDispersion.average * 100).toFixed(1) + '%');
-        benchmarkOutputInstance.writeln('####################################')
-        benchmarkOutputInstance.writeln('Reference values:');
+        BenchmarkOutput.getInstance().writeln('####################################')
+        BenchmarkOutput.getInstance().writeln('Reference values:');
         for (j=0; j<testScores.length; ++j) {
             var testInfo = BenchmarkTestCases.get(j);
             var testScoreStatisticalDispersion = getStatisticalDispersion(testScores[j]);
-            benchmarkOutputInstance.writeln(testInfo.name + ':', '%25',  'FPS=', (testInfo.referenceFPS * testScoreStatisticalDispersion.average).toFixed(2));
+            BenchmarkOutput.getInstance().writeln(testInfo.name + ':', '%25',  'FPS=', (testInfo.referenceFPS * testScoreStatisticalDispersion.average).toFixed(2));
         }
     };
     controller._oldBenchmarkDone_ = controller.benchmarkDone;
@@ -78,12 +78,12 @@ var BENCHMARK_TIMES = 10;
             this._reset_();
         }
         else {
-            benchmarkOutputInstance.writeln("<<<<<<<<<<<<<<<< " + this._benchmarkTime_ + " >>>>>>>>>>>>>>>>");
+            BenchmarkOutput.getInstance().writeln("<<<<<<<<<<<<<<<< " + this._benchmarkTime_ + " >>>>>>>>>>>>>>>>");
             this.startBenchmark();
         }
     };
     // update version info when run dev version with SINGLE_FILE off
-    benchmarkVersionElement = document.getElementById('benchmark_version');
+    var benchmarkVersionElement = document.getElementById('benchmark_version');
     if (benchmarkVersionElement) {
         if (-1 === BENCHMARK_VERSION.indexOf('dev')) {
             benchmarkVersionElement.innerHTML = BENCHMARK_VERSION + '-dev';
