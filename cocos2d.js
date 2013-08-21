@@ -34,6 +34,9 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
         },
         "v2.1.1.min": {
             file: 'engines/Cocos2d-html5-v2.1.1.min.js'
+        },
+        "v2.1.4.min": {
+            file: 'engines/Cocos2d-html5-v2.1.4.min.js'
         }
         // add more engine versions here
     };
