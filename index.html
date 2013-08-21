@@ -43,12 +43,12 @@
         }
     </style>
     <script type="text/javascript">
-        var BENCHMARK_VERSION = 'v0.7.0'; // Modify version in build.xml, when single file used
+        var BENCHMARK_VERSION = 'v0.8.0'; // Modify version in build.xml, when single file used
         // append version to title
         document.title = document.title + ' ' + BENCHMARK_VERSION;
         // benchmark output to write test result
-        benchmarkOutputInstance = {
-            _format: function(args) {
+        var BenchmarkOutput = function() {
+            this._format = function(args) {
                 var text = '', i, width = 0;
                 for (i=0; i<args.length; ++i) {
                     var arg = args[i];
@@ -71,24 +71,31 @@
                     text += arg;
                 }
                 return text;
-            },
-            _write: function(text) {
+            };
+            this._write = function(text) {
                 var output = document.getElementById('output');
                 if (1 === output.firstChild.length) {
                     output.firstChild.deleteData(0, output.firstChild.length);
                 }
                 output.firstChild.appendData(text);
-            },
-            write: function() {
+            };
+            this.write = function() {
                 this._write(this._format(arguments));
-            },
-            writeln: function() {
+            };
+            this.writeln = function() {
                 this._write(this._format(arguments) + '\n');
-            },
-            clear: function() {
+            };
+            this.clear = function() {
                 var output = document.getElementById('output');
                 output.firstChild.deleteData(0, output.firstChild.length);
             }
+        };
+        BenchmarkOutput._instance = null;
+        BenchmarkOutput.getInstance = function() {
+            if (!this._instance) {
+                this._instance = new BenchmarkOutput();
+            }
+            return this._instance;
         };
         BenchmarkQueryParameters = (function() {
             var result = {};
@@ -122,32 +129,56 @@
             };
             return result;
         }());
-        function BenchmarkSetAction(button, action) {
-            if (!button) {
-                button = document.getElementById('action');
-            }
-            button.value = action;
-        }
-        function BenchmarkSetActionStart(button) {
-            BenchmarkSetAction(button, 'start');
-        }
-        function BenchmarkSetActionStop(button) {
-            BenchmarkSetAction(button, 'stop');
-        }
         function BenchmarkOnActionButtonClick(button) {
-            if (button.value == 'start') {
-                if (typeof benchmarkControllerInstance !== 'undefined') { // loaded
-                    benchmarkControllerInstance.startBenchmark(button);
+            if (typeof BenchmarkController !== 'undefined') { // loaded
+                if (button.value == 'start') {
+                    BenchmarkController.getInstance().startBenchmark();
                 }
-            }
-            else if (button.value == 'stop') {
-                benchmarkControllerInstance.stopBenchmark(button);
+                else if (button.value == 'stop') {
+                    BenchmarkController.getInstance().stopBenchmark();
+                }
             }
         }
         function BenchmarkOnEngineChange(select) {
             var selectOption = select.options[select.selectedIndex];
             BenchmarkQueryParameters.engine = selectOption.value;
             window.location.search = BenchmarkQueryParameters.toString();
+        }
+        function BenchmarkOnControllerLoadEnd(controller) {
+            var controllerDelegate = {
+                _setAction: function(action) {
+                    document.getElementById('action').value = action;
+                },
+                onBeginTestCase: function(testInfo) {
+                    if (testInfo.firstInCategory) {
+                        BenchmarkOutput.getInstance().writeln(testInfo.category);
+                    }
+                },
+                onEndTestCase: function(testID, testInfo) {
+                    var name = '  ' + testInfo.name + ': ';
+                    var FPS = '', score = '';
+                    if (testInfo.duration) {
+                        FPS = controller.getTestFPS(testID);
+                        score = '(' + controller.getTestScore(testID) + ')';
+                    }
+                    BenchmarkOutput.getInstance().writeln(name, '%25', FPS, score);
+                },
+                onStartBenchmark: function() {
+                    this._setAction('stop');
+                },
+                onStopBenchmark: function() {
+                    cc.Director.getInstance().replaceScene(BenchmarkEntryScene.getInstance());
+                    this._setAction('start');
+                },
+                onBenchmarkDone: function() {
+                    BenchmarkOutput.getInstance().writeln('Score: ' + controller.getFinalScore());
+                    BenchmarkOutput.getInstance().writeln('####################################');
+                },
+                onError: function(e) {
+                    BenchmarkOutput.getInstance().writeln('Exception occurred, stopped:\n' + e);
+                }
+            };
+            controller.setDelegate(controllerDelegate);
         }
     </script>
     <script src="cocos2d.js"></script>
@@ -156,7 +187,7 @@
 <div id="Cocos2dGameContainer" style="background-color:rgba(0,0,0,0.1); width: 300px; height: 300px">
 </div>
 <div style="height: 50px">
-    <div class="menu_item_wrapper" style="width: 50%">
+    <div class="menu_item_wrapper" style="width: 56%">
         <div>
             <div class="menu_item_text">
                 <span style="float: left">version:&nbsp;</span>
@@ -170,14 +201,14 @@
             </div>
         </div>
     </div>
-    <div class="menu_item_wrapper" style="width: 25%">
+    <div class="menu_item_wrapper" style="width: 22%">
         <div>
             <input id="action" type="button" onclick="BenchmarkOnActionButtonClick(this)" value=start />
         </div>
     </div>
-    <div class="menu_item_wrapper" style="width: 25%">
+    <div class="menu_item_wrapper" style="width: 22%">
         <div>
-            <input id="clear" type="button" onclick="benchmarkOutputInstance.clear()" value=clear />
+            <input id="clear" type="button" onclick="BenchmarkOutput.getInstance().clear()" value=clear />
         </div>
     </div>
 </div>

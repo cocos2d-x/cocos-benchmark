@@ -1,8 +1,6 @@
 #!/bin/sh
-compile_target=
-upload_server=
-upload_user=
-upload_dir=
+source config.sh
+
 if [ ! $upload_server ]; then
     echo 'upload_server not assigned'
     exit 1
@@ -19,7 +17,7 @@ fi
 project=cocos-benchmark
 distr_files=(cocos2d.js main.js index.html)
 # DO NOT ADD the last '/'
-distr_dirs=(res lib/lib)
+distr_dirs=(res engines)
 root_dir=$(pwd)
 archive_dir=$(pwd)/archive
 usage() 
@@ -47,6 +45,14 @@ if [ $# -lt 1 ]; then
 	usage
 fi
 version=$1
+
+if [ $compile_target = dev ]; then
+    if [[ $version != *dev* ]]; then
+        echo "invalid dev version: $version"
+        exit 1
+    fi
+fi
+
 single_file_name=$project-v$version.js
 single_file=$root_dir/$single_file_name
 version_dir=$archive_dir/v$version
@@ -77,14 +83,19 @@ else
 	cp -fv $single_file $version_dir/
 	check_error
 fi
+
 for file in ${distr_files[@]}; do
 	cp -fv $file $version_dir/ 
 	check_error
 done
+
 for dir in ${distr_dirs[@]}; do
 	rsync -av --exclude=".*" $dir $version_dir/
 	check_error
 done
+
+rsync -av --exclude=".*" $root_dir/Resources-html5/ $version_dir/
+
 cd $version_dir
 echo "removing hidden file(s)..."
 rm -rf .DS_Store

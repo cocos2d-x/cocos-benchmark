@@ -3,3 +3,25 @@
 
 cocos-benchmark-v*.js
 /archive/
+*.ap_
+*.apk
+*.d
+*.jsc
+*.o
+*.o.d
+/proj.android/obj/
+
+/proj.ios/CocosBenchmark.xcodeproj/project.xcworkspace/xcuserdata/
+/proj.ios/CocosBenchmark.xcodeproj/xcuserdata/
+/proj.win32/CocosBenchmark.vcxproj.user
+/proj.android/.classpath
+/proj.android/.cproject
+/proj.android/.project
+/proj.android/assets/
+/proj.android/bin/classes.dex
+/proj.android/bin/classes/
+/proj.android/bin/dexedLibs/
+/proj.android/libs/x86/libcocos2djs.so
+/proj.android/local.properties
+/proj.android/bin/jarlist.cache
+/proj.android/bin/build.prop

@@ -30,10 +30,13 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
 (function () {
     var engines = {
         'v2.1.0.min': {
-            file: 'lib/Cocos2d-html5-v2.1.0.min.js'
+            file: 'engines/Cocos2d-html5-v2.1.0.min.js'
         },
         "v2.1.1.min": {
-            file: 'lib/Cocos2d-html5-v2.1.1.min.js'
+            file: 'engines/Cocos2d-html5-v2.1.1.min.js'
+        },
+        "v2.1.4.min": {
+            file: 'engines/Cocos2d-html5-v2.1.4.min.js'
         }
         // add more engine versions here
     };
@@ -45,11 +48,18 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
         loadExtension:false,
         renderMode: 1   , // 1 for canvas, 2 for WebGL
         tag:'Cocos2dGameContainer', //the dom element to run cocos2d on
-        engineDir:'./lib/cocos2d/',
+        engineDir:'./lib/cocos2d-html5/cocos2d/',
         appFiles:[
             'src/resources.js',
-            'src/cocos-benchmark.js',
-            //'src/BenchmarkDevController.js', // use it to test error and get reference values
+            'src/BenchmarkConfig.js',
+            'src/APIWrapper.js',
+            'src/BenchmarkTestScene.js',
+            'src/BenchmarkEntryScene.js',
+            'src/BenchmarkEntryScene-html5.js',
+            'src/BenchmarkTestCases.js',
+            'src/BenchmarkTestCases-html5.js',
+            'src/BenchmarkController.js',
+            //'src/BenchmarkControllerDevHack-html5.js', // use it to test error and get reference values
             'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',
             'src/tests/Particle/BenchmarkParticleTest.js',
             'src/tests/Sprite/BenchmarkSpriteTest.js',
@@ -82,9 +92,11 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
              }
              else {
                  for (ID in engines) {
-                     currentEngineID = ID;
-                     currentEngineInfo = engines[ID];
-                     break;
+                     if (engines.hasOwnProperty(ID)) {
+                         currentEngineID = ID;
+                         currentEngineInfo = engines[ID];
+                         break;
+                     }
                  }
              }
              if (currentEngineInfo) {
@@ -121,10 +133,10 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
                  if (engineLabelElement) {
                      engineLabelElement.style.display = 'block';
                  }
-                 benchmarkOutputInstance.writeln('Engine version: ' + currentEngineID);
+                 BenchmarkOutput.getInstance().writeln('Engine version: ' + currentEngineID);
              }
              else {
-                 alert('invalid engine: ' + engine)
+                 alert('invalid engine: ' + currentEngineID)
                  return;
              }
          }

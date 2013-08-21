@@ -4,14 +4,15 @@
  * Date: 3/27/13
  * Time: 12:23 PM
  */
-var TileMapIsometricBenchmarkScene = BenchmarkBaseTestScene.extend({
+// TODO: find why cc.LayerColor.extend failed
+var TileMapIsometricBenchmarkScene = BenchmarkTestScene.extend({
     ctor: function() {
         this._super();
         var winSize = cc.Director.getInstance().getWinSize();
         var color = cc.LayerColor.create(cc.c4b(64, 64, 64, 255));
         this.addChild(color, -1);
         // TODO: fix display issue when using iso-test.tmx on iPhone5
-        var map = cc.TMXTiledMap.create("res/TileMaps/iso-test-zorder.tmx");
+        var map = cc.TMXTiledMap.create(s_testTileMap);
         this.addChild(map, 0);
          var ms = map.getMapSize();
          var ts = map.getTileSize();

@@ -36,31 +36,6 @@ var TAG_INFO_LAYER = 1;
 
 var start=0;
 
-cc.Sprite.benchmarkCreate = function (fileName, rect) {
-    var argnum = arguments.length;
-    var sprite = new cc.Sprite();
-    if (argnum === 0) {
-        if (sprite.init())
-            return sprite;
-        return null;
-    } else if (argnum < 2) {
-        /** Creates an sprite with an image filename.
-         The rect used will be the size of the image.
-         The offset will be (0,0).
-         */
-        if (sprite && sprite.initWithFile(fileName)) {
-            return sprite;
-        }
-        return null;
-    } else {
-        /** Creates an sprite with an CCBatchNode and a rect
-         */
-        if (sprite && sprite.initWithFile(fileName, rect)) {
-            return sprite;
-        }
-        return null;
-    }
-};
 ////////////////////////////////////////////////////////
 //
 // SubTest
@@ -98,7 +73,7 @@ var SubTest = cc.Class.extend({
         switch (this._subtestNumber) {
             case 1:
             {
-                sprite = cc.Sprite.benchmarkCreate("res/Images/grossinis_sister1.png");
+                sprite = cc.Sprite.create("res/Images/grossinis_sister1.png");
                 this._parent.addChild(sprite, 0, tag + 100);
                 break;
             }
@@ -191,7 +166,7 @@ var SubTest = cc.Class.extend({
 // SpriteMainScene
 //
 ////////////////////////////////////////////////////////
-var SpriteMainScene = BenchmarkBaseTestScene.extend({
+var SpriteMainScene = BenchmarkTestScene.extend({
     _lastRenderedCount:null,
     _quantityNodes:null,
     _subTest:null,
@@ -209,7 +184,7 @@ var SpriteMainScene = BenchmarkBaseTestScene.extend({
         this._lastRenderedCount = 0;
         this._quantityNodes = 0;
 
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             // add title label
             var label = cc.LabelTTF.create(this.title(), "Arial", 40);
             this.addChild(label, 1);
@@ -227,7 +202,7 @@ var SpriteMainScene = BenchmarkBaseTestScene.extend({
         }
     },
     updateNodes:function () {
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             if (this._quantityNodes != this._lastRenderedCount) {
                 var infoLabel = this.getChildByTag(TAG_INFO_LAYER);
                 var str = this._quantityNodes + " nodes";
@@ -274,12 +249,12 @@ var SpriteActionsBenchmarkScene = SpriteMainScene.extend({
         var period = 0.5 + (Math.random() * 1000) / 500.0;
         var rot = cc.RotateBy.create(period, 360.0 * Math.random());
         var rot_back = rot.reverse();
-        var permanentRotation = cc.RepeatForever.create(cc.Sequence.create(rot, rot_back, null));
+        var permanentRotation = cc.RepeatForever.create(cc.Sequence.create(rot, rot_back));
         sprite.runAction(permanentRotation);
 
         var growDuration = 0.5 + (Math.random() * 1000) / 500.0;
         var grow = cc.ScaleBy.create(growDuration, 0.5, 0.5);
-        var permanentScaleLoop = cc.RepeatForever.create(cc.Sequence._actionOneTwo(grow, grow.reverse()));
+        var permanentScaleLoop = cc.RepeatForever.create(cc.Sequence.create(grow, grow.reverse()));
         sprite.runAction(permanentScaleLoop);
     },
     title:function () {

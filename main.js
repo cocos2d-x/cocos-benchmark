@@ -47,11 +47,16 @@ var cocos2dApp = cc.Application.extend({
         }
     },
     applicationDidFinishLaunching:function () {
+        /* // TODO: fix it
+        if (!SINGLE_FILE) {
+            cc.FileUtils.getInstance().setSearchPath(['.', 'Resources-html5']);
+        }
+        */
         // initialize director
         var director = cc.Director.getInstance();
         // turn on/off display FPS
-        if (BENCHMARK_DEBUG) {
-            benchmarkOutputInstance.writeln('Debug mode: on');
+        if (BenchmarkConfig.DEBUG) {
+            BenchmarkOutput.getInstance().writeln('Debug mode: on');
             director.setDisplayStats(this.config['showFPS']);
         }
 

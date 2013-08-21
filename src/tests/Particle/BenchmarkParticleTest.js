@@ -27,14 +27,12 @@ var TAG_INFO_LAYER = 1;
 var TAG_PARTICLE_SYSTEM = 3;
 var TAG_LABEL_ATLAS = 4;
 var PARTICLE_NODES = 100;
-var VALID_DELTA_RATE = 0.3;
-
 ////////////////////////////////////////////////////////
 //
 // ParticleMainScene
 //
 ////////////////////////////////////////////////////////
-var ParticleMainScene = BenchmarkBaseTestScene.extend({
+var ParticleMainScene = BenchmarkTestScene.extend({
     _lastRenderedCount:null,
     _quantityParticles:null,
     _subtestNumber:null,
@@ -45,7 +43,7 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         this._lastRenderedCount = 0;
         this._quantityParticles = particles;
 
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             var infoLabel = cc.LabelTTF.create("0 nodes", "Marker Felt", 30);
             infoLabel.setColor(cc.c3b(0, 200, 20));
             infoLabel.setPosition(cc.p(s.width / 2, s.height - 90));
@@ -68,7 +66,7 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         this.schedule(this.step);
     },
     step:function () {
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             var atlas = this.getChildByTag(TAG_LABEL_ATLAS);
             var emitter = this.getChildByTag(TAG_PARTICLE_SYSTEM);
            
@@ -92,26 +90,26 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         }
         //todo
         // remove the "fire.png" from the TextureCache cache.
-        var texture = cc.TextureCache.getInstance().addImage("res/Images/fire.png");
+        var texture = cc.TextureCache.getInstance().addImage(s_fire);
         cc.TextureCache.getInstance().removeTexture(texture);
 
-        particleSystem = new cc.ParticleSystemQuad();
+        particleSystem = new APIWrapper.ParticleSystem();
 
         switch (this._subtestNumber) {
             case 1:
                 cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_RGBA8888);
                 particleSystem.initWithTotalParticles(this._quantityParticles);
-                particleSystem.setTexture(cc.TextureCache.getInstance().addImage("res/Images/fire.png"));
+                particleSystem.setTexture(cc.TextureCache.getInstance().addImage(s_fire));
                 break;
             case 2:
                 cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_RGBA4444);
                 particleSystem.initWithTotalParticles(this._quantityParticles);
-                particleSystem.setTexture(cc.TextureCache.getInstance().addImage("res/Images/fire.png"));
+                particleSystem.setTexture(cc.TextureCache.getInstance().addImage(s_fire));
                 break;
             case 3:
                 cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_A8);
                 particleSystem.initWithTotalParticles(this._quantityParticles);
-                particleSystem.setTexture(cc.TextureCache.getInstance().addImage("res/Images/fire.png"));
+                particleSystem.setTexture(cc.TextureCache.getInstance().addImage(s_fire));
                 break;
             default:
                 particleSystem = null;
@@ -126,7 +124,7 @@ var ParticleMainScene = BenchmarkBaseTestScene.extend({
         cc.Texture2D.setDefaultAlphaPixelFormat(cc.TEXTURE_2D_PIXEL_FORMAT_RGBA8888);
     },
     updateQuantityLabel:function () {
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             if (this._quantityParticles != this._lastRenderedCount) {
                 var infoLabel = this.getChildByTag(TAG_INFO_LAYER);
                 var str = this._quantityParticles + " particles";
@@ -192,16 +190,16 @@ var ParticleSize4BenchmarkScene = ParticleMainScene.extend({
         particleSystem.setEmissionRate(particleSystem.getTotalParticles() / particleSystem.getLife());
 
         // color of particles
-        var startColor = new cc.Color4F(0.5, 0.5, 0.5, 1.0);
+        var startColor = new cc.c4f(0.5, 0.5, 0.5, 1.0);
         particleSystem.setStartColor(startColor);
 
-        var startColorVar = new cc.Color4F(0.5, 0.5, 0.5, 1.0);
+        var startColorVar = new cc.c4f(0.5, 0.5, 0.5, 1.0);
         particleSystem.setStartColorVar(startColorVar);
 
-        var endColor = new cc.Color4F(0.1, 0.1, 0.1, 0.2);
+        var endColor = new cc.c4f(0.1, 0.1, 0.1, 0.2);
         particleSystem.setEndColor(endColor);
 
-        var endColorVar = new cc.Color4F(0.1, 0.1, 0.1, 0.2);
+        var endColorVar = new cc.c4f(0.1, 0.1, 0.1, 0.2);
         particleSystem.setEndColorVar(endColorVar);
 
         // size, in pixels
@@ -257,16 +255,16 @@ var ParticleSize8BenchmarkScene = ParticleMainScene.extend({
         particleSystem.setEmissionRate(particleSystem.getTotalParticles() / particleSystem.getLife());
 
         // color of particles
-        var startColor = new cc.Color4F(0.5, 0.5, 0.5, 1.0);
+        var startColor = new cc.c4f(0.5, 0.5, 0.5, 1.0);
         particleSystem.setStartColor(startColor);
 
-        var startColorVar = new cc.Color4F(0.5, 0.5, 0.5, 1.0);
+        var startColorVar = new cc.c4f(0.5, 0.5, 0.5, 1.0);
         particleSystem.setStartColorVar(startColorVar);
 
-        var endColor = new cc.Color4F(0.1, 0.1, 0.1, 0.2);
+        var endColor = new cc.c4f(0.1, 0.1, 0.1, 0.2);
         particleSystem.setEndColor(endColor);
 
-        var endColorVar = new cc.Color4F(0.1, 0.1, 0.1, 0.2);
+        var endColorVar = new cc.c4f(0.1, 0.1, 0.1, 0.2);
         particleSystem.setEndColorVar(endColorVar);
 
         // size, in pixels
@@ -322,16 +320,16 @@ var ParticleSize32BenchmarkScene = ParticleMainScene.extend({
         particleSystem.setEmissionRate(particleSystem.getTotalParticles() / particleSystem.getLife());
 
         // color of particles
-        var startColor = new cc.Color4F(0.5, 0.5, 0.5, 1.0);
+        var startColor = new cc.c4f(0.5, 0.5, 0.5, 1.0);
         particleSystem.setStartColor(startColor);
 
-        var startColorVar = new cc.Color4F(0.5, 0.5, 0.5, 1.0);
+        var startColorVar = new cc.c4f(0.5, 0.5, 0.5, 1.0);
         particleSystem.setStartColorVar(startColorVar);
 
-        var endColor = new cc.Color4F(0.1, 0.1, 0.1, 0.2);
+        var endColor = new cc.c4f(0.1, 0.1, 0.1, 0.2);
         particleSystem.setEndColor(endColor);
 
-        var endColorVar = new cc.Color4F(0.1, 0.1, 0.1, 0.2);
+        var endColorVar = new cc.c4f(0.1, 0.1, 0.1, 0.2);
         particleSystem.setEndColorVar(endColorVar);
 
         // size, in pixels
@@ -387,16 +385,16 @@ var ParticleSize64BenchmarkScene = ParticleMainScene.extend({
         particleSystem.setEmissionRate(particleSystem.getTotalParticles() / particleSystem.getLife());
 
         // color of particles
-        var startColor = new cc.Color4F(0.5, 0.5, 0.5, 1.0);
+        var startColor = new cc.c4f(0.5, 0.5, 0.5, 1.0);
         particleSystem.setStartColor(startColor);
 
-        var startColorVar = new cc.Color4F(0.5, 0.5, 0.5, 1.0);
+        var startColorVar = new cc.c4f(0.5, 0.5, 0.5, 1.0);
         particleSystem.setStartColorVar(startColorVar);
 
-        var endColor = new cc.Color4F(0.1, 0.1, 0.1, 0.2);
+        var endColor = new cc.c4f(0.1, 0.1, 0.1, 0.2);
         particleSystem.setEndColor(endColor);
 
-        var endColorVar = new cc.Color4F(0.1, 0.1, 0.1, 0.2);
+        var endColorVar = new cc.c4f(0.1, 0.1, 0.1, 0.2);
         particleSystem.setEndColorVar(endColorVar);
 
         // size, in pixels
@@ -428,7 +426,7 @@ var ParticleDemo = cc.LayerGradient.extend({
         this.addChild(label, 100, 1000);
         label.setPosition(s.width / 2, s.height - 50);
 
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             var labelAtlas = cc.LabelAtlas.create("0123456789", s_fpsImages, 16, 24, '.');
             this.addChild(labelAtlas, 100, TAG_LABEL_ATLAS);
             labelAtlas.setPosition(s.width - 66, 50);
@@ -438,7 +436,7 @@ var ParticleDemo = cc.LayerGradient.extend({
 
     onEnter:function () {
         this._super();
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             var pLabel = this.getChildByTag(1000);
             pLabel.setString(this.title());
         }
@@ -448,7 +446,7 @@ var ParticleDemo = cc.LayerGradient.extend({
     },
 
     update:function () {
-        if (BENCHMARK_DEBUG) {
+        if (BenchmarkConfig.DEBUG) {
             if (this._emitter) {
                 var atlas = this.getChildByTag(TAG_LABEL_ATLAS);
                 atlas.setString(this._emitter.getParticleCount().toFixed(0));
@@ -473,11 +471,8 @@ var DemoParticleFromFile = ParticleDemo.extend({
     onEnter:function () {
         this._super();
         this.setColor(cc.c3b(0,0,0));
-        this.removeChild(this._background, true);
-        this._background = null;
-
         var filename = "res/Particles/" + this._title + ".plist";
-        this._emitter = cc.ParticleSystemQuad.create(filename);
+        this._emitter = APIWrapper.ParticleSystem.create(filename);
         this.addChild(this._emitter, 10);
 
         if(this._title == "Flower"){
@@ -493,20 +488,16 @@ var DemoParticleFromFile = ParticleDemo.extend({
     }
 });
 
-var ParticleBurstPipeBenchmarkScene = BenchmarkBaseTestScene.extend({
+var ParticleBurstPipeBenchmarkScene = BenchmarkTestScene.extend({
     runTest: function () {
-        PARTICLE_NODES = 120;
-        VALID_DELTA_RATE = 0.4;
         var winSize = cc.Director.getInstance().getWinSize();
         this.addChild(new DemoParticleFromFile("BurstPipe", {x: winSize.width/2, y: winSize.height-50}));
         cc.Director.getInstance().replaceScene(this);
     }
 });
 
-var ParticleCometBenchmarkScene = BenchmarkBaseTestScene.extend({
+var ParticleCometBenchmarkScene = BenchmarkTestScene.extend({
     runTest: function () {
-        PARTICLE_NODES = 120;
-        VALID_DELTA_RATE = 0.4;
         var winSize = cc.Director.getInstance().getWinSize();
         this.addChild(new DemoParticleFromFile("Comet", {x: winSize.width-60, y: 60}));
         cc.Director.getInstance().replaceScene(this);
