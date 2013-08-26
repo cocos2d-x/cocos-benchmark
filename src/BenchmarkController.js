@@ -28,6 +28,7 @@ var BenchmarkController = cc.Class.extend({
     _currentTestID: 0,
     _delegate: null,
     ready: false,
+    _submitted: false,
     getTestFPS: function(testID) {
         return this._testFPSList[testID];
     },
@@ -91,6 +92,39 @@ var BenchmarkController = cc.Class.extend({
             this._delegate.onStopBenchmark();
         }
     },
+    submitBenchmark: function() {
+        if (!this._submitted) {
+            var data = {
+                benchmarkVersion: BENCHMARK_VERSION,
+                engineVersion: BenchmarkQueryParameters.engine,
+                language: navigator.language,
+                platform: navigator.platform,
+                userAgent: navigator.userAgent,
+                vendor: navigator.vendor,
+                fpsList: [],
+                scores: [],
+                finalScore: 0
+            };
+            var i;
+            for (i=0; i<this._testFPSList.length; ++i) {
+                data.fpsList[i] = this._testFPSList[i];
+            }
+            for (i=0; i<this._testScores.length; ++i) {
+                data.scores[i] = this._testScores[i];
+            }
+            data.finalScore = this._finalScore;
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'submit.php', false);
+            xhr.send(JSON.stringify(data));
+            if (xhr.responseText === '0') {
+                this._submitted = true;
+            }
+            return xhr.responseText;
+        }
+        else {
+            return '-1'; // already submitted
+        }
+    },
     benchmarkDone: function() {
         // use Harmonic Average value as the final score
         var sum = 0;
@@ -99,6 +133,7 @@ var BenchmarkController = cc.Class.extend({
             sum += 1 / this._testScores[i];
         }
         this._finalScore = (length / sum).toFixed(2);
+        this._submitted = false;
         if (this._delegate && this._delegate.onBenchmarkDone) {
             this._delegate.onBenchmarkDone();
         }

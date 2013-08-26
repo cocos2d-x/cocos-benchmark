@@ -131,13 +131,41 @@
         }());
         function BenchmarkOnActionButtonClick(button) {
             if (typeof BenchmarkController !== 'undefined') { // loaded
-                if (button.value == 'start') {
+                if (button.value === 'start') {
                     BenchmarkController.getInstance().startBenchmark();
                 }
-                else if (button.value == 'stop') {
+                else if (button.value === 'stop') {
                     BenchmarkController.getInstance().stopBenchmark();
                 }
+                else if (button.value === 'clear') {
+                    BenchmarkOutput.getInstance().clear();
+                    BenchmarkEnableResultActions(false);
+                }
+                else if (button.value === 'submit') {
+                    var element = document.getElementById('submit');
+                    element.disabled = true;
+                    var error_no = BenchmarkController.getInstance().submitBenchmark();
+                    element.disabled = false;
+                    if (error_no === '0') {
+                        alert('Submitted, thanks for your contribution.');
+                    }
+                    else if (error_no === '-1') {
+                        alert('Data already submitted');
+                    }
+                    else {
+                        alert('Failed to submit, errno: ' + error_no);
+                    }
+                }
+                else if (button.value === 'share') {
+                }
             }
+        }
+        function BenchmarkEnableResultActions(enable) {
+            var display = 'none';
+            if (enable) {
+                display = 'block';
+            }
+            document.getElementById('result_actions').style.display = display;
         }
         function BenchmarkOnEngineChange(select) {
             var selectOption = select.options[select.selectedIndex];
@@ -173,6 +201,7 @@
                 onBenchmarkDone: function() {
                     BenchmarkOutput.getInstance().writeln('Score: ' + controller.getFinalScore());
                     BenchmarkOutput.getInstance().writeln('####################################');
+                    BenchmarkEnableResultActions(true);
                 },
                 onError: function(e) {
                     BenchmarkOutput.getInstance().writeln('Exception occurred, stopped:\n' + e);
@@ -208,7 +237,19 @@
     </div>
     <div class="menu_item_wrapper" style="width: 22%">
         <div>
-            <input id="clear" type="button" onclick="BenchmarkOutput.getInstance().clear()" value=clear />
+            <input id="clear" type="button" onclick="BenchmarkOnActionButtonClick(this)" value=clear />
+        </div>
+    </div>
+</div>
+<div id="result_actions" style="height: 40px; display: block; border-top:1px solid black;">
+    <div class="menu_item_wrapper" style="width: 50%">
+        <div>
+            <input id="submit" type="button" onclick="BenchmarkOnActionButtonClick(this)" value=submit />
+        </div>
+    </div>
+    <div class="menu_item_wrapper" style="width: 50%">
+        <div>
+            <input id="share" type="button" disabled=true onclick="BenchmarkOnActionButtonClick(this)" value=share />
         </div>
     </div>
 </div>

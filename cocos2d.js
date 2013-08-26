@@ -100,6 +100,7 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
                  }
              }
              if (currentEngineInfo) {
+                 BenchmarkQueryParameters.engine = currentEngineID; //set back engine ID
                  config.engineDir = null;
                  config.SingleEngineFile = currentEngineInfo.file;
                  config.appFiles = [APP_SINGLE_FILE];
