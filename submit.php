@@ -22,7 +22,7 @@ else {
     $fpsList = json_encode($data->fpsList);
     $scores = json_encode($data->scores);
     $ret = mysqli_query($con,
-        "INSERT INTO result(benchmarkVersion, engineVersion, language, platform, userAgent, vendor, fpsList, scores, finalScore, time)
+        "INSERT INTO result(benchmarkVersion, engineVersion, language, platform, userAgent, vendor, fpsList, scores, finalScore, timeUsed, time)
         VALUES (
           '$data->benchmarkVersion',
           '$data->engineVersion',
@@ -33,6 +33,7 @@ else {
           '$fpsList',
           '$scores',
           '$data->finalScore',
+          '$data->timeUsed',
           '$now')"
     );
     if (!$ret) {

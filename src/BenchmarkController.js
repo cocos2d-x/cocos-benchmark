@@ -17,6 +17,8 @@
  */
 
 var BenchmarkController = cc.Class.extend({
+    _benchmarkBeginTime: 0,
+    _benchmarkEndTime: 0,
     _testSceneBeginTime: 0,
     _testSceneEndTime: 0,
     _testSceneBeginFrames: 0,
@@ -35,6 +37,9 @@ var BenchmarkController = cc.Class.extend({
     getTestScore: function(testID) {
         return this._testScores[testID];
     },
+    getTimeUsed: function() {
+        return this._benchmarkEndTime - this._benchmarkBeginTime;
+    },
     getFinalScore: function() {
         return Number(this._finalScore);
     },
@@ -46,11 +51,9 @@ var BenchmarkController = cc.Class.extend({
         this._testSceneBeginTime = (new Date).getTime();
         this._testSceneBeginFrames = cc.Director.getInstance().getTotalFrames();
         if (0 < testCase.duration) {
-            cc.Director.getInstance().getScheduler().scheduleCallbackForTarget(
+            BenchmarkAPIWrapper.Scheduler.getInstance().schedule(
                 this,
                 this._runNextTest,
-                0,
-                false,
                 testCase.duration / 1000
             );
         }
@@ -76,6 +79,7 @@ var BenchmarkController = cc.Class.extend({
     startBenchmark: function() {
         if (this.ready) {
             this._testInterrupted = false;
+            this._benchmarkBeginTime = new Date().getTime();
             this._runTest(0);
             if (this._delegate && this._delegate.onStartBenchmark) {
                 this._delegate.onStartBenchmark();
@@ -87,7 +91,7 @@ var BenchmarkController = cc.Class.extend({
             interrupted = true;
         }
         this._testInterrupted = interrupted;
-        cc.Director.getInstance().getScheduler().unscheduleAllCallbacksForTarget(this);
+        BenchmarkAPIWrapper.Scheduler.getInstance().unscheduleAll();
         if (this._delegate && this._delegate.onStopBenchmark) {
             this._delegate.onStopBenchmark();
         }
@@ -103,7 +107,8 @@ var BenchmarkController = cc.Class.extend({
                 vendor: navigator.vendor,
                 fpsList: [],
                 scores: [],
-                finalScore: 0
+                finalScore: 0,
+                timeUsed: this.getTimeUsed()
             };
             var i;
             for (i=0; i<this._testFPSList.length; ++i) {
@@ -126,6 +131,7 @@ var BenchmarkController = cc.Class.extend({
         }
     },
     benchmarkDone: function() {
+        this._benchmarkEndTime = new Date().getTime();
         // use Harmonic Average value as the final score
         var sum = 0;
         var length = BenchmarkTestCases.maxID() + 1;

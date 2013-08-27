@@ -43,7 +43,7 @@
         }
     </style>
     <script type="text/javascript">
-        var BENCHMARK_VERSION = 'v0.9.0'; // Modify version in build.xml, when single file used
+        var BENCHMARK_VERSION = 'v0.10.1'; // Modify version in build.xml, when single file used
         // append version to title
         document.title = document.title + ' ' + BENCHMARK_VERSION;
         // benchmark output to write test result
@@ -141,13 +141,10 @@
                 }
                 else if (button.id === 'clear') {
                     BenchmarkOutput.getInstance().clear();
-                    BenchmarkEnableResultActions(false);
+                    BenchmarkShowResultActions(false);
                 }
                 else if (button.id === 'submit') {
-                    var element = document.getElementById('submit');
-                    element.disabled = true;
                     var error_no = BenchmarkController.getInstance().submitBenchmark();
-                    element.disabled = false;
                     if (error_no === '0') {
                         alert('Submitted, thanks for your contribution.');
                     }
@@ -162,20 +159,23 @@
                 }
             }
         }
-        function BenchmarkEnableResultActions(enable) {
-            var display = 'none';
-            if (enable) {
-                display = 'block';
-            }
-            document.getElementById('result_actions').style.display = display;
-        }
         function BenchmarkOnEngineChange(select) {
             var selectOption = select.options[select.selectedIndex];
             BenchmarkQueryParameters.engine = selectOption.value;
             window.location.search = BenchmarkQueryParameters.toString();
         }
+        function BenchmarkShowResultActions(show) {
+            var display = 'none';
+            if (show) {
+                display = 'block';
+            }
+            document.getElementById('result_actions').style.display = display;
+        }
         function BenchmarkOnControllerLoadEnd(controller) {
             var controllerDelegate = {
+                _enableSubmitAction: function(enable) {
+                    document.getElementById('submit').disabled = !enable;
+                },
                 _setAction: function(action) {
                     document.getElementById('action').value = action;
                 },
@@ -195,15 +195,17 @@
                 },
                 onStartBenchmark: function() {
                     this._setAction('stop');
+                    this._enableSubmitAction(false);
                 },
                 onStopBenchmark: function() {
                     cc.Director.getInstance().replaceScene(BenchmarkEntryScene.getInstance());
                     this._setAction('start');
                 },
                 onBenchmarkDone: function() {
-                    BenchmarkOutput.getInstance().writeln('Score: ' + controller.getFinalScore());
+                    BenchmarkOutput.getInstance().writeln('Score: ' + controller.getFinalScore() + ',  Time used: ' + controller.getTimeUsed() + 'ms');
                     BenchmarkOutput.getInstance().writeln('####################################');
-                    BenchmarkEnableResultActions(true);
+                    BenchmarkShowResultActions(true);
+                    this._enableSubmitAction(true);
                 },
                 onError: function(e) {
                     BenchmarkOutput.getInstance().writeln('Exception occurred, stopped:\n' + e);
