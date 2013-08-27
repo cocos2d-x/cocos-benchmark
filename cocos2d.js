@@ -52,7 +52,7 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
         appFiles:[
             'src/resources.js',
             'src/BenchmarkConfig.js',
-            'src/APIWrapper.js',
+            'src/BenchmarkAPIWrapper.js',
             'src/BenchmarkTestScene.js',
             'src/BenchmarkEntryScene.js',
             'src/BenchmarkEntryScene-html5.js',

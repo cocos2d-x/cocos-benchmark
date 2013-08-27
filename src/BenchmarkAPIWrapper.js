@@ -5,17 +5,16 @@
  * Date: 7/18/13
  * Time: 10:25 AM
  */
-var APIWrapper = {};
+var BenchmarkAPIWrapper = {};
 
-APIWrapper.ParticleSystem = null;
+BenchmarkAPIWrapper.ParticleSystem = null;
 
 // particle system API name changed after cocos2d-x version xxx
 if (typeof cc.ParticleSystemQuad === 'function') {
-    APIWrapper.ParticleSystem = cc.ParticleSystemQuad;
+    BenchmarkAPIWrapper.ParticleSystem = cc.ParticleSystemQuad;
 }
 else if (typeof cc.ParticleSystem === 'function') {
-    APIWrapper.ParticleSystem = cc.ParticleSystem;
+    BenchmarkAPIWrapper.ParticleSystem = cc.ParticleSystem;
 }
-
 
 
