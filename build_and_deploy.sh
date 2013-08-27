@@ -15,7 +15,7 @@ if [ ! $upload_dir ]; then
 fi
 
 project=cocos-benchmark
-distr_files=(cocos2d.js main.js index.html)
+distr_files=(cocos2d.js main.js index.html submit.php config.php)
 # DO NOT ADD the last '/'
 distr_dirs=(res engines)
 root_dir=$(pwd)

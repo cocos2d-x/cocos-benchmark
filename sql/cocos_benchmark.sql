@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.5.15, for osx10.6 (i386)
 --
--- Host: localhost    Database: cocos-benchmark
+-- Host: localhost    Database: cocos_benchmark
 -- ------------------------------------------------------
 -- Server version	5.5.15
 
@@ -16,12 +16,12 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `cocos-benchmark`
+-- Current Database: `cocos_benchmark`
 --
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `cocos-benchmark` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `cocos_benchmark` /*!40100 DEFAULT CHARACTER SET utf8 */;
 
-USE `cocos-benchmark`;
+USE `cocos_benchmark`;
 
 --
 -- Table structure for table `result`

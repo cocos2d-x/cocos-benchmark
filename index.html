@@ -43,7 +43,7 @@
         }
     </style>
     <script type="text/javascript">
-        var BENCHMARK_VERSION = 'v0.8.0'; // Modify version in build.xml, when single file used
+        var BENCHMARK_VERSION = 'v0.9.0'; // Modify version in build.xml, when single file used
         // append version to title
         document.title = document.title + ' ' + BENCHMARK_VERSION;
         // benchmark output to write test result
@@ -131,17 +131,19 @@
         }());
         function BenchmarkOnActionButtonClick(button) {
             if (typeof BenchmarkController !== 'undefined') { // loaded
-                if (button.value === 'start') {
-                    BenchmarkController.getInstance().startBenchmark();
+                if (button.id === 'action') {
+                    if (button.value === 'start') {
+                        BenchmarkController.getInstance().startBenchmark();
+                    }
+                    else if (button.value === 'stop') {
+                        BenchmarkController.getInstance().stopBenchmark();
+                    }
                 }
-                else if (button.value === 'stop') {
-                    BenchmarkController.getInstance().stopBenchmark();
-                }
-                else if (button.value === 'clear') {
+                else if (button.id === 'clear') {
                     BenchmarkOutput.getInstance().clear();
                     BenchmarkEnableResultActions(false);
                 }
-                else if (button.value === 'submit') {
+                else if (button.id === 'submit') {
                     var element = document.getElementById('submit');
                     element.disabled = true;
                     var error_no = BenchmarkController.getInstance().submitBenchmark();
@@ -156,7 +158,7 @@
                         alert('Failed to submit, errno: ' + error_no);
                     }
                 }
-                else if (button.value === 'share') {
+                else if (button.id === 'share') {
                 }
             }
         }
@@ -241,7 +243,7 @@
         </div>
     </div>
 </div>
-<div id="result_actions" style="height: 40px; display: block; border-top:1px solid black;">
+<div id="result_actions" style="height: 40px; display: none; border-top:1px solid black;">
     <div class="menu_item_wrapper" style="width: 50%">
         <div>
             <input id="submit" type="button" onclick="BenchmarkOnActionButtonClick(this)" value=submit />
