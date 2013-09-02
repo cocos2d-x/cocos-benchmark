@@ -75,7 +75,7 @@
 <script src="lib/highcharts/modules/exporting.js"></script>
 <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 <div style="text-align: center">
-    <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc/3.0/80x15.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">Creative Commons Attribution-NonCommercial 3.0 Unported License</a>.
+    Powered by <a href="http://www.highcharts.com/">highcharts</a>
 </div>
 </body>
 </html>
