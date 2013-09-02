@@ -147,6 +147,7 @@
                     var error_no = BenchmarkController.getInstance().submitBenchmark();
                     if (error_no === '0') {
                         alert('Submitted, thanks for your contribution.');
+                        window.location = 'result.php'
                     }
                     else if (error_no === '-1') {
                         alert('Data already submitted');

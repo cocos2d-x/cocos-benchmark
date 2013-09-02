@@ -103,7 +103,6 @@ var BenchmarkController = cc.Class.extend({
                 engineVersion: BenchmarkQueryParameters.engine,
                 language: navigator.language,
                 platform: navigator.platform,
-                userAgent: navigator.userAgent,
                 vendor: navigator.vendor,
                 fpsList: [],
                 scores: [],
