@@ -98,9 +98,13 @@ var BenchmarkController = cc.Class.extend({
     },
     submitBenchmark: function() {
         if (!this._submitted) {
+            var engineVersion = BenchmarkQueryParameters.engine;
+            if (!engineVersion) { // debug version
+                engineVersion = cc.ENGINE_VERSION;
+            }
             var data = {
                 benchmarkVersion: BENCHMARK_VERSION,
-                engineVersion: BenchmarkQueryParameters.engine,
+                engineVersion: engineVersion,
                 language: navigator.language,
                 platform: navigator.platform,
                 vendor: navigator.vendor,
@@ -126,7 +130,7 @@ var BenchmarkController = cc.Class.extend({
             return xhr.responseText;
         }
         else {
-            return '-1'; // already submitted
+            return BenchmarkController.E_ALREADY_SUBMITTED; // already submitted
         }
     },
     benchmarkDone: function() {
@@ -188,6 +192,11 @@ var BenchmarkController = cc.Class.extend({
 });
 
 BenchmarkController._instance = null;
+
+BenchmarkController.E_SUCCESS = 0;
+BenchmarkController.E_UNKNOWN = -1;
+BenchmarkController.E_INVALID_PARAM = -2;
+BenchmarkController.E_ALREADY_SUBMITTED = -3;
 
 BenchmarkController.getInstance = function() {
     if (!this._instance) {

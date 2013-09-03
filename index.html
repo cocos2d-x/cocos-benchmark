@@ -145,12 +145,12 @@
                 }
                 else if (button.id === 'submit') {
                     var error_no = BenchmarkController.getInstance().submitBenchmark();
-                    if (error_no === '0') {
+                    if (error_no == BenchmarkController.E_SUCCESS) {
                         BenchmarkEnableSubmitAction(false);
                         alert('Submitted, thanks for your contribution.');
                         window.location = 'result.php'
                     }
-                    else if (error_no === '-1') {
+                    else if (error_no == BenchmarkController.E_ALREADY_SUBMITTED) {
                         alert('Data already submitted');
                     }
                     else {
