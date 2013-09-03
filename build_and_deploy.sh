@@ -82,6 +82,8 @@ if [ ! -f $single_file ]; then
 else
 	cp -fv $single_file $version_dir/
 	check_error
+	# delete the file after archived
+	rm -f $single_file
 fi
 
 for file in ${distr_files[@]}; do

@@ -146,6 +146,7 @@
                 else if (button.id === 'submit') {
                     var error_no = BenchmarkController.getInstance().submitBenchmark();
                     if (error_no === '0') {
+                        BenchmarkEnableSubmitAction(false);
                         alert('Submitted, thanks for your contribution.');
                         window.location = 'result.php'
                     }
@@ -172,11 +173,11 @@
             }
             document.getElementById('result_actions').style.display = display;
         }
+        function BenchmarkEnableSubmitAction(enable) {
+            document.getElementById('submit').disabled = !enable;
+        }
         function BenchmarkOnControllerLoadEnd(controller) {
             var controllerDelegate = {
-                _enableSubmitAction: function(enable) {
-                    document.getElementById('submit').disabled = !enable;
-                },
                 _setAction: function(action) {
                     document.getElementById('action').value = action;
                 },
@@ -196,7 +197,7 @@
                 },
                 onStartBenchmark: function() {
                     this._setAction('stop');
-                    this._enableSubmitAction(false);
+                    BenchmarkEnableSubmitAction(false);
                 },
                 onStopBenchmark: function() {
                     cc.Director.getInstance().replaceScene(BenchmarkEntryScene.getInstance());
@@ -206,7 +207,7 @@
                     BenchmarkOutput.getInstance().writeln('Score: ' + controller.getFinalScore() + ',  Time used: ' + controller.getTimeUsed() + 'ms');
                     BenchmarkOutput.getInstance().writeln('####################################');
                     BenchmarkShowResultActions(true);
-                    this._enableSubmitAction(true);
+                    BenchmarkEnableSubmitAction(true);
                 },
                 onError: function(e) {
                     BenchmarkOutput.getInstance().writeln('Exception occurred, stopped:\n' + e);
