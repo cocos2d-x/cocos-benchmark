@@ -15,9 +15,10 @@ if [ ! $upload_dir ]; then
 fi
 
 project=cocos-benchmark
-distr_files=(cocos2d.js main.js index.html submit.php config.php)
+distr_files=(cocos2d.js main.js index.html submit.php errno.php rank.php)
 # DO NOT ADD the last '/'
 distr_dirs=(res engines)
+distr_lib_dirs=(lib/highcharts lib/jquery lib/phpbrowscap)
 root_dir=$(pwd)
 archive_dir=$(pwd)/archive
 usage() 
@@ -46,7 +47,7 @@ if [ $# -lt 1 ]; then
 fi
 version=$1
 
-if [ $compile_target = dev ]; then
+if [[ $compile_target = dev ]]; then
     if [[ $version != *dev* ]]; then
         echo "invalid dev version: $version"
         exit 1
@@ -93,6 +94,11 @@ done
 
 for dir in ${distr_dirs[@]}; do
 	rsync -av --exclude=".*" $dir $version_dir/
+	check_error
+done
+
+for dir in ${distr_lib_dirs[@]}; do
+	rsync -av --exclude=".*" $dir $version_dir/lib/
 	check_error
 done
 

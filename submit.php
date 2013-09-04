@@ -132,7 +132,7 @@ if (isset($HTTP_RAW_POST_DATA)) {
             $browser->RenderingEngine_Version
         );
         $ret = $stmt->execute();
-        $stmt->close($stmt);
+        $stmt->close();
         if ($ret) {
             session_start();
             $error_no = E_SUCCESS;

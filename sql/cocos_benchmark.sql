@@ -32,18 +32,54 @@ DROP TABLE IF EXISTS `result`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `result` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `benchmarkVersion` varchar(45) DEFAULT NULL,
-  `engineVersion` varchar(45) DEFAULT NULL,
-  `language` varchar(45) DEFAULT NULL,
-  `platform` varchar(45) DEFAULT NULL,
-  `userAgent` varchar(255) DEFAULT NULL,
-  `vendor` varchar(45) DEFAULT NULL,
-  `fpsList` varchar(1023) DEFAULT NULL,
-  `scores` varchar(1023) DEFAULT NULL,
-  `finalScore` float DEFAULT NULL,
-  `time` datetime DEFAULT NULL,
+  `benchmarkVersion` varchar(45) NOT NULL,
+  `engineVersion` varchar(45) NOT NULL,
+  `language` varchar(45) NOT NULL,
+  `platform` varchar(45) NOT NULL,
+  `userAgent` varchar(255) NOT NULL,
+  `vendor` varchar(45) NOT NULL,
+  `fpsList` varchar(1023) NOT NULL,
+  `scores` varchar(1023) NOT NULL,
+  `finalScore` float NOT NULL,
+  `timeUsed` int(11) NOT NULL,
+  `time` datetime NOT NULL,
+  `userAgent_browser_name` varchar(255) NOT NULL,
+  `userAgent_browser_name_regex` varchar(255) NOT NULL,
+  `userAgent_browser_name_pattern` varchar(255) NOT NULL,
+  `userAgent_Parent` varchar(127) NOT NULL,
+  `userAgent_Comment` varchar(127) NOT NULL,
+  `userAgent_Browser` varchar(127) NOT NULL,
+  `userAgent_Version` varchar(127) NOT NULL,
+  `userAgent_MajorVer` varchar(31) NOT NULL,
+  `userAgent_MinorVer` varchar(31) NOT NULL,
+  `userAgent_Platform` varchar(127) NOT NULL,
+  `userAgent_Platform_Version` varchar(127) NOT NULL,
+  `userAgent_Platform_Description` varchar(127) NOT NULL,
+  `userAgent_Alpha` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_Beta` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_Win16` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_Win32` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_Win64` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_Frames` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_IFrames` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_Tables` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_Cookies` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_BackgroundSounds` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_Javascript` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_VBScript` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_JavaApplets` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_ActiveXControls` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_isMobileDevice` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_isSyndicationReader` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_Crawler` tinyint(1) NOT NULL DEFAULT '0',
+  `userAgent_CssVersion` varchar(15) NOT NULL,
+  `userAgent_AolVersion` varchar(15) NOT NULL,
+  `userAgent_Device_Name` varchar(255) NOT NULL,
+  `userAgent_Device_Maker` varchar(31) NOT NULL,
+  `userAgent_RenderingEngine_Name` varchar(31) NOT NULL,
+  `userAgent_RenderingEngine_Version` varchar(31) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -64,4 +100,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-08-26 14:42:58
+-- Dump completed on 2013-09-04 15:58:44

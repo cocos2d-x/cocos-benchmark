@@ -43,7 +43,7 @@
         }
     </style>
     <script type="text/javascript">
-        var BENCHMARK_VERSION = 'v0.10.1'; // Modify version in build.xml, when single file used
+        var BENCHMARK_VERSION = 'v0.11.0'; // Modify version in build.xml, when single file used
         // append version to title
         document.title = document.title + ' ' + BENCHMARK_VERSION;
         // benchmark output to write test result
@@ -148,7 +148,7 @@
                     if (error_no == BenchmarkController.E_SUCCESS) {
                         BenchmarkEnableSubmitAction(false);
                         alert('Submitted, thanks for your contribution.');
-                        window.location = 'result.php'
+                        window.location = 'rank.php'
                     }
                     else if (error_no == BenchmarkController.E_ALREADY_SUBMITTED) {
                         alert('Data already submitted');
