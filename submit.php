@@ -20,8 +20,9 @@ if (isset($HTTP_RAW_POST_DATA)) {
     $data = json_decode($HTTP_RAW_POST_DATA);
     $data->language = strtolower($data->language);
 
-    $con = mysqli_connect(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-    $error_no = mysqli_connect_errno($con);
+    $mysqli = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
+
+    $error_no = mysqli_connect_errno();
 
     if ($error_no) {
         error_log("Failed to connect to MySQL: " . mysqli_connect_error());
@@ -30,7 +31,7 @@ if (isset($HTTP_RAW_POST_DATA)) {
         $now = date('Y-m-d h:i:s');
         $fpsList = json_encode($data->fpsList);
         $scores = json_encode($data->scores);
-        $stmt = mysqli_prepare($con,
+        $stmt = $mysqli->prepare(
             "INSERT INTO result(
                 benchmarkVersion,
                 engineVersion,
@@ -82,7 +83,7 @@ if (isset($HTTP_RAW_POST_DATA)) {
             VALUES(
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
             )");
-        mysqli_stmt_bind_param($stmt, "ssssssssssssssssssssssssssssssssssssssssssssss",
+        $stmt->bind_param("ssssssssssssssssssssssssssssssssssssssssssssss",
             $data->benchmarkVersion,
             $data->engineVersion,
             $data->language,
@@ -130,22 +131,22 @@ if (isset($HTTP_RAW_POST_DATA)) {
             $browser->RenderingEngine_Name,
             $browser->RenderingEngine_Version
         );
-        $ret = mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
+        $ret = $stmt->execute();
+        $stmt->close($stmt);
         if ($ret) {
             session_start();
             $error_no = E_SUCCESS;
             $_SESSION['result'] = $HTTP_RAW_POST_DATA;
         }
         else {
-            $error_no = mysqli_errno($con);
+            $error_no = $mysqli->errno;
             if (!$error_no) {
                 $error_no = E_UNKNOWN; // not mysql error, php error
             }
-            error_log('Failed to insert, mysql error: ' . mysqli_error($con));
+            error_log('Failed to insert, mysql error: ' . $mysqli->error);
             error_log('PHP error msg: ' . $php_errormsg);
         }
-        mysqli_close($con);
+        $mysqli->close();
     }
 }
 else {

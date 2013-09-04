@@ -6,86 +6,129 @@
 		<script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
 	</head>
 	<body>
-    <?php
-    session_start();
-    if (!isset($_SESSION['result'])) {
-        header('Location: ' . dirname($_SERVER['PHP_SELF']));
-        session_destroy();
-    }
-    else {
-        echo '<script src="lib/highcharts/highcharts.js"></script>';
-        echo '<script src="lib/highcharts/modules/exporting.js"></script>';
-        echo '<script type="text/javascript">';
-        echo "
-        $(function () {
-            $('#container').highcharts({
-                chart: {
-                    type: 'bar'
-                },
-                title: {
-                    text: 'cocos-benchmark result'
-                },
-                subtitle: {
-                    text: ''
-                },
-                xAxis: {
-                    categories: ['K800', 'iPhone5', 'MI2S', 'SAMSUNGS4', 'SAMSUNGS2'],
-                    title: {
-                        text: null
+        <?php
+        require_once( dirname(__FILE__) . '/config.php' );
+        require_once( dirname(__FILE__) . '/errno.php' );
+        function ResultKeyString($platform, $browser) {
+            return $platform . '|' . $browser;
+        }
+        class SeriesItem {
+            public $name;
+            public $data;
+            public function __construct($name) {
+                $this->name = $name;
+                $this->data = array();
+            }
+        };
+        $resultMap = array();
+        $platformList = array();
+        $browserList = array();
+
+        session_start();
+        if (!isset($_SESSION['result'])) {
+            header('Location: ' . dirname($_SERVER['PHP_SELF']));
+            session_destroy();
+        }
+        else {
+            $mysqli = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
+            $error_no = mysqli_connect_errno();
+            if ($error_no) {
+                error_log("Failed to connect to MySQL: " . mysqli_connect_error());
+            }
+            else {
+                $query = "SELECT platform, userAgent_Parent, AVG(finalScore) FROM `cocos_benchmark`.`result` GROUP  BY platform , userAgent_Parent";
+                if ($result = $mysqli->query($query)) {
+                    while ($row = $result->fetch_row()) {
+                        $platform = $row[0];
+                        $browser = $row[1];
+                        $score = number_format($row[2], 2);
+                        $resultMap[ResultKeyString($platform, $browser)] = $score;
+                        $platformList[$platform] = TRUE;
+                        $browserList[$browser] = TRUE;
                     }
-                },
-                yAxis: {
-                    min: 0,
-                    title: {
-                        text: 'Score',
-                        align: 'high'
-                    },
-                    labels: {
-                        overflow: 'justify'
-                    }
-                },
-                tooltip: {
-                    valueSuffix: ' millions'
-                },
-                plotOptions: {
-                    bar: {
-                        dataLabels: {
-                            enabled: true
+                    $result->close();
+                }
+                $mysqli->close();
+                $series = array();
+                foreach($browserList as $browser => $browserDummy) {
+                    $seriesItem = new SeriesItem($browser);
+                    foreach ($platformList as $platform => $platformDummy) {
+                        $key = ResultKeyString($platform, $browser);
+                        $value = null;
+                        if (array_key_exists($key, $resultMap)) {
+                            $value = (float)$resultMap[$key];
                         }
+                        array_push($seriesItem->data, $value);
                     }
-                },
-                legend: {
-                    layout: 'vertical',
-                    align: 'right',
-                    verticalAlign: 'top',
-                    x: -40,
-                    y: 100,
-                    floating: true,
-                    borderWidth: 1,
-                    backgroundColor: '#FFFFFF',
-                    shadow: true
-                },
-                credits: {
-                    enabled: false
-                },
-                series: [{
-                    name: 'Safari',
-                    data: [107, 31, 635, 203, 2]
-                }, {
-                    name: 'Chrome',
-                    data: [133, 156, 947, 408, 6]
-                }, {
-                    name: 'UC',
-                    data: [973, 914, 4054, 732, 34]
-                }]
-            });
-        });";
-        echo '</script>';
-        echo '<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>';
-        echo '<div style="text-align: center">';
-        echo    'Powered by <a href="http://www.highcharts.com/">highcharts</a>';
-        echo '</div>';
-    }
-    ?>
+                    array_push($series, $seriesItem);
+                }
+                $categories = json_encode(array_keys($platformList));
+                $series = json_encode($series);
+                echo '<script src="lib/highcharts/highcharts.js"></script>';
+                echo '<script src="lib/highcharts/modules/exporting.js"></script>';
+                echo '<script type="text/javascript">';
+                echo "
+                    $(function () {
+                        $('#container').highcharts({
+                            chart: {
+                                type: 'bar'
+                            },
+                            title: {
+                                text: 'cocos-benchmark result'
+                            },
+                            subtitle: {
+                                text: ''
+                            },
+                            xAxis: {
+                                categories: $categories,
+                                title: {
+                                    text: null
+                                }
+                            },
+                            yAxis: {
+                                min: 0,
+                                title: {
+                                    text: 'Score',
+                                    align: 'high'
+                                },
+                                labels: {
+                                    overflow: 'justify'
+                                }
+                            },
+                            tooltip: {
+                                valueSuffix: ' '
+                            },
+                            plotOptions: {
+                                bar: {
+                                    dataLabels: {
+                                        enabled: true
+                                    }
+                                }
+                            },
+                            legend: {
+                                layout: 'vertical',
+                                align: 'right',
+                                verticalAlign: 'top',
+                                x: -40,
+                                y: 100,
+                                floating: true,
+                                borderWidth: 1,
+                                backgroundColor: '#FFFFFF',
+                                shadow: true
+                            },
+                            credits: {
+                                enabled: false
+                            },
+                            series: $series
+                        });
+                    });";
+                echo '</script>';
+                echo '<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>';
+                echo '<div style="text-align: center">';
+                echo    'Powered by <a href="http://www.highcharts.com/">highcharts</a>';
+                echo '</div>';
+            }
+        }
+        ?>
     </body>
 </html>
