@@ -36,7 +36,7 @@
                     error_log("Failed to connect to MySQL: " . mysqli_connect_error());
                 }
                 else {
-                    $query = "SELECT platform, userAgent_Parent, AVG(finalScore) FROM `cocos_benchmark`.`result` GROUP  BY platform , userAgent_Parent";
+                    $query = "SELECT platform, userAgent_Parent, AVG(finalScore) FROM result GROUP BY platform , userAgent_Parent";
                     if ($result = $mysqli->query($query)) {
                         while ($row = $result->fetch_row()) {
                             $platform = $row[0];
