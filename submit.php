@@ -22,10 +22,9 @@ if (isset($HTTP_RAW_POST_DATA)) {
 
     $mysqli = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
 
-    $error_no = mysqli_connect_errno();
-
-    if ($error_no) {
-        error_log("Failed to connect to MySQL: " . mysqli_connect_error());
+    if ($mysqli->connect_errno) {
+        $error_no = $mysqli->connect_errno;
+        error_log("Failed to connect to MySQL, error no: $error_no, error: $mysqli->connect_error");
     }
     else {
         $now = date('Y-m-d h:i:s');

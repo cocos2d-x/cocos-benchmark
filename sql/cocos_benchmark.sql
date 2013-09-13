@@ -36,6 +36,8 @@ CREATE TABLE `result` (
   `engineVersion` varchar(45) NOT NULL,
   `language` varchar(45) NOT NULL,
   `platform` varchar(45) NOT NULL,
+  `deviceName` varchar(31) DEFAULT NULL,
+  `deviceMaker` varchar(63) DEFAULT NULL,
   `userAgent` varchar(255) NOT NULL,
   `vendor` varchar(45) NOT NULL,
   `fpsList` varchar(1023) NOT NULL,
@@ -43,6 +45,7 @@ CREATE TABLE `result` (
   `finalScore` float NOT NULL,
   `timeUsed` int(11) NOT NULL,
   `time` datetime NOT NULL,
+  `updateTime` datetime DEFAULT NULL,
   `userAgent_browser_name` varchar(255) NOT NULL,
   `userAgent_browser_name_regex` varchar(255) NOT NULL,
   `userAgent_browser_name_pattern` varchar(255) NOT NULL,
@@ -100,4 +103,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-09-04 15:58:44
+-- Dump completed on 2013-09-13 14:59:46

@@ -31,12 +31,12 @@
             }
             else {
                 $mysqli = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-                $error_no = mysqli_connect_errno();
-                if ($error_no) {
-                    error_log("Failed to connect to MySQL: " . mysqli_connect_error());
+                if ($mysqli->connect_errno) {
+                    $errorNo = $mysqli->connect_errno;
+                    error_log("Failed to connect to MySQL: $errorNo");
                 }
                 else {
-                    $query = "SELECT platform, userAgent_Parent, AVG(finalScore) FROM result GROUP BY platform , userAgent_Parent";
+                    $query = "SELECT deviceName, userAgent_Parent, AVG(finalScore) FROM result GROUP BY platform , userAgent_Parent";
                     if ($result = $mysqli->query($query)) {
                         while ($row = $result->fetch_row()) {
                             $platform = $row[0];
