@@ -43,7 +43,7 @@
         }
     </style>
     <script type="text/javascript">
-        var BENCHMARK_VERSION = 'v0.8.0'; // Modify version in build.xml, when single file used
+        var BENCHMARK_VERSION = 'v0.11.1'; // Modify version in build.xml, when single file used
         // append version to title
         document.title = document.title + ' ' + BENCHMARK_VERSION;
         // benchmark output to write test result
@@ -131,11 +131,33 @@
         }());
         function BenchmarkOnActionButtonClick(button) {
             if (typeof BenchmarkController !== 'undefined') { // loaded
-                if (button.value == 'start') {
-                    BenchmarkController.getInstance().startBenchmark();
+                if (button.id === 'action') {
+                    if (button.value === 'start') {
+                        BenchmarkController.getInstance().startBenchmark();
+                    }
+                    else if (button.value === 'stop') {
+                        BenchmarkController.getInstance().stopBenchmark();
+                    }
                 }
-                else if (button.value == 'stop') {
-                    BenchmarkController.getInstance().stopBenchmark();
+                else if (button.id === 'clear') {
+                    BenchmarkOutput.getInstance().clear();
+                    BenchmarkShowResultActions(false);
+                }
+                else if (button.id === 'submit') {
+                    var errno = BenchmarkController.getInstance().submitBenchmark();
+                    if (errno == BenchmarkController.E_SUCCESS) {
+                        BenchmarkEnableSubmitAction(false);
+                        alert('Submitted, thanks for your contribution.');
+                        window.location = 'rank.php'
+                    }
+                    else if (errno == BenchmarkController.E_ALREADY_SUBMITTED) {
+                        alert('Data already submitted');
+                    }
+                    else {
+                        alert('Failed to submit, errno: ' + errno);
+                    }
+                }
+                else if (button.id === 'share') {
                 }
             }
         }
@@ -143,6 +165,16 @@
             var selectOption = select.options[select.selectedIndex];
             BenchmarkQueryParameters.engine = selectOption.value;
             window.location.search = BenchmarkQueryParameters.toString();
+        }
+        function BenchmarkShowResultActions(show) {
+            var display = 'none';
+            if (show) {
+                display = 'block';
+            }
+            document.getElementById('result_actions').style.display = display;
+        }
+        function BenchmarkEnableSubmitAction(enable) {
+            document.getElementById('submit').disabled = !enable;
         }
         function BenchmarkOnControllerLoadEnd(controller) {
             var controllerDelegate = {
@@ -165,14 +197,17 @@
                 },
                 onStartBenchmark: function() {
                     this._setAction('stop');
+                    BenchmarkEnableSubmitAction(false);
                 },
                 onStopBenchmark: function() {
                     cc.Director.getInstance().replaceScene(BenchmarkEntryScene.getInstance());
                     this._setAction('start');
                 },
                 onBenchmarkDone: function() {
-                    BenchmarkOutput.getInstance().writeln('Score: ' + controller.getFinalScore());
+                    BenchmarkOutput.getInstance().writeln('Score: ' + controller.getFinalScore() + ',  Time used: ' + controller.getTimeUsed() + 'ms');
                     BenchmarkOutput.getInstance().writeln('####################################');
+                    BenchmarkShowResultActions(true);
+                    BenchmarkEnableSubmitAction(true);
                 },
                 onError: function(e) {
                     BenchmarkOutput.getInstance().writeln('Exception occurred, stopped:\n' + e);
@@ -208,7 +243,19 @@
     </div>
     <div class="menu_item_wrapper" style="width: 22%">
         <div>
-            <input id="clear" type="button" onclick="BenchmarkOutput.getInstance().clear()" value=clear />
+            <input id="clear" type="button" onclick="BenchmarkOnActionButtonClick(this)" value=clear />
+        </div>
+    </div>
+</div>
+<div id="result_actions" style="height: 40px; display: none; border-top:1px solid black;">
+    <div class="menu_item_wrapper" style="width: 50%">
+        <div>
+            <input id="submit" type="button" onclick="BenchmarkOnActionButtonClick(this)" value=submit />
+        </div>
+    </div>
+    <div class="menu_item_wrapper" style="width: 50%">
+        <div>
+            <input id="share" type="button" disabled=true onclick="BenchmarkOnActionButtonClick(this)" value=share />
         </div>
     </div>
 </div>

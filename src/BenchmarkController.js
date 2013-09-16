@@ -17,6 +17,8 @@
  */
 
 var BenchmarkController = cc.Class.extend({
+    _benchmarkBeginTime: 0,
+    _benchmarkEndTime: 0,
     _testSceneBeginTime: 0,
     _testSceneEndTime: 0,
     _testSceneBeginFrames: 0,
@@ -28,11 +30,15 @@ var BenchmarkController = cc.Class.extend({
     _currentTestID: 0,
     _delegate: null,
     ready: false,
+    _submitted: false,
     getTestFPS: function(testID) {
         return this._testFPSList[testID];
     },
     getTestScore: function(testID) {
         return this._testScores[testID];
+    },
+    getTimeUsed: function() {
+        return this._benchmarkEndTime - this._benchmarkBeginTime;
     },
     getFinalScore: function() {
         return Number(this._finalScore);
@@ -45,11 +51,9 @@ var BenchmarkController = cc.Class.extend({
         this._testSceneBeginTime = (new Date).getTime();
         this._testSceneBeginFrames = cc.Director.getInstance().getTotalFrames();
         if (0 < testCase.duration) {
-            cc.Director.getInstance().getScheduler().scheduleCallbackForTarget(
+            BenchmarkAPIWrapper.Scheduler.getInstance().schedule(
                 this,
                 this._runNextTest,
-                0,
-                false,
                 testCase.duration / 1000
             );
         }
@@ -75,6 +79,7 @@ var BenchmarkController = cc.Class.extend({
     startBenchmark: function() {
         if (this.ready) {
             this._testInterrupted = false;
+            this._benchmarkBeginTime = new Date().getTime();
             this._runTest(0);
             if (this._delegate && this._delegate.onStartBenchmark) {
                 this._delegate.onStartBenchmark();
@@ -86,12 +91,52 @@ var BenchmarkController = cc.Class.extend({
             interrupted = true;
         }
         this._testInterrupted = interrupted;
-        cc.Director.getInstance().getScheduler().unscheduleAllCallbacksForTarget(this);
+        BenchmarkAPIWrapper.Scheduler.getInstance().unscheduleAll();
         if (this._delegate && this._delegate.onStopBenchmark) {
             this._delegate.onStopBenchmark();
         }
     },
+    submitBenchmark: function() {
+        if (!this._submitted) {
+            var engineVersion = BenchmarkQueryParameters.engine;
+            if (!engineVersion) { // debug version
+                engineVersion = cc.ENGINE_VERSION;
+            }
+            var data = {
+                benchmarkVersion: BENCHMARK_VERSION,
+                engineVersion: engineVersion,
+                language: navigator.language,
+                platform: navigator.platform,
+                vendor: navigator.vendor,
+                deviceName: BenchmarkDevice.currentDeviceInfo().name,
+                deviceMaker: BenchmarkDevice.currentDeviceInfo().maker,
+                fpsList: [],
+                scores: [],
+                finalScore: 0,
+                timeUsed: this.getTimeUsed()
+            };
+            var i;
+            for (i=0; i<this._testFPSList.length; ++i) {
+                data.fpsList[i] = this._testFPSList[i];
+            }
+            for (i=0; i<this._testScores.length; ++i) {
+                data.scores[i] = this._testScores[i];
+            }
+            data.finalScore = this._finalScore;
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'submit.php', false);
+            xhr.send(JSON.stringify(data));
+            if (xhr.responseText === '0') {
+                this._submitted = true;
+            }
+            return xhr.responseText;
+        }
+        else {
+            return BenchmarkController.E_ALREADY_SUBMITTED; // already submitted
+        }
+    },
     benchmarkDone: function() {
+        this._benchmarkEndTime = new Date().getTime();
         // use Harmonic Average value as the final score
         var sum = 0;
         var length = BenchmarkTestCases.maxID() + 1;
@@ -99,6 +144,7 @@ var BenchmarkController = cc.Class.extend({
             sum += 1 / this._testScores[i];
         }
         this._finalScore = (length / sum).toFixed(2);
+        this._submitted = false;
         if (this._delegate && this._delegate.onBenchmarkDone) {
             this._delegate.onBenchmarkDone();
         }
@@ -148,6 +194,11 @@ var BenchmarkController = cc.Class.extend({
 });
 
 BenchmarkController._instance = null;
+
+BenchmarkController.E_SUCCESS = 0;
+BenchmarkController.E_UNKNOWN = -1;
+BenchmarkController.E_INVALID_PARAM = -2;
+BenchmarkController.E_ALREADY_SUBMITTED = -3;
 
 BenchmarkController.getInstance = function() {
     if (!this._instance) {

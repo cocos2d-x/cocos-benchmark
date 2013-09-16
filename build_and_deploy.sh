@@ -15,9 +15,11 @@ if [ ! $upload_dir ]; then
 fi
 
 project=cocos-benchmark
-distr_files=(cocos2d.js main.js index.html)
+distr_files=(cocos2d.js main.js index.html submit.php errno.php rank.php update.php)
+rm_files=(lib/phpbrowscap/cache.php)
 # DO NOT ADD the last '/'
 distr_dirs=(res engines)
+distr_lib_dirs=(lib/highcharts lib/jquery lib/phpbrowscap)
 root_dir=$(pwd)
 archive_dir=$(pwd)/archive
 usage() 
@@ -46,7 +48,7 @@ if [ $# -lt 1 ]; then
 fi
 version=$1
 
-if [ $compile_target = dev ]; then
+if [[ $compile_target = dev ]]; then
     if [[ $version != *dev* ]]; then
         echo "invalid dev version: $version"
         exit 1
@@ -82,6 +84,8 @@ if [ ! -f $single_file ]; then
 else
 	cp -fv $single_file $version_dir/
 	check_error
+	# delete the file after archived
+	rm -f $single_file
 fi
 
 for file in ${distr_files[@]}; do
@@ -94,7 +98,18 @@ for dir in ${distr_dirs[@]}; do
 	check_error
 done
 
+for dir in ${distr_lib_dirs[@]}; do
+	rsync -av --exclude=".*" $dir $version_dir/lib/
+	check_error
+done
+
 rsync -av --exclude=".*" $root_dir/Resources-html5/ $version_dir/
+
+for file in ${rm_files[@]}; do
+	echo "removing $file..."
+	rm -rf $version_dir/$file
+	check_error
+done
 
 cd $version_dir
 echo "removing hidden file(s)..."

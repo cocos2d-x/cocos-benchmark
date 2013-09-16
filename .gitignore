@@ -25,3 +25,4 @@ cocos-benchmark-v*.js
 /proj.android/local.properties
 /proj.android/bin/jarlist.cache
 /proj.android/bin/build.prop
+/lib/phpbrowscap/cache.php

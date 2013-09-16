@@ -7,12 +7,13 @@
     <target name="release">
         <!-- version MUST be same as BENCHMARK_VERSION defined in index.html -->
         <jscomp compilationLevel="simple" warning="quiet"
-                debug="false" output="cocos-benchmark-v0.8.0.js">
+                debug="false" output="cocos-benchmark-v0.11.1.js">
             <!-- cocos benchmark source -->
             <sources dir="${basedir}">
-                <file name="src/APIWrapper.js"/>
+                <file name="src/BenchmarkAPIWrapper.js"/>
                 <file name="src/BenchmarkConfig.js"/>
                 <file name="src/BenchmarkController.js"/>
+                <file name="src/BenchmarkDevice.js"/>
                 <file name="src/BenchmarkEntryScene.js"/>
                 <file name="src/BenchmarkEntryScene-html5.js"/>
                 <file name="src/BenchmarkTestCases.js"/>
@@ -32,13 +33,14 @@
     <target name="dev">
         <!-- version MUST be same as BENCHMARK_VERSION defined in index.html -->
         <jscomp compilationLevel="simple" warning="quiet"
-                debug="false" output="cocos-benchmark-v0.8.0-dev.js">
+                debug="false" output="cocos-benchmark-v0.11.1-dev.js">
             <!-- cocos benchmark source -->
             <sources dir="${basedir}">
-                <file name="src/APIWrapper.js"/>
+                <file name="src/BenchmarkAPIWrapper.js"/>
                 <file name="src/BenchmarkConfig.js"/>
                 <file name="src/BenchmarkController.js"/>
                 <file name="src/BenchmarkControllerDevHack-html5.js"/>
+                <file name="src/BenchmarkDevice.js"/>
                 <file name="src/BenchmarkEntryScene.js"/>
                 <file name="src/BenchmarkEntryScene-html5.js"/>
                 <file name="src/BenchmarkTestCases.js"/>

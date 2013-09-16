@@ -93,7 +93,7 @@ var ParticleMainScene = BenchmarkTestScene.extend({
         var texture = cc.TextureCache.getInstance().addImage(s_fire);
         cc.TextureCache.getInstance().removeTexture(texture);
 
-        particleSystem = new APIWrapper.ParticleSystem();
+        particleSystem = new BenchmarkAPIWrapper.ParticleSystem();
 
         switch (this._subtestNumber) {
             case 1:
@@ -472,7 +472,7 @@ var DemoParticleFromFile = ParticleDemo.extend({
         this._super();
         this.setColor(cc.c3b(0,0,0));
         var filename = "res/Particles/" + this._title + ".plist";
-        this._emitter = APIWrapper.ParticleSystem.create(filename);
+        this._emitter = BenchmarkAPIWrapper.ParticleSystem.create(filename);
         this.addChild(this._emitter, 10);
 
         if(this._title == "Flower"){

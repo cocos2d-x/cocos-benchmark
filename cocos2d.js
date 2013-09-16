@@ -26,6 +26,7 @@
  ****************************************************************************/
 var SINGLE_FILE = false; // use SINGLE_FILE in release version to reduce loading time
 var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
+var ENABLE_PC_HACK = false;
 
 (function () {
     var engines = {
@@ -50,9 +51,9 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
         tag:'Cocos2dGameContainer', //the dom element to run cocos2d on
         engineDir:'./lib/cocos2d-html5/cocos2d/',
         appFiles:[
-            'src/resources.js',
+            'src/BenchmarkAPIWrapper.js',
             'src/BenchmarkConfig.js',
-            'src/APIWrapper.js',
+            'src/BenchmarkDevice.js',
             'src/BenchmarkTestScene.js',
             'src/BenchmarkEntryScene.js',
             'src/BenchmarkEntryScene-html5.js',
@@ -60,6 +61,7 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
             'src/BenchmarkTestCases-html5.js',
             'src/BenchmarkController.js',
             //'src/BenchmarkControllerDevHack-html5.js', // use it to test error and get reference values
+            'src/resources.js',
             'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',
             'src/tests/Particle/BenchmarkParticleTest.js',
             'src/tests/Sprite/BenchmarkSpriteTest.js',
@@ -67,23 +69,23 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
         ]
     };
      function loadEnd() {
-         //< pc support hack
-         if (BenchmarkQueryParameters.v == 'pc') {
-             var PC_SIZE = '600px';
-             var PC_TITLE_SUFFIX = '(for PC)';
-             var gameContainer = document.getElementById('Cocos2dGameContainer');
-             gameContainer.style.width = PC_SIZE;
-             gameContainer.style.height = PC_SIZE;
-             var i, rules = document.styleSheets[0].rules;
-             for (i=0; i<rules.length; ++i) {
-                 if (rules[i].selectorText == 'body > *') {
-                     rules[i].style.width = PC_SIZE;
-                     break;
+         if (ENABLE_PC_HACK) {
+             if (BenchmarkQueryParameters.v == 'pc') {
+                 var PC_SIZE = '600px';
+                 var PC_TITLE_SUFFIX = '(for PC)';
+                 var gameContainer = document.getElementById('Cocos2dGameContainer');
+                 gameContainer.style.width = PC_SIZE;
+                 gameContainer.style.height = PC_SIZE;
+                 var i, rules = document.styleSheets[0].rules;
+                 for (i=0; i<rules.length; ++i) {
+                     if (rules[i].selectorText == 'body > *') {
+                         rules[i].style.width = PC_SIZE;
+                         break;
+                     }
                  }
+                 document.title += PC_TITLE_SUFFIX;
              }
-             document.title += PC_TITLE_SUFFIX;
          }
-         //>
          if (SINGLE_FILE) {
              var currentEngineID = BenchmarkQueryParameters.engine;
              var currentEngineInfo, ID;
@@ -100,6 +102,7 @@ var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
                  }
              }
              if (currentEngineInfo) {
+                 BenchmarkQueryParameters.engine = currentEngineID; //set back engine ID
                  config.engineDir = null;
                  config.SingleEngineFile = currentEngineInfo.file;
                  config.appFiles = [APP_SINGLE_FILE];

@@ -9,7 +9,7 @@ var appFiles = [
     'src/resources.js',
     'src/BenchmarkConfig.js',
     'src/BenchmarkConfig-android.js',
-    'src/APIWrapper.js',
+    'src/BenchmarkAPIWrapper.js',
     'src/BenchmarkTestScene.js',
     'src/BenchmarkEntryScene.js',
     'src/BenchmarkEntryScene-native.js',
