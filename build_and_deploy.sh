@@ -15,7 +15,7 @@ if [ ! $upload_dir ]; then
 fi
 
 project=cocos-benchmark
-distr_files=(cocos2d.js main.js index.html submit.php errno.php rank.php)
+distr_files=(cocos2d.js main.js index.html submit.php errno.php rank.php update.php)
 # DO NOT ADD the last '/'
 distr_dirs=(res engines)
 distr_lib_dirs=(lib/highcharts lib/jquery lib/phpbrowscap)

@@ -9,7 +9,11 @@
 		<script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
         <?php
             require_once( dirname(__FILE__) . '/config.php' );
+            require_once( dirname(__FILE__) . '/lib/phpbrowscap/Browscap.php' );
             require_once( dirname(__FILE__) . '/errno.php' );
+            use phpbrowscap\Browscap;
+            $bc = new Browscap('lib/phpbrowscap');
+            $browserObject = $bc->getBrowser();
             function ResultKeyString($platform, $browser) {
                 return $platform . '|' . $browser;
             }
@@ -24,12 +28,14 @@
             $resultMap = array();
             $platformList = array();
             $browserList = array();
-
+            $currentPlatform = 'Your Score';
+            $currentBrowser = $browserObject->Parent;
             if (!isset($_SESSION['result'])) {
                 header('Location: ' . dirname($_SERVER['PHP_SELF']));
                 session_destroy();
             }
             else {
+                $currentScore = json_decode($_SESSION['result'])->finalScore;
                 $mysqli = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
                 if ($mysqli->connect_errno) {
                     $errorNo = $mysqli->connect_errno;
@@ -51,6 +57,9 @@
                         }
                         $result->close();
                     }
+                    $platformList[$currentPlatform] = TRUE;
+                    $browserList[$currentBrowser] = TRUE;
+                    $resultMap[ResultKeyString($currentPlatform, $currentBrowser)] = $currentScore;
                     $mysqli->close();
                     $series = array();
                     foreach($browserList as $browser => $browserDummy) {

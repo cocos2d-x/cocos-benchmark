@@ -9,7 +9,6 @@ require_once( dirname(__FILE__) . '/config.php' );
 require_once( dirname(__FILE__) . '/lib/phpbrowscap/Browscap.php' );
 require_once( dirname(__FILE__) . '/errno.php' );
 
-// The Browscap class is in the phpbrowscap namespace, so import it
 use phpbrowscap\Browscap;
 
 $error_no = E_UNKNOWN;
