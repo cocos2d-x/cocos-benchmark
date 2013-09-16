@@ -19,7 +19,12 @@ if (isset($HTTP_RAW_POST_DATA)) {
     $browser = $bc->getBrowser();
     $data = json_decode($HTTP_RAW_POST_DATA);
     $data->language = strtolower($data->language);
-
+    if (!$data->deviceName || 'unknown' == $data->deviceName) {
+        $data->deviceName = $browser->Device_Name;
+    }
+    if (!$data->deviceMaker || 'unknown' == $data->deviceMaker) {
+        $data->deviceMaker = $browser->Device_Maker;
+    }
     $mysqli = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
 
     if ($mysqli->connect_errno) {
@@ -37,6 +42,8 @@ if (isset($HTTP_RAW_POST_DATA)) {
                 language,
                 platform,
                 vendor,
+                deviceName,
+                deviceMaker,
                 fpsList,
                 scores,
                 finalScore,
@@ -80,14 +87,16 @@ if (isset($HTTP_RAW_POST_DATA)) {
                 userAgent_RenderingEngine_Version
             )
             VALUES(
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
             )");
-        $stmt->bind_param("ssssssssssssssssssssssssssssssssssssssssssssss",
+        $stmt->bind_param("ssssssssssssssssssssssssssssssssssssssssssssssss",
             $data->benchmarkVersion,
             $data->engineVersion,
             $data->language,
             $data->platform,
             $data->vendor,
+            $data->deviceName,
+            $data->deviceMaker,
             $fpsList,
             $scores,
             $data->finalScore,
@@ -138,12 +147,13 @@ if (isset($HTTP_RAW_POST_DATA)) {
             $_SESSION['result'] = $HTTP_RAW_POST_DATA;
         }
         else {
+            global $php_errormsg;
             $error_no = $mysqli->errno;
             if (!$error_no) {
                 $error_no = E_UNKNOWN; // not mysql error, php error
             }
-            error_log('Failed to insert, mysql error: ' . $mysqli->error);
-            error_log('PHP error msg: ' . $php_errormsg);
+            error_log("Failed to insert, mysql error no: $mysqli->errno , msg: $mysqli->error");
+            error_log("PHP error msg: $php_errormsg");
         }
         $mysqli->close();
     }

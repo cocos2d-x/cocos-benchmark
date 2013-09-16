@@ -108,6 +108,8 @@ var BenchmarkController = cc.Class.extend({
                 language: navigator.language,
                 platform: navigator.platform,
                 vendor: navigator.vendor,
+                deviceName: BenchmarkDevice.currentDeviceInfo().name,
+                deviceMaker: BenchmarkDevice.currentDeviceInfo().maker,
                 fpsList: [],
                 scores: [],
                 finalScore: 0,

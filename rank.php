@@ -36,7 +36,10 @@
                     error_log("Failed to connect to MySQL: $errorNo");
                 }
                 else {
-                    $query = "SELECT deviceName, userAgent_Parent, AVG(finalScore) FROM result GROUP BY platform , userAgent_Parent";
+                    $query = "SELECT deviceName, userAgent_Parent, AVG(finalScore)
+                        FROM result
+                        WHERE deviceName <> 'unknown'
+                        GROUP BY deviceName, userAgent_Parent";
                     if ($result = $mysqli->query($query)) {
                         while ($row = $result->fetch_row()) {
                             $platform = $row[0];

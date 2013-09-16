@@ -144,17 +144,17 @@
                     BenchmarkShowResultActions(false);
                 }
                 else if (button.id === 'submit') {
-                    var error_no = BenchmarkController.getInstance().submitBenchmark();
-                    if (error_no == BenchmarkController.E_SUCCESS) {
+                    var errno = BenchmarkController.getInstance().submitBenchmark();
+                    if (errno == BenchmarkController.E_SUCCESS) {
                         BenchmarkEnableSubmitAction(false);
                         alert('Submitted, thanks for your contribution.');
                         window.location = 'rank.php'
                     }
-                    else if (error_no == BenchmarkController.E_ALREADY_SUBMITTED) {
+                    else if (errno == BenchmarkController.E_ALREADY_SUBMITTED) {
                         alert('Data already submitted');
                     }
                     else {
-                        alert('Failed to submit, errno: ' + error_no);
+                        alert('Failed to submit, errno: ' + errno);
                     }
                 }
                 else if (button.id === 'share') {

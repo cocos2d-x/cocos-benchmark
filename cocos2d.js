@@ -51,9 +51,9 @@ var ENABLE_PC_HACK = false;
         tag:'Cocos2dGameContainer', //the dom element to run cocos2d on
         engineDir:'./lib/cocos2d-html5/cocos2d/',
         appFiles:[
-            'src/resources.js',
-            'src/BenchmarkConfig.js',
             'src/BenchmarkAPIWrapper.js',
+            'src/BenchmarkConfig.js',
+            'src/BenchmarkDevice.js',
             'src/BenchmarkTestScene.js',
             'src/BenchmarkEntryScene.js',
             'src/BenchmarkEntryScene-html5.js',
@@ -61,6 +61,7 @@ var ENABLE_PC_HACK = false;
             'src/BenchmarkTestCases-html5.js',
             'src/BenchmarkController.js',
             //'src/BenchmarkControllerDevHack-html5.js', // use it to test error and get reference values
+            'src/resources.js',
             'src/tests/DrawPrimitives/BenchmarkDrawPrimitivesTest.js',
             'src/tests/Particle/BenchmarkParticleTest.js',
             'src/tests/Sprite/BenchmarkSpriteTest.js',
