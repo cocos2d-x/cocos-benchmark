@@ -16,6 +16,7 @@ fi
 
 project=cocos-benchmark
 distr_files=(cocos2d.js main.js index.html submit.php errno.php rank.php update.php)
+rm_files=(lib/phpbrowscap/cache.php)
 # DO NOT ADD the last '/'
 distr_dirs=(res engines)
 distr_lib_dirs=(lib/highcharts lib/jquery lib/phpbrowscap)
@@ -103,6 +104,12 @@ for dir in ${distr_lib_dirs[@]}; do
 done
 
 rsync -av --exclude=".*" $root_dir/Resources-html5/ $version_dir/
+
+for file in ${rm_files[@]}; do
+	echo "removing $file..."
+	rm -rf $version_dir/$file
+	check_error
+done
 
 cd $version_dir
 echo "removing hidden file(s)..."
