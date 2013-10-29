@@ -36,8 +36,20 @@ var ENABLE_PC_HACK = false;
         "v2.1.1.min": {
             file: 'engines/Cocos2d-html5-v2.1.1.min.js'
         },
+        "v2.1.3.min": {
+            file: 'engines/Cocos2d-html5-v2.1.3.min.js'
+        },
         "v2.1.4.min": {
             file: 'engines/Cocos2d-html5-v2.1.4.min.js'
+        },
+        "v2.1.5.min": {
+            file: 'engines/Cocos2d-html5-v2.1.5.min.js'
+        },
+        "v2.1.6.min": {
+            file: 'engines/Cocos2d-html5-v2.1.6.min.js'
+        },
+        "v2.2.min": {
+            file: 'engines/Cocos2d-html5-v2.2.min.js'
         }
         // add more engine versions here
     };
