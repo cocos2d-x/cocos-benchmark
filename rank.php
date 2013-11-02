@@ -140,7 +140,7 @@
         ?>
 	</head>
 	<body>
-        <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+        <div id="container" style="min-width: 310px; height: 720px; margin: 0 auto"></div>
         <div style="text-align: center">
             Powered by <a href="http://www.highcharts.com/">highcharts</a>
         </div>
