@@ -142,7 +142,7 @@
 	<body>
         <div id="container" style="min-width: 310px; height: 720px; margin: 0 auto"></div>
         <div style="text-align: center">
-            Powered by <a href="http://www.highcharts.com/">highcharts</a>
+            Powered by <a href="http://www.highcharts.com/">highcharts</a> under <a href="http://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>
         </div>
     </body>
 </html>

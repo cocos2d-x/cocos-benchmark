@@ -1,0 +1,8 @@
+GROSSINI
+--------------------------------
+res/grossinis_*.png
+
+From:
+	http://www.stortroopers.com
+
+License: Attribution-NonCommercial-ShareAlike 2.0
