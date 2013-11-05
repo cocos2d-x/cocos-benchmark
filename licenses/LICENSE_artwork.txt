@@ -5,4 +5,5 @@ res/grossinis_*.png
 From:
 	http://www.stortroopers.com
 
-License: Attribution-NonCommercial-ShareAlike 2.0
+License: Attribution-NonCommercial-ShareAlike 2.0, for detail please refer to following URL:
+http://creativecommons.org/licenses/by-nc-sa/2.0/
