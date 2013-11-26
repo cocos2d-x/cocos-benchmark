@@ -89,7 +89,7 @@
                     echo '<script type="text/javascript" src="lib/jqplot/jquery.jqplot.min.js"></script>';
                     echo '<script type="text/javascript" src="lib/jqplot/plugins/jqplot.barRenderer.min.js"></script>';
                     echo '<script type="text/javascript" src="lib/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"></script>';
-                    echo '<script type="text/javascript" src="lib/jqplot/plugins/jqplot.pointLabels.js"></script>';
+                    echo '<script type="text/javascript" src="lib/jqplot/plugins/jqplot.pointLabels.min.js"></script>';
                     echo '<script type="text/javascript">';
                     echo "
                     $(document).ready(function(){
