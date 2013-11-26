@@ -96,6 +96,7 @@
                         // from their vertical bar counterpart.
                         var plot2 = $.jqplot('chart',
                             $series, {
+                            animate: true,
                             title: 'cocos-benchmark rank',
                             seriesDefaults: {
                                 renderer:$.jqplot.BarRenderer,
