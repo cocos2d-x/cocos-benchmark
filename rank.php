@@ -25,6 +25,12 @@
                     $this->data = array();
                 }
             };
+            class SeriesLabel {
+                public $label;
+                public function __construct($label) {
+                    $this->label = $label;
+                }
+            }
             $resultMap = array();
             $platformList = array();
             $browserList = array();
@@ -42,6 +48,8 @@
                     error_log("Failed to connect to MySQL: $errorNo");
                 }
                 else {
+                    $platformList[$currentPlatform] = TRUE;
+                    $browserList[$currentBrowser] = TRUE;
                     $query = "SELECT deviceName, userAgent_Parent, AVG(finalScore)
                         FROM result
                         WHERE deviceName <> 'unknown'
@@ -57,11 +65,10 @@
                         }
                         $result->close();
                     }
-                    $platformList[$currentPlatform] = TRUE;
-                    $browserList[$currentBrowser] = TRUE;
                     $resultMap[ResultKeyString($currentPlatform, $currentBrowser)] = $currentScore;
                     $mysqli->close();
                     $series = array();
+                    $seriesLabels = array();
                     foreach($browserList as $browser => $browserDummy) {
                         $seriesItem = new SeriesItem($browser);
                         foreach ($platformList as $platform => $platformDummy) {
@@ -72,77 +79,69 @@
                             }
                             array_push($seriesItem->data, $value);
                         }
-                        array_push($series, $seriesItem);
+                        array_push($series, $seriesItem->data);
+                        array_push($seriesLabels, new SeriesLabel($seriesItem->name));
                     }
                     $categories = json_encode(array_keys($platformList));
                     $series = json_encode($series);
-                    echo '<script src="lib/highcharts/highcharts.js"></script>';
-                    echo '<script src="lib/highcharts/modules/exporting.js"></script>';
+                    $seriesLabels = json_encode($seriesLabels);
+                    echo '<link rel="stylesheet" type="text/css" href="lib/jqplot/jquery.jqplot.min.css">';
+                    echo '<script type="text/javascript" src="lib/jqplot/jquery.jqplot.min.js"></script>';
+                    echo '<script type="text/javascript" src="lib/jqplot/plugins/jqplot.barRenderer.min.js"></script>';
+                    echo '<script type="text/javascript" src="lib/jqplot/plugins/jqplot.categoryAxisRenderer.min.js"></script>';
+                    echo '<script type="text/javascript" src="lib/jqplot/plugins/jqplot.pointLabels.min.js"></script>';
                     echo '<script type="text/javascript">';
                     echo "
-                        $(function () {
-                            $('#container').highcharts({
-                                chart: {
-                                    type: 'bar'
+                    $(document).ready(function(){
+                        // from their vertical bar counterpart.
+                        var plot2 = $.jqplot('chart',
+                            $series, {
+                            animate: true,
+                            title: 'cocos-benchmark rank',
+                            seriesDefaults: {
+                                renderer:$.jqplot.BarRenderer,
+                                pointLabels: { show: true, location: 'e', formatString: '%.2f' },
+                                rendererOptions: {
+                                    barDirection: 'horizontal'
                                 },
-                                title: {
-                                    text: 'cocos-benchmark rank'
+                                shadow: false
+                            },
+                            axes: {
+                                xaxis: {
+
                                 },
-                                subtitle: {
-                                    text: ''
-                                },
-                                xAxis: {
-                                    categories: $categories,
-                                    title: {
-                                        text: null
+                                yaxis: {
+                                    renderer: $.jqplot.CategoryAxisRenderer,
+                                    ticks: $categories,
+                                    tickOptions: {
+                                        showGridline: false,
                                     }
-                                },
-                                yAxis: {
-                                    min: 0,
-                                    title: {
-                                        text: 'Score',
-                                        align: 'high'
-                                    },
-                                    labels: {
-                                        overflow: 'justify'
-                                    }
-                                },
-                                tooltip: {
-                                    valueSuffix: ' '
-                                },
-                                plotOptions: {
-                                    bar: {
-                                        dataLabels: {
-                                            enabled: true
-                                        }
-                                    }
-                                },
-                                legend: {
-                                    layout: 'vertical',
-                                    align: 'right',
-                                    verticalAlign: 'top',
-                                    x: -40,
-                                    y: 100,
-                                    floating: true,
-                                    borderWidth: 1,
-                                    backgroundColor: '#FFFFFF',
-                                    shadow: true
-                                },
-                                credits: {
-                                    enabled: false
-                                },
-                                series: $series
-                            });
-                        });";
+                                }
+                            },
+                            grid: {
+                                gridLineColor: '#c0c0c0',
+                                background: '#ffffff',
+                                borderColor: '#c0c0c0',
+                                borderWidth: 0,
+                                shadow: false
+                            },
+                            legend: {
+                                show: true,
+                                placement: 'e'
+                            },
+                            series: $seriesLabels
+                        });
+                    });
+                    ";
                     echo '</script>';
                 }
             }
         ?>
 	</head>
 	<body>
-        <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+        <div id="chart" style="min-width: 310px; height: 720px; margin: 10px auto 20px" class="jqplot-target"></div>
         <div style="text-align: center">
-            Powered by <a href="http://www.highcharts.com/">highcharts</a>
+            Powered by <a href="http://www.jqplot.com/">jqPlot</a> under <a href="http://www.jqplot.com/docs/files/MIT-LICENSE-txt.html">MIT</a> license
         </div>
     </body>
 </html>
