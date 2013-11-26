@@ -1,4 +1,0 @@
-highcharts uses license CC BY-NC 3.0 with Non-commercial usage.
-For detail of CC BY-NC 3.0, please refer to following URL:
-http://creativecommons.org/licenses/by-nc/3.0/
-
