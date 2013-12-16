@@ -7,7 +7,7 @@
     <target name="release">
         <!-- version MUST be same as BENCHMARK_VERSION defined in index.html -->
         <jscomp compilationLevel="simple" warning="quiet"
-                debug="false" output="cocos-benchmark-v1.0.1.js">
+                debug="false" output="cocos-benchmark-v1.0.2.js">
             <!-- cocos benchmark source -->
             <sources dir="${basedir}">
                 <file name="src/BenchmarkAPIWrapper.js"/>
@@ -33,7 +33,7 @@
     <target name="dev">
         <!-- version MUST be same as BENCHMARK_VERSION defined in index.html -->
         <jscomp compilationLevel="simple" warning="quiet"
-                debug="false" output="cocos-benchmark-v1.0.1-dev.js">
+                debug="false" output="cocos-benchmark-v1.0.2-dev.js">
             <!-- cocos benchmark source -->
             <sources dir="${basedir}">
                 <file name="src/BenchmarkAPIWrapper.js"/>
