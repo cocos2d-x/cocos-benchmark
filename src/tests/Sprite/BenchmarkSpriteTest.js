@@ -73,7 +73,7 @@ var SubTest = cc.Class.extend({
         switch (this._subtestNumber) {
             case 1:
             {
-                sprite = cc.Sprite.create("res/Images/grossinis_sister1.png");
+                sprite = cc.Sprite.create(s_testSprite);
                 this._parent.addChild(sprite, 0, tag + 100);
                 break;
             }
