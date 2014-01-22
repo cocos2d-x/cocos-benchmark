@@ -1,10 +1,5 @@
-/**
- * Created with JetBrains WebStorm.
- * User: sunzhuoshi
- * Date: 1/4/13
- * Time: 4:03 PM
- */
 /****************************************************************************
+ Copyright (c) 2013-2014 Intel Corporation.
  Copyright (c) 2010-2012 cocos2d-x.org
  Copyright (c) 2008-2010 Ricardo Quesada
  Copyright (c) 2011      Zynga Inc.
