@@ -1,4 +1,5 @@
 /****************************************************************************
+ Copyright (c) 2013-2014 Intel Corporation.
  Copyright (c) 2010-2012 cocos2d-x.org
  Copyright (c) 2008-2010 Ricardo Quesada
  Copyright (c) 2011      Zynga Inc.
@@ -23,8 +24,6 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-var DRAW_PRIMITIVES_TEST_LOOP = 20;
-
 var DrawPrimitivesBaseBenchmark = cc.Layer.extend({
     ctor: function() {
         this._super();

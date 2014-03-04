@@ -19,7 +19,7 @@ distr_files=(cocos2d.js main.js index.html submit.php errno.php rank.php update.
 rm_files=(lib/phpbrowscap/cache.php)
 # DO NOT ADD the last '/'
 distr_dirs=(res engines)
-distr_lib_dirs=(lib/highcharts lib/jquery lib/phpbrowscap)
+distr_lib_dirs=(lib/jqplot lib/jquery lib/phpbrowscap)
 root_dir=$(pwd)
 archive_dir=$(pwd)/archive
 usage() 
