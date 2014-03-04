@@ -15,7 +15,7 @@ Platforms
 Pre-Requirements
 -------------
    * mysql 5.5 or above
-   * php 5.3 or above
+   * php 5.2 or above
 
 Run locally
 ------------------
@@ -37,10 +37,10 @@ Example:
     mysql> exit
     $ vi config.php
     <?php>
-    CONST DATABASE_HOST = '127.0.0.1';
-    CONST DATABASE_USER = 'root';
-    CONST DATABASE_PASSWORD = '';
-    CONST DATABASE_NAME = 'cocos_benchmark';
+    define('DATABASE_HOST', '127.0.0.1');
+    define('DATABASE_USER', 'root');
+    define('DATABASE_PASSWORD, '');
+    defone('DATABASE_NAME', 'cocos_benchmark');
     
 
 Build and deploy to remote
