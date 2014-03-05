@@ -103,7 +103,7 @@ if (isset($HTTP_RAW_POST_DATA)) {
             VALUES(
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
             )");
-        $stmt->bind_param("ssssssssssssssssssssssssssssssssssssssssssssssss",
+        $stmt->bind_param("sssssssssdissssssssssssssiiiiiiiiiiiiiiiiissssss",
             $data->benchmarkVersion,
             $data->engineVersion,
             $data->language,
@@ -168,6 +168,9 @@ if (isset($HTTP_RAW_POST_DATA)) {
             }
             error_log("Failed to insert, mysql error no: $mysqli->errno , msg: $mysqli->error");
             error_log("PHP error msg: $php_errormsg");
+            error_log('data: ' . var_export($data));
+            error_log('user agent: ' . $_SERVER['HTTP_USER_AGENT']);
+            //error_log('browser: ' + var_export($browser));
         }
         $mysqli->close();
     }
