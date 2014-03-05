@@ -51,6 +51,12 @@ var ENABLE_PC_HACK = false;
         },
         "v2.2.min": {
             file: 'engines/Cocos2d-html5-v2.2.min.js'
+        },
+        "v2.2.1.min": {
+            file: 'engines/Cocos2d-html5-v2.2.1.min.js'
+        },
+        "v2.2.2.min": {
+            file: 'engines/Cocos2d-html5-v2.2.2.min.js'
         }
         // add more engine versions here
     };
