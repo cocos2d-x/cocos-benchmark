@@ -214,8 +214,9 @@ class Browscap
      */
     public function __construct($cache_dir)
     {
+        // Update: data_default_timezone_get() still generates warnings, so remove it by sunzhuoshi@gmail.com
         // has to be set to reach E_STRICT compatibility, does not affect system/app settings
-        date_default_timezone_set(date_default_timezone_get());
+        //date_default_timezone_set(date_default_timezone_get());
 
         if (!isset($cache_dir)) {
             throw new Exception(

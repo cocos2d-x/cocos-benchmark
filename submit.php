@@ -46,6 +46,7 @@ if (isset($HTTP_RAW_POST_DATA)) {
         error_log("Failed to connect to MySQL, error no: $error_no, error: $mysqli->connect_error");
     }
     else {
+        date_default_timezone_set('UTC');
         $now = date('Y-m-d h:i:s');
         $fpsList = json_encode($data->fpsList);
         $scores = json_encode($data->scores);
@@ -168,9 +169,9 @@ if (isset($HTTP_RAW_POST_DATA)) {
             }
             error_log("Failed to insert, mysql error no: $mysqli->errno , msg: $mysqli->error");
             error_log("PHP error msg: $php_errormsg");
-            error_log('data: ' . var_export($data));
+            error_log('data: ' . var_export($data, TRUE));
             error_log('user agent: ' . $_SERVER['HTTP_USER_AGENT']);
-            //error_log('browser: ' + var_export($browser));
+            error_log('browser: ' . var_export($browser, TRUE));
         }
         $mysqli->close();
     }
