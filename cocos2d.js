@@ -25,7 +25,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-var SINGLE_FILE = false; // use SINGLE_FILE in release version to reduce loading time
+var SINGLE_FILE = true; // use SINGLE_FILE in release version to reduce loading time
 var APP_SINGLE_FILE = 'cocos-benchmark-' + BENCHMARK_VERSION + '.js';
 var ENABLE_PC_HACK = false;
 
