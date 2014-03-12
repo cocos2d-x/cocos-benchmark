@@ -26,6 +26,8 @@ require_once( dirname(__FILE__) . '/errno.php' );
 
 use phpbrowscap\Browscap;
 
+date_default_timezone_set('UTC');
+
 $error_no = E_UNKNOWN;
 
 if (isset($HTTP_RAW_POST_DATA)) {

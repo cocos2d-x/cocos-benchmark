@@ -31,34 +31,34 @@ var ENABLE_PC_HACK = false;
 
 (function () {
     var engines = {
-        'v2.1.0.min': {
-            file: 'engines/Cocos2d-html5-v2.1.0.min.js'
-        },
-        "v2.1.1.min": {
-            file: 'engines/Cocos2d-html5-v2.1.1.min.js'
-        },
-        "v2.1.3.min": {
-            file: 'engines/Cocos2d-html5-v2.1.3.min.js'
-        },
-        "v2.1.4.min": {
-            file: 'engines/Cocos2d-html5-v2.1.4.min.js'
-        },
-        "v2.1.5.min": {
-            file: 'engines/Cocos2d-html5-v2.1.5.min.js'
-        },
-        "v2.1.6.min": {
-            file: 'engines/Cocos2d-html5-v2.1.6.min.js'
-        },
-        "v2.2.min": {
-            file: 'engines/Cocos2d-html5-v2.2.min.js'
+        // add more engine versions here
+        "v2.2.2.min": {
+            file: 'engines/Cocos2d-html5-v2.2.2.min.js'
         },
         "v2.2.1.min": {
             file: 'engines/Cocos2d-html5-v2.2.1.min.js'
         },
-        "v2.2.2.min": {
-            file: 'engines/Cocos2d-html5-v2.2.2.min.js'
+        "v2.2.min": {
+            file: 'engines/Cocos2d-html5-v2.2.min.js'
+        },
+        "v2.1.6.min": {
+            file: 'engines/Cocos2d-html5-v2.1.6.min.js'
+        },
+        "v2.1.5.min": {
+            file: 'engines/Cocos2d-html5-v2.1.5.min.js'
+        },
+        "v2.1.4.min": {
+            file: 'engines/Cocos2d-html5-v2.1.4.min.js'
+        },
+        "v2.1.3.min": {
+            file: 'engines/Cocos2d-html5-v2.1.3.min.js'
+        },
+        "v2.1.1.min": {
+            file: 'engines/Cocos2d-html5-v2.1.1.min.js'
+        },
+        'v2.1.0.min': {
+            file: 'engines/Cocos2d-html5-v2.1.0.min.js'
         }
-        // add more engine versions here
     };
     var config = {
         COCOS2D_DEBUG:2, //0 to turn debug off, 1 for basic debug, and 2 for full debug

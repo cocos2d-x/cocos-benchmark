@@ -33,6 +33,7 @@ THE SOFTWARE.
             require_once( dirname(__FILE__) . '/lib/phpbrowscap/Browscap.php' );
             require_once( dirname(__FILE__) . '/errno.php' );
             use phpbrowscap\Browscap;
+            date_default_timezone_set('UTC');
             $bc = new Browscap('lib/phpbrowscap');
             $browserObject = $bc->getBrowser();
             function ResultKeyString($platform, $browser) {
@@ -56,7 +57,13 @@ THE SOFTWARE.
             $platformList = array();
             $browserList = array();
             $currentPlatform = 'Your Score';
-            $currentBrowser = $browserObject->Parent;
+            // TODO: check if use $browser->Comment instead of $browser->Parent
+            if (isset($browserObject->Parent)) {
+                $currentBrowser = $browserObject->Parent;
+            }
+            else {
+                $currentBrowser = 'Unknown';
+            }
             if (!isset($_SESSION['result'])) {
                 header('Location: ' . dirname($_SERVER['PHP_SELF']));
                 session_destroy();
@@ -71,6 +78,7 @@ THE SOFTWARE.
                 else {
                     $platformList[$currentPlatform] = TRUE;
                     $browserList[$currentBrowser] = TRUE;
+                    // TODO: check if use userAgent_Comment instead of userAgent_Parent
                     $query = "SELECT deviceName, userAgent_Parent, AVG(finalScore)
                         FROM result
                         WHERE deviceName <> 'unknown'

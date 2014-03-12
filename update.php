@@ -26,8 +26,9 @@ require_once( dirname(__FILE__) . '/errno.php' );
 
 use phpbrowscap\Browscap;
 
-$errorNo = E_UNKNOWN;
 date_default_timezone_set('UTC');
+
+$errorNo = E_UNKNOWN;
 $updateTime = date('Y-m-d h:i:s');
 $toUpdateCount = 0;
 $updateOKCount = 0;

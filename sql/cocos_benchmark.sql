@@ -49,7 +49,7 @@ CREATE TABLE `result` (
   `userAgent_browser_name` varchar(255) NOT NULL,
   `userAgent_browser_name_regex` varchar(255) NOT NULL,
   `userAgent_browser_name_pattern` varchar(255) NOT NULL,
-  `userAgent_Parent` varchar(127) NOT NULL,
+  `userAgent_Parent` varchar(127) DEFAULT NULL,
   `userAgent_Comment` varchar(127) NOT NULL,
   `userAgent_Browser` varchar(127) NOT NULL,
   `userAgent_Version` varchar(127) NOT NULL,
